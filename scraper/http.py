@@ -24,6 +24,11 @@ class Client:
         except requests.RequestException:
             self.robots.parse([])
         self.requests = 0
+        self.errors = {}        # motivo -> cantidad, para diagnosticar tiendas que fallan
+        self.last_headers = {}
+
+    def _err(self, why):
+        self.errors[why] = self.errors.get(why, 0) + 1
 
     def allowed(self, url: str) -> bool:
         return self.robots.can_fetch(USER_AGENT, url)
@@ -31,6 +36,7 @@ class Client:
     def get(self, path_or_url: str, *, params=None, expect_json=False, retries=2):
         url = path_or_url if path_or_url.startswith("http") else urljoin(self.base + "/", path_or_url.lstrip("/"))
         if not self.allowed(url):
+            self._err("bloqueado por robots.txt")
             return None
         for attempt in range(retries + 1):
             wait = self.delay - (time.time() - self._last)
@@ -40,20 +46,24 @@ class Client:
             self.requests += 1
             try:
                 r = self.s.get(url, params=params, timeout=TIMEOUT)
-            except requests.RequestException:
+            except requests.RequestException as e:
                 if attempt < retries:
                     time.sleep(3 * (attempt + 1))
                     continue
+                self._err(type(e).__name__)
                 return None
             if r.status_code in (429, 503) and attempt < retries:
                 time.sleep(10 * (attempt + 1))
                 continue
             if not r.ok:
+                self._err(f"HTTP {r.status_code}")
                 return None
+            self.last_headers = r.headers
             if expect_json:
                 try:
                     return r.json()
                 except ValueError:
+                    self._err("respuesta no es JSON")
                     return None
             return r
         return None

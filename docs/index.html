@@ -222,7 +222,14 @@ function renderStores(){
   const col = {ok:'var(--mint)', stale:'var(--gold)', error:'var(--pink)', pending:'var(--mute)'};
   const lab = {ok:'Al día', stale:'Mostrando últimos precios', error:'No se pudo leer', pending:'Pendiente'};
   $('#stores').innerHTML = META.stores.map(s => `<div class="sc"><b><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)} ↗</a></b>
-    <div>${esc(s.location)}</div><div style="margin-top:6px"><span class="dot" style="background:${col[s.status]||col.pending}"></span>${lab[s.status]||s.status} · ${s.count||0} figuras</div></div>`).join('');
+    <div>${esc(s.location)}</div><div style="margin-top:6px"><span class="dot" style="background:${col[s.status]||col.pending}"></span>${lab[s.status]||s.status} · ${s.count||0} figuras</div>${s.status==='error'&&s.diag?`<div style="margin-top:4px;font-size:12px">Motivo: ${esc(why(s.diag))}</div>`:''}</div>`).join('');
+}
+function why(d){
+  const errs = {}; (d.intentos||[]).forEach(i => Object.entries(i.errores||{}).forEach(([k,v]) => errs[k]=(errs[k]||0)+v));
+  const top = Object.entries(errs).sort((a,b)=>b[1]-a[1]).map(([k])=>k).slice(0,2);
+  if (top.length) return top.join(', ');
+  if ((d.intentos||[]).some(i=>i.productos)) return 'se leyeron productos, pero ninguno parecía figura';
+  return 'no se encontró catálogo ni sitemap';
 }
 
 function route(){

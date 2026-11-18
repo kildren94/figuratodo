@@ -77,3 +77,13 @@ def test_jsonld_page():
     p = parse_product_page(html, "https://tienda/machi")
     assert p["price"] == 64990 and p["preorder"] and p["in_stock"]
     assert p["barcode"] == "4580590123456" and p["image"] == "https://x/machi.jpg"
+
+
+def test_microdata_page():
+    html = """<html><head><meta property="og:title" content="X"></head><body><div itemscope itemtype="https://schema.org/Product">
+    <h1 itemprop="name">Funko Pop Animation Hunter x Hunter Gon Freecss 2088</h1>
+    <img itemprop="image" src="https://x/gon.jpg"><span itemprop="price" content="14990">$14.990</span>
+    <link itemprop="availability" href="https://schema.org/InStock"></div></body></html>"""
+    p = parse_product_page(html, "https://holygeek/gon")
+    assert p["price"] == 14990 and p["in_stock"] and p["title"].startswith("Funko Pop")
+    assert p["image"] == "https://x/gon.jpg"

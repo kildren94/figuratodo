@@ -92,6 +92,10 @@ def woocommerce(client):
     else:
         return None
     page, data = 1, first
+    try:
+        total_pages = int(client.last_headers.get("X-WP-TotalPages") or 0)
+    except ValueError:
+        total_pages = 0
     while isinstance(data, list) and data:
         for p in data:
             pr = p.get("prices") or {}
@@ -123,7 +127,7 @@ def woocommerce(client):
                 "brand": None,
                 "kind": f"{cats} {tags}",
             })
-        if len(data) < 100 or page >= MAX_WOO_PAGES:
+        if page >= MAX_WOO_PAGES or (total_pages and page >= total_pages) or (not total_pages and len(data) < 10):
             break
         page += 1
         data = client.get(base, params={"per_page": 100, "page": page}, expect_json=True)
@@ -221,6 +225,18 @@ def parse_product_page(html_text, url):
         barcode = None
         for k in ("gtin13", "gtin", "gtin12", "gtin14", "gtin8", "ean"):
             barcode = barcode or _barcode(prod.get(k) or offers.get(k))
+    elif soup.find(attrs={"itemprop": "price"}):
+        def ip(name, attr="content"):
+            el = soup.find(attrs={"itemprop": name})
+            if not el:
+                return None
+            return el.get(attr) or el.get("content") or el.get("href") or el.get("src") or el.get_text(" ", strip=True)
+        price = _int_price(ip("price"))
+        title = _clean(ip("name") or meta("og:title") or "")
+        avail = ip("availability", "href") or meta("product:availability") or ""
+        img = ip("image", "src") or meta("og:image")
+        brand, barcode = None, _barcode(ip("gtin13") or ip("gtin"))
+        prod = {"sku": ip("sku")}
     else:
         price = _int_price(meta("product:price:amount") or meta("og:price:amount"))
         title = _clean(meta("og:title") or (soup.title.string if soup.title else ""))
@@ -265,18 +281,23 @@ def _looks_preorder(title, extra):
     return bool(PREORDER_RE.search(" ".join([title or ""] + [str(x) for x in extra])))
 
 
-def detect_and_scrape(client, platform="auto"):
-    """Devuelve (plataforma_usada, ofertas)."""
+def detect_and_scrape(client, platform="auto", diag=None):
+    """Devuelve (plataforma_usada, ofertas). Si se pasa `diag` (lista), anota cada intento."""
     order = {"shopify": [shopify], "woocommerce": [woocommerce], "generic": [generic]}.get(
         platform, [shopify, woocommerce, generic])
     if platform in ("shopify", "woocommerce"):
         order = order + [generic]          # si la API está cerrada, intenta por sitemap
     for fn in order:
+        before = dict(client.errors)
         try:
             items = fn(client)
+            err = None
         except Exception as e:  # una tienda rota no debe botar la corrida
             print(f"  {client.host}: {fn.__name__} falló: {e!r}")
-            items = None
+            items, err = None, repr(e)[:200]
+        if diag is not None:
+            new = {k: v - before.get(k, 0) for k, v in client.errors.items() if v - before.get(k, 0)}
+            diag.append({"intento": fn.__name__, "productos": len(items or []), "errores": new, "excepcion": err})
         if items:
             return fn.__name__, items
     return None, []

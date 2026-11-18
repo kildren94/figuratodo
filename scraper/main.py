@@ -29,10 +29,13 @@ def load(path, default):
 def scrape_store(store):
     t0 = time.time()
     client = Client(store["url"])
-    platform, items = detect_and_scrape(client, store.get("platform", "auto"))
-    figs = []
+    diag = []
+    platform, items = detect_and_scrape(client, store.get("platform", "auto"), diag)
+    figs, dropped = [], []
     for it in items:
         if not is_figure(it["title"], it.get("kind", ""), strict=store.get("strict", False)):
+            if len(dropped) < 15:
+                dropped.append(f'{it["title"]} || {it.get("kind", "")}'[:160])
             continue
         it["store"] = store["id"]
         it["line"] = detect_line(it["title"], it.get("kind", ""))
@@ -40,6 +43,7 @@ def scrape_store(store):
     return {
         "id": store["id"], "platform": platform, "total": len(items), "figures": figs,
         "requests": client.requests, "seconds": round(time.time() - t0),
+        "diag": {"intentos": diag, "descartados_ejemplo": dropped if len(figs) < 20 else []},
     }
 
 
@@ -83,6 +87,12 @@ def main():
         r = results.get(s["id"])
         pm = prev_meta.get(s["id"], {})
         entry = {"id": s["id"], "name": s["name"], "url": s["url"], "location": s.get("location", "")}
+        if r is None and pm:
+            offers += prev_offers.get(s["id"], [])
+            meta_stores.append(pm)
+            continue
+        if r and r.get("diag"):
+            entry["diag"] = r["diag"]
         if r and r["figures"]:
             offers += r["figures"]
             entry.update(status="ok", platform=r["platform"], count=len(r["figures"]), last_ok=today)
@@ -93,7 +103,7 @@ def main():
             offers += old
             entry.update(status="stale" if old else ("error" if r else pm.get("status", "pending")),
                          platform=(r or {}).get("platform") or pm.get("platform"),
-                         count=len(old), last_ok=last_ok)
+                         count=len(old), last_ok=last_ok, total=(r or {}).get("total", 0))
         meta_stores.append(entry)
 
     products = group(offers)
