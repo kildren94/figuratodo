@@ -1,0 +1,165 @@
+{
+ "updated": null,
+ "stores": [
+  {
+   "id": "richirocko",
+   "name": "Richirocko",
+   "url": "https://tienda.richirocko.com",
+   "location": "Santiago Centro (retiro)",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "irion",
+   "name": "Juguetería Irion",
+   "url": "https://irion.cl",
+   "location": "Santiago Centro y Dos Caracoles (Providencia)",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "bydanime",
+   "name": "BYD Anime",
+   "url": "https://bydanime.cl",
+   "location": "Dos Caracoles (Providencia)",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "ikigaibazar",
+   "name": "Ikigai Bazar",
+   "url": "https://www.ikigaibazar.cl",
+   "location": "Santiago Centro",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "figurasdbz",
+   "name": "Figuras DBZ Chile",
+   "url": "https://www.figurasdbzchile.cl",
+   "location": "Paseo San Agustín, Santiago Centro",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "nakamahouse",
+   "name": "Nakama House",
+   "url": "https://nakamahouse.cl",
+   "location": "Boulevard Alameda, Santiago Centro",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "figuartschile",
+   "name": "Figuarts Chile",
+   "url": "https://www.figuartschile.com",
+   "location": "San Miguel",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "holygeek",
+   "name": "HolyGeek",
+   "url": "https://holygeek.cl",
+   "location": "Eurocentro, Santiago Centro",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "svader",
+   "name": "SVADER Coleccionables",
+   "url": "https://www.svadercoleccionables.cl",
+   "location": "Providencia (Metro Tobalaba)",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "luffytoys",
+   "name": "LuffyToys",
+   "url": "https://luffytoys.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "animestore",
+   "name": "Anime Store",
+   "url": "https://animestore.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "figuartszone",
+   "name": "Figuarts Zone Toys",
+   "url": "https://www.figuartszonetoys.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "newtype",
+   "name": "Newtype Chile",
+   "url": "https://newtypechile.com",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "avsotoyz",
+   "name": "AvsoToyz",
+   "url": "https://www.avsotoyz.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "yumeshoku",
+   "name": "Yumeshoku Store",
+   "url": "https://www.yumeshokustore.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "anezaki",
+   "name": "Anezaki Store",
+   "url": "https://anezakistore.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "kinue",
+   "name": "Kinue Store",
+   "url": "https://kinuestore.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "burubox",
+   "name": "Burubox",
+   "url": "https://burubox.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "zonaanime",
+   "name": "Zona Anime",
+   "url": "https://zonaanime.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  },
+  {
+   "id": "otakuverso",
+   "name": "OtakuVerso",
+   "url": "https://otakuverso.cl",
+   "location": "Online",
+   "status": "pending",
+   "count": 0
+  }
+ ]
+}

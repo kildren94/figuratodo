@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FiguraTodo — compara precios de figuras de anime en Chile</title>
+<meta name="description" content="Compara precios de figuras de anime en tiendas chilenas: Nendoroid, figma, Pop Up Parade, Banpresto, Ichiban Kuji y más.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0e14;--panel:#18161f;--panel2:#211e2b;--line:#2e2a3b;--ink:#f1eef7;--mute:#9a93ab;--pink:#ff5d8f;--mint:#5de0b4;--gold:#ffc65d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
+a{color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:900;font-size:34px;margin:0;line-height:1;letter-spacing:-.02em;cursor:pointer}
+h1 span{color:var(--pink)}
+.upd{color:var(--mute);font-size:13px}
+nav{display:flex;gap:6px}
+nav a{color:var(--mute);text-decoration:none;font-weight:600;font-size:14px;padding:7px 12px;border-radius:8px}
+nav a.on{background:var(--panel2);color:var(--ink)}
+.bar{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:10px}
+input,select{background:var(--panel2);border:1px solid var(--line);color:var(--ink);font:14px Inter;padding:10px 12px;border-radius:10px;outline:none;min-width:0}
+input:focus,select:focus{border-color:var(--pink)}
+#q{font-size:17px;padding:14px 16px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.filters label{display:flex;gap:6px;align-items:center;color:var(--mute);font-size:13px;cursor:pointer}
+.filters input[type=checkbox]{accent-color:var(--pink)}
+.count{color:var(--mute);font-size:13px;margin-left:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:.15s;display:flex;flex-direction:column}
+.card:hover{border-color:var(--pink);transform:translateY(-2px)}
+.img{aspect-ratio:1;background:var(--panel2) center/contain no-repeat;position:relative}
+.img .noimg{position:absolute;inset:0;display:grid;place-items:center;color:var(--line);font:900 40px "Zen Kaku Gothic New"}
+.badges{position:absolute;top:8px;left:8px;display:flex;gap:4px;flex-wrap:wrap}
+.b{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:rgba(15,14,20,.85);color:var(--ink)}
+.b.pre{color:var(--gold)}.b.off{color:var(--mute)}.b.drop{color:var(--mint)}
+.body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.ln{font-size:11px;color:var(--pink);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.nm{font-size:14px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pr{margin-top:auto;display:flex;justify-content:space-between;align-items:baseline;padding-top:6px}
+.pr b{font:900 20px "Zen Kaku Gothic New";color:var(--mint)}
+.pr span{font-size:12px;color:var(--mute)}
+.more{display:block;margin:22px auto 0;background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:11px 22px;border-radius:10px;font:600 14px Inter;cursor:pointer}
+[hidden]{display:none!important}
+.empty{color:var(--mute);text-align:center;padding:50px 10px}
+/* detalle */
+.ov{position:fixed;inset:0;background:rgba(5,4,8,.75);display:none;align-items:flex-start;justify-content:center;padding:30px 14px;overflow:auto;z-index:10}
+.ov.on{display:flex}
+.det{background:var(--panel);border:1px solid var(--line);border-radius:18px;max-width:860px;width:100%;padding:22px;position:relative}
+.x{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--mute);font-size:24px;cursor:pointer}
+.dtop{display:grid;grid-template-columns:220px 1fr;gap:20px}
+@media(max-width:640px){.dtop{grid-template-columns:1fr}}
+.dimg{aspect-ratio:1;border-radius:12px;background:var(--panel2) center/contain no-repeat}
+.det h2{font-family:"Zen Kaku Gothic New";margin:4px 0 8px;font-size:22px;line-height:1.25}
+.big{font:900 34px "Zen Kaku Gothic New";color:var(--mint)}
+.meta{color:var(--mute);font-size:13px}
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px}
+th{text-align:left;color:var(--mute);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding:8px;border-bottom:1px solid var(--line)}
+td{padding:10px 8px;border-bottom:1px solid var(--line)}
+tr.best td{background:rgba(93,224,180,.07)}
+tr.best td:first-child{box-shadow:inset 3px 0 var(--mint)}
+.go{background:var(--pink);color:#1a0b12;text-decoration:none;font-weight:700;font-size:13px;padding:6px 11px;border-radius:8px;white-space:nowrap}
+.st{font-size:12px}.st.ok{color:var(--mint)}.st.pre{color:var(--gold)}.st.no{color:var(--mute)}
+.chart{margin-top:18px;background:var(--panel2);border-radius:12px;padding:12px 14px}
+.chart h3{margin:0 0 6px;font-size:13px;color:var(--mute);font-weight:600}
+/* tiendas */
+.stores{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.sc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.sc b{font-size:15px}.sc div{color:var(--mute);font-size:13px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 onclick="location.hash=''">Figura<span>Todo</span></h1>
+      <div class="upd" id="upd">Cargando…</div>
+    </div>
+    <nav><a href="#" id="nFig" class="on">Figuras</a><a href="#tiendas" id="nSt">Tiendas</a></nav>
+  </header>
+
+  <main id="vFig">
+    <div class="bar">
+      <input id="q" placeholder="Busca: Gojo, Nendoroid 2205, Frieren Pop Up Parade, Vegeto Grandista…" autocomplete="off">
+      <select id="sort">
+        <option value="rel">Relevancia</option>
+        <option value="price">Menor precio</option>
+        <option value="-price">Mayor precio</option>
+        <option value="stores">Más tiendas</option>
+        <option value="drop">Mayor descuento</option>
+      </select>
+    </div>
+    <div class="filters">
+      <select id="fLine"><option value="">Todas las líneas</option></select>
+      <select id="fStore"><option value="">Todas las tiendas</option></select>
+      <input id="fMax" type="number" placeholder="Precio máx." style="width:130px">
+      <label><input type="checkbox" id="fStock" checked> Solo disponibles</label>
+      <label><input type="checkbox" id="fPre"> Ocultar preventas</label>
+      <label><input type="checkbox" id="fMulti"> En 2+ tiendas</label>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <button class="more" id="more" hidden>Ver más</button>
+  </main>
+
+  <main id="vSt" hidden>
+    <p class="meta">Tiendas que revisa FiguraTodo. Los precios se actualizan automáticamente dos veces al día.</p>
+    <div class="stores" id="stores"></div>
+  </main>
+
+  <footer>Los precios se leen de los sitios públicos de cada tienda y pueden cambiar. Confirma siempre el precio final en la tienda.</footer>
+</div>
+
+<div class="ov" id="ov"><div class="det" id="det"></div></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const fmt = n => '$' + Math.round(n).toLocaleString('es-CL');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9/ ]+/g,' ').replace(/\s+/g,' ').trim();
+let P = [], STORES = {}, HIST = {}, META = null, shown = 60, list = [];
+
+Promise.all([
+  fetch('data/products.json').then(r => r.json()),
+  fetch('data/meta.json').then(r => r.json()),
+]).then(([prod, meta]) => {
+  META = meta;
+  meta.stores.forEach(s => STORES[s.id] = s);
+  P = prod.products.map(p => {
+    const regs = p.offers.filter(o => o.in_stock).map(o => o.regular_price || o.price);
+    const drop = regs.length ? Math.max(0, 1 - p.min_price / Math.max(...regs)) : 0;
+    return {...p, _q: norm(p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + p.offers.map(o => o.title).join(' ')),
+            _pre: p.offers.every(o => o.preorder), _drop: drop};
+  });
+  const d = new Date(prod.updated);
+  $('#upd').textContent = `${P.length.toLocaleString('es-CL')} figuras · ${meta.stores.filter(s=>s.status==='ok'||s.status==='stale').length} tiendas · actualizado ${d.toLocaleString('es-CL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
+  const lines = {}; P.forEach(p => lines[p.line] = p.line_name);
+  $('#fLine').innerHTML += Object.entries(lines).sort((a,b)=>a[1].localeCompare(b[1])).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('');
+  $('#fStore').innerHTML += meta.stores.filter(s=>s.count).map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  renderStores(); apply(); route();
+}).catch(() => { $('#upd').textContent = 'Aún no hay datos. La primera actualización corre en GitHub Actions.'; });
+
+function apply(){
+  const q = norm($('#q').value), words = q ? q.split(' ') : [];
+  const line = $('#fLine').value, store = $('#fStore').value, max = +$('#fMax').value || Infinity;
+  const stock = $('#fStock').checked, nopre = $('#fPre').checked, multi = $('#fMulti').checked;
+  list = P.filter(p => {
+    if (line && p.line !== line) return false;
+    if (store && !p.offers.some(o => o.store === store)) return false;
+    if (stock && !p.in_stock) return false;
+    if (nopre && p._pre) return false;
+    if (multi && p.stores < 2) return false;
+    if (p.min_price > max) return false;
+    return words.every(w => p._q.includes(w));
+  });
+  const s = $('#sort').value;
+  if (s === 'price') list.sort((a,b)=>a.min_price-b.min_price);
+  else if (s === '-price') list.sort((a,b)=>b.min_price-a.min_price);
+  else if (s === 'stores') list.sort((a,b)=>b.stores-a.stores || a.min_price-b.min_price);
+  else if (s === 'drop') list.sort((a,b)=>b._drop-a._drop);
+  else if (words.length) list.sort((a,b)=> (norm(b.name).startsWith(words[0])) - (norm(a.name).startsWith(words[0])) || b.stores-a.stores);
+  shown = 60; draw();
+}
+
+function draw(){
+  $('#count').textContent = `${list.length.toLocaleString('es-CL')} resultados`;
+  $('#grid').innerHTML = list.length ? list.slice(0, shown).map(card).join('') : '<div class="empty">No encontré figuras con esos filtros.</div>';
+  $('#more').hidden = list.length <= shown;
+}
+function card(p){
+  return `<div class="card" onclick="location.hash='f-${encodeURIComponent(p.id)}'">
+    <div class="img" style="${p.image?`background-image:url('${esc(p.image)}')`:''}">${p.image?'':'<div class="noimg">?</div>'}
+      <div class="badges">${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}</div></div>
+    <div class="body"><div class="ln">${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><div class="nm">${esc(p.name)}</div>
+      <div class="pr"><b>${fmt(p.min_price)}</b><span>${p.stores} ${p.stores>1?'tiendas':'tienda'}</span></div></div></div>`;
+}
+
+async function openDetail(id){
+  const p = P.find(x => x.id === id); if (!p) return;
+  if (!HIST._loaded) { try { HIST = await fetch('data/history.json').then(r=>r.json()); } catch(e){ HIST = {}; } HIST._loaded = true; }
+  const offs = [...p.offers].sort((a,b)=>(!a.in_stock)-(!b.in_stock) || a.price-b.price);
+  const best = offs.find(o=>o.in_stock) || offs[0];
+  $('#det').innerHTML = `<button class="x" onclick="location.hash=''">×</button>
+    <div class="dtop"><div class="dimg" style="${p.image?`background-image:url('${esc(p.image)}')`:''}"></div>
+      <div><div class="ln">${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><h2>${esc(p.name)}</h2>
+      <div class="big">${fmt(p.min_price)}</div>
+      <div class="meta">Mejor precio en <b style="color:var(--ink)">${esc(STORES[best.store]?.name||best.store)}</b> · ${p.stores} ${p.stores>1?'tiendas':'tienda'}${p.barcode?' · JAN '+esc(p.barcode):''}</div>
+      <div style="margin-top:12px"><a class="go" href="${esc(best.url)}" target="_blank" rel="noopener">Ir a la tienda ↗</a></div></div></div>
+    <table><thead><tr><th>Tienda</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>
+    ${offs.map(o=>`<tr class="${o===best?'best':''}"><td><b>${esc(STORES[o.store]?.name||o.store)}</b><div class="meta">${esc(o.title)}</div></td>
+      <td><b>${fmt(o.price)}</b>${o.regular_price>o.price?`<div class="meta" style="text-decoration:line-through">${fmt(o.regular_price)}</div>`:''}</td>
+      <td class="st ${!o.in_stock?'no':o.preorder?'pre':'ok'}">${!o.in_stock?'Agotada':o.preorder?'Preventa / encargo':'Disponible'}</td>
+      <td style="text-align:right"><a class="go" href="${esc(o.url)}" target="_blank" rel="noopener">Ver ↗</a></td></tr>`).join('')}
+    </tbody></table>${chart(p)}`;
+  $('#ov').classList.add('on');
+}
+
+function chart(p){
+  // precio mínimo por día entre las ofertas, reconstruido desde los cambios guardados
+  const series = p.offers.map(o => HIST[o.store + '|' + o.url] || []).filter(h => h.length);
+  const days = [...new Set(series.flat().map(x => x[0]))].sort();
+  if (days.length < 2) return '<div class="chart"><h3>Historial de precio</h3><div class="meta">Se irá llenando con cada actualización.</div></div>';
+  const pts = days.map(d => {
+    const vals = series.map(h => { let v = null; for (const [dd, pr] of h) { if (dd <= d) v = pr; } return v; }).filter(v => v != null);
+    return [d, Math.min(...vals)];
+  });
+  const W = 780, H = 150, pad = 28, ys = pts.map(x=>x[1]), lo = Math.min(...ys), hi = Math.max(...ys), span = (hi-lo)||1;
+  const X = i => pad + i*(W-2*pad)/(pts.length-1), Y = v => H-pad - (v-lo)*(H-2*pad)/span;
+  const path = pts.map((x,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ');
+  return `<div class="chart"><h3>Historial del precio más bajo</h3><svg viewBox="0 0 ${W} ${H}" width="100%">
+    <path d="${path}" fill="none" stroke="#5de0b4" stroke-width="2.5"/>
+    ${pts.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(x[1])}" r="3" fill="#5de0b4"><title>${x[0]}: ${fmt(x[1])}</title></circle>`).join('')}
+    <text x="${pad}" y="14" fill="#9a93ab" font-size="12">${fmt(hi)}</text><text x="${pad}" y="${H-6}" fill="#9a93ab" font-size="12">${fmt(lo)}</text>
+    <text x="${W-pad}" y="${H-6}" fill="#9a93ab" font-size="12" text-anchor="end">${pts.at(-1)[0]}</text></svg></div>`;
+}
+
+function renderStores(){
+  const col = {ok:'var(--mint)', stale:'var(--gold)', error:'var(--pink)', pending:'var(--mute)'};
+  const lab = {ok:'Al día', stale:'Mostrando últimos precios', error:'No se pudo leer', pending:'Pendiente'};
+  $('#stores').innerHTML = META.stores.map(s => `<div class="sc"><b><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)} ↗</a></b>
+    <div>${esc(s.location)}</div><div style="margin-top:6px"><span class="dot" style="background:${col[s.status]||col.pending}"></span>${lab[s.status]||s.status} · ${s.count||0} figuras</div></div>`).join('');
+}
+
+function route(){
+  const h = decodeURIComponent(location.hash.slice(1));
+  const st = h === 'tiendas';
+  $('#vFig').hidden = st; $('#vSt').hidden = !st;
+  $('#nFig').classList.toggle('on', !st); $('#nSt').classList.toggle('on', st);
+  if (h.startsWith('f-')) openDetail(h.slice(2)); else $('#ov').classList.remove('on');
+}
+window.addEventListener('hashchange', route);
+$('#ov').addEventListener('click', e => { if (e.target.id === 'ov') location.hash = ''; });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#ov').classList.contains('on')) location.hash = ''; });
+let t; $('#q').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 150); });
+['sort','fLine','fStore','fMax','fStock','fPre','fMulti'].forEach(id => $('#'+id).addEventListener('change', apply));
+$('#fMax').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 250); });
+$('#more').onclick = () => { shown += 60; draw(); };
+</script>
+</body>
+</html>
