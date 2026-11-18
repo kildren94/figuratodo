@@ -1,8 +1,8 @@
 [
-  {"id": "richirocko", "name": "Richirocko", "url": "https://tienda.richirocko.com", "platform": "woocommerce", "location": "Santiago Centro (retiro)"},
+  {"id": "richirocko", "name": "Richirocko", "url": "https://tienda.richirocko.com", "platform": "woocommerce", "location": "Santiago Centro (retiro)", "nota": "Responde HTTP 403 a lectores automáticos"},
   {"id": "irion", "name": "Juguetería Irion", "url": "https://irion.cl", "platform": "shopify", "location": "Santiago Centro y Dos Caracoles (Providencia)"},
   {"id": "bydanime", "name": "BYD Anime", "url": "https://bydanime.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)"},
-  {"id": "ikigaibazar", "name": "Ikigai Bazar", "url": "https://www.ikigaibazar.cl", "platform": "auto", "location": "Santiago Centro"},
+  {"id": "ikigaibazar", "name": "Ikigai Bazar", "url": "https://www.ikigaibazar.cl", "platform": "auto", "location": "Santiago Centro", "enabled": false, "nota": "Catálogo web sin figuras (katanas, ponchos, llaveros)"},
   {"id": "figurasdbz", "name": "Figuras DBZ Chile", "url": "https://www.figurasdbzchile.cl", "platform": "auto", "location": "Paseo San Agustín, Santiago Centro"},
   {"id": "nakamahouse", "name": "Nakama House", "url": "https://nakamahouse.cl", "platform": "auto", "location": "Boulevard Alameda, Santiago Centro"},
   {"id": "figuartschile", "name": "Figuarts Chile", "url": "https://www.figuartschile.com", "platform": "auto", "location": "San Miguel"},
@@ -10,13 +10,18 @@
   {"id": "svader", "name": "SVADER Coleccionables", "url": "https://www.svadercoleccionables.cl", "platform": "auto", "location": "Providencia (Metro Tobalaba)", "strict": true},
   {"id": "luffytoys", "name": "LuffyToys", "url": "https://luffytoys.cl", "platform": "shopify", "location": "Online"},
   {"id": "animestore", "name": "Anime Store", "url": "https://animestore.cl", "platform": "shopify", "location": "Online"},
-  {"id": "figuartszone", "name": "Figuarts Zone Toys", "url": "https://www.figuartszonetoys.cl", "platform": "woocommerce", "location": "Online"},
-  {"id": "newtype", "name": "Newtype Chile", "url": "https://newtypechile.com", "platform": "auto", "location": "Online"},
+  {"id": "figuartszone", "name": "Figuarts Zone Toys", "url": "https://www.figuartszonetoys.cl", "platform": "woocommerce", "location": "Online", "enabled": false, "nota": "El dominio no responde (error de conexión, nov 2026)"},
+  {"id": "newtype", "name": "Newtype Chile", "url": "https://newtypechile.com", "platform": "auto", "location": "Online", "enabled": false, "nota": "El dominio no responde (error de conexión, nov 2026)"},
   {"id": "avsotoyz", "name": "AvsoToyz", "url": "https://www.avsotoyz.cl", "platform": "auto", "location": "Online"},
   {"id": "yumeshoku", "name": "Yumeshoku Store", "url": "https://www.yumeshokustore.cl", "platform": "auto", "location": "Online"},
   {"id": "anezaki", "name": "Anezaki Store", "url": "https://anezakistore.cl", "platform": "auto", "location": "Online"},
   {"id": "kinue", "name": "Kinue Store", "url": "https://kinuestore.cl", "platform": "auto", "location": "Online"},
   {"id": "burubox", "name": "Burubox", "url": "https://burubox.cl", "platform": "auto", "location": "Online"},
-  {"id": "zonaanime", "name": "Zona Anime", "url": "https://zonaanime.cl", "platform": "auto", "location": "Online"},
-  {"id": "otakuverso", "name": "OtakuVerso", "url": "https://otakuverso.cl", "platform": "auto", "location": "Online"}
+  {"id": "zonaanime", "name": "Zona Anime", "url": "https://zonaanime.cl", "platform": "auto", "location": "Online", "all_figures": true},
+  {"id": "otakuverso", "name": "OtakuVerso", "url": "https://otakuverso.cl", "platform": "auto", "location": "Online"},
+  {"id": "chilerobots", "name": "Chile Robots", "url": "https://www.chilerobots.cl", "platform": "auto", "location": "Online (entrega presencial en Santiago)"},
+  {"id": "tomatorepublic", "name": "Tomato Republic", "url": "https://tomatorepublic.cl", "platform": "woocommerce", "location": "Online"},
+  {"id": "mranime", "name": "Figuras MR Anime", "url": "https://figurasmranime.cl", "platform": "auto", "location": "Galpón Bío Bío, Santiago"},
+  {"id": "bocchita", "name": "Bocchita Store", "url": "https://bocchitastore.cl", "platform": "auto", "location": "Online"},
+  {"id": "universotoys", "name": "Universo Toys", "url": "https://www.universotoys.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true}
 ]

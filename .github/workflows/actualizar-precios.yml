@@ -47,10 +47,11 @@ jobs:
         run: |
           git config user.name "figuratodo-bot"
           git config user.email "figuratodo-bot@users.noreply.github.com"
-          git add docs/data
+          git add docs/data cache
           if git diff --cached --quiet; then
             echo "Sin cambios"
           else
             git commit -m "Precios $(TZ=America/Santiago date '+%Y-%m-%d %H:%M')"
-            git push
+            # si alguien subió cambios mientras corría, se integran antes de guardar
+            for i in 1 2 3; do git pull --rebase -X theirs && git push && break; sleep 5; done
           fi

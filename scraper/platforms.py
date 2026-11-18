@@ -7,6 +7,7 @@ Cada lector devuelve una lista de ofertas con este formato:
 import html
 import json
 import re
+import zlib
 from xml.etree import ElementTree as ET
 
 from bs4 import BeautifulSoup
@@ -140,12 +141,15 @@ SKIP_URL = re.compile(r"/(blog|blogs|pages?|collections?|categor(y|ia|ias)|categ
 
 
 def _sitemap_urls(client):
+    """Devuelve [(url, lastmod)] de productos según el sitemap de la tienda."""
     roots = []
     r = client.get("/robots.txt")
     if r is not None:
         roots += re.findall(r"(?im)^\s*sitemap:\s*(\S+)", r.text)
-    roots += [client.base + "/sitemap.xml", client.base + "/sitemap_index.xml"]
+    roots += [client.base + p for p in ("/sitemap.xml", "/sitemap_index.xml", "/1_index_sitemap.xml",
+                                        "/sitemap_products_1.xml", "/product-sitemap.xml")]
     seen, product_urls, other_urls = set(), [], []
+    ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 
     def parse(url, depth=0, product_hint=False):
         if url in seen or depth > 2 or len(seen) > 40:
@@ -158,23 +162,60 @@ def _sitemap_urls(client):
             root = ET.fromstring(r.content)
         except ET.ParseError:
             return
-        ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
         children = [e.text.strip() for e in root.findall("s:sitemap/s:loc", ns) if e.text]
         if children:
             prod = [c for c in children if "product" in c.lower() or "producto" in c.lower()]
             for c in (prod or children):
                 parse(c, depth + 1, product_hint=bool(prod))
             return
-        locs = [e.text.strip() for e in root.findall("s:url/s:loc", ns) if e.text]
+        locs = []
+        for u in root.findall("s:url", ns):
+            loc = u.find("s:loc", ns)
+            if loc is None or not loc.text:
+                continue
+            lm = u.find("s:lastmod", ns)
+            locs.append((loc.text.strip(), (lm.text or "").strip() if lm is not None else ""))
         (product_urls if product_hint or "product" in url.lower() else other_urls).extend(locs)
 
     for u in dict.fromkeys(roots):
         parse(u)
         if product_urls or other_urls:
             break
-    urls = product_urls or [u for u in other_urls if not SKIP_URL.search(u)
+    urls = product_urls or [(u, lm) for u, lm in other_urls if not SKIP_URL.search(u)
                             and u.rstrip("/") != client.base]
     return list(dict.fromkeys(urls))[:MAX_GENERIC_PAGES]
+
+
+CRAWL_SKIP = re.compile(r"\.(jpe?g|png|gif|webp|svg|pdf|zip|css|js|xml)(\?|$)|/(cart|carrito|checkout|login|"
+                        r"account|mi-cuenta|my-account|contact|contacto|wishlist|module/|blog)", re.I)
+
+
+def _crawl(client, limit=1500):
+    """Para tiendas sin sitemap: recorre los links internos desde la portada buscando páginas de producto."""
+    from urllib.parse import urljoin, urlparse, urlunparse, parse_qsl, urlencode
+    host = urlparse(client.base).netloc
+    queue, seen, out = [client.base + "/"], set(), []
+    while queue and len(seen) < limit:
+        url = queue.pop(0)
+        if url in seen:
+            continue
+        seen.add(url)
+        r = client.get(url)
+        if r is None or "html" not in r.headers.get("content-type", ""):
+            continue
+        item = parse_product_page(r.text, url)
+        if item:
+            out.append(item)
+            continue   # en una página de producto no hace falta seguir links
+        for a in BeautifulSoup(r.text, "lxml").find_all("a", href=True):
+            u = urlparse(urljoin(url, a["href"]))
+            if u.netloc != host or CRAWL_SKIP.search(u.path):
+                continue
+            q = [(k, v) for k, v in parse_qsl(u.query) if k in ("page", "p")]   # sólo paginación
+            clean = urlunparse((u.scheme, u.netloc, u.path, "", urlencode(q), ""))
+            if clean not in seen:
+                queue.append(clean)
+    return out
 
 
 def _iter_ld(obj):
@@ -225,7 +266,7 @@ def parse_product_page(html_text, url):
         barcode = None
         for k in ("gtin13", "gtin", "gtin12", "gtin14", "gtin8", "ean"):
             barcode = barcode or _barcode(prod.get(k) or offers.get(k))
-    elif soup.find(attrs={"itemprop": "price"}):
+    elif len({(e.get("content") or e.get_text(strip=True)) for e in soup.find_all(attrs={"itemprop": "price"})}) == 1:
         def ip(name, attr="content"):
             el = soup.find(attrs={"itemprop": name})
             if not el:
@@ -261,15 +302,49 @@ def parse_product_page(html_text, url):
     }
 
 
-def generic(client):
-    out = []
-    for url in _sitemap_urls(client):
+REFRESH_DAYS = 4   # aunque el sitemap no indique cambios, cada producto se vuelve a leer cada tantos días
+
+
+def generic(client, cache=None):
+    """Lee productos desde el sitemap. Con `cache` ({url: {lastmod, fetched, item}}) solo abre las páginas
+    nuevas, las que cambiaron según el sitemap o las que no se leen hace REFRESH_DAYS días."""
+    import datetime as _dt
+    today = _dt.date.today()
+    cache = cache if cache is not None else {}
+    entries = _sitemap_urls(client)
+    if not entries:
+        return _crawl(client)
+    out, fresh = [], {}
+    # primero las que hay que leer sí o sí; el resto se reparte en el tiempo
+    for url, lastmod in entries:
+        c = cache.get(url)
+        if c:
+            age = (today - _dt.date.fromisoformat(c["fetched"])).days
+            # el desfase por url reparte las relecturas entre días distintos
+            stale = age >= REFRESH_DAYS + (zlib.crc32(url.encode()) % 3)
+            if c.get("lastmod") == lastmod and lastmod and not stale:
+                fresh[url] = c
+                if c.get("item"):
+                    out.append(c["item"])
+                continue
+            if not lastmod and not stale:
+                fresh[url] = c
+                if c.get("item"):
+                    out.append(c["item"])
+                continue
         r = client.get(url)
         if r is None or "html" not in r.headers.get("content-type", "html"):
+            if c:
+                fresh[url] = c
+                if c.get("item"):
+                    out.append(c["item"])
             continue
         item = parse_product_page(r.text, url)
+        fresh[url] = {"lastmod": lastmod, "fetched": today.isoformat(), "item": item}
         if item:
             out.append(item)
+    cache.clear()
+    cache.update(fresh)
     return out
 
 
@@ -281,7 +356,7 @@ def _looks_preorder(title, extra):
     return bool(PREORDER_RE.search(" ".join([title or ""] + [str(x) for x in extra])))
 
 
-def detect_and_scrape(client, platform="auto", diag=None):
+def detect_and_scrape(client, platform="auto", diag=None, cache=None):
     """Devuelve (plataforma_usada, ofertas). Si se pasa `diag` (lista), anota cada intento."""
     order = {"shopify": [shopify], "woocommerce": [woocommerce], "generic": [generic]}.get(
         platform, [shopify, woocommerce, generic])
@@ -290,7 +365,7 @@ def detect_and_scrape(client, platform="auto", diag=None):
     for fn in order:
         before = dict(client.errors)
         try:
-            items = fn(client)
+            items = fn(client, cache) if fn is generic else fn(client)
             err = None
         except Exception as e:  # una tienda rota no debe botar la corrida
             print(f"  {client.host}: {fn.__name__} falló: {e!r}")

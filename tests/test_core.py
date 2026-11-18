@@ -87,3 +87,12 @@ def test_microdata_page():
     p = parse_product_page(html, "https://holygeek/gon")
     assert p["price"] == 14990 and p["in_stock"] and p["title"].startswith("Funko Pop")
     assert p["image"] == "https://x/gon.jpg"
+
+
+def test_adult():
+    from scraper.classify import is_adult
+    assert is_adult("Obsidia Bunny 1/4", "Figuras Ecchi (+18) Figuras Estáticas Preventa")
+    assert is_adult("Mauve 1/6", "", "Rocket Boy / Native")
+    assert not is_adult("Nendoroid Frieren 2367", "Nendoroid")
+    assert not is_adult("Figura Alternative Ver. Miku", "Figuras")
+    assert not is_adult("Figura Tsuyu Asui Frog Form My Hero Academia", "Figuras")

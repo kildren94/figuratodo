@@ -57,11 +57,13 @@ ANIME_HINT = re.compile(
     r"\bfrieren\b|\bbleach\b|\bjojo|\bsailor moon\b|\bhaikyuu\b|\bgundam\b|\bdandadan\b|\bsolo leveling\b")
 
 
-def is_figure(title, kind="", strict=False):
+def is_figure(title, kind="", strict=False, all_figures=False):
     t = norm(f"{title} {kind}")
     tt = norm(title)
     if EXCLUDE.search(tt) and not re.search(r"\bfigur|\bnendoroid\b|\bfigma\b", tt):
         return False
+    if all_figures:          # tiendas que solo venden figuras y no lo dicen en el título
+        return True
     if not FIGURE_WORDS.search(t):
         return False
     if strict and not ANIME_HINT.search(t):
@@ -114,3 +116,19 @@ def kuji_prize(title):
     m = re.search(r"\b(?:premio|prize)\s*([a-z]|last ?one)\b", norm(title)) or \
         re.search(r"\b([a-z]|last ?one)\s*(?:premio|prize)\b", norm(title))
     return m.group(1).replace(" ", "") if m else None
+
+
+# Figuras para adultos: por categoría de la tienda o por fabricante especializado
+ADULT_WORDS = re.compile(r"\+ ?18|18 ?\+|\becchi\b|\bhentai\b|\bnsfw\b|\badult[oa]s?\b|\bcast ?off\b|\berotic|\b r18\b|\br 18\b")
+ADULT_BRANDS = re.compile(
+    r"\bnative\b|\bbinding\b|\brocket boy\b|\bnocturne\b|\bpink cat\b|\bhotvenus\b|\bhot venus\b|\bskytube\b|"
+    r"\bsky tube\b|\btuberosa\b|\borchidseed\b|\bq six\b|\bqsix\b|\blechery\b|\bmagic mould\b|\bdaiki kougyou\b|"
+    r"\binsight\b|\bgentlemen\b|\bpartylook\b|\bascendia\b|\bfrog\b|\bmagicbullets\b|\bpink charm\b|\bvibrastar\b")
+
+
+def is_adult(title, kind="", brand=""):
+    raw = f"{title} {kind} {brand}"
+    if ADULT_WORDS.search(raw.lower()) or ADULT_WORDS.search(norm(raw)):
+        return True
+    # los fabricantes se miran solo en marca/categorías: en un título "Frog" o "Native" puede ser otra cosa
+    return bool(ADULT_BRANDS.search(norm(f"{kind} {brand}")))

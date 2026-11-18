@@ -9,7 +9,7 @@ from pathlib import Path
 
 from .http import Client
 from .platforms import detect_and_scrape
-from .classify import is_figure, detect_line
+from .classify import is_figure, detect_line, is_adult
 from .match import group
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -26,19 +26,29 @@ def load(path, default):
         return default
 
 
+CACHE = ROOT / "cache"
+
+
 def scrape_store(store):
     t0 = time.time()
     client = Client(store["url"])
     diag = []
-    platform, items = detect_and_scrape(client, store.get("platform", "auto"), diag)
+    cache_file = CACHE / f"{store['id']}.json"
+    cache = load(cache_file, {})
+    platform, items = detect_and_scrape(client, store.get("platform", "auto"), diag, cache)
+    if cache:
+        CACHE.mkdir(exist_ok=True)
+        cache_file.write_text(json.dumps(cache, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     figs, dropped = [], []
     for it in items:
-        if not is_figure(it["title"], it.get("kind", ""), strict=store.get("strict", False)):
+        if not is_figure(it["title"], it.get("kind", ""), strict=store.get("strict", False),
+                         all_figures=store.get("all_figures", False)):
             if len(dropped) < 15:
                 dropped.append(f'{it["title"]} || {it.get("kind", "")}'[:160])
             continue
         it["store"] = store["id"]
         it["line"] = detect_line(it["title"], it.get("kind", ""))
+        it["adult"] = is_adult(it["title"], it.get("kind", ""), it.get("brand") or "")
         figs.append(it)
     return {
         "id": store["id"], "platform": platform, "total": len(items), "figures": figs,
@@ -53,7 +63,7 @@ def main():
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()
 
-    stores = load(STORES, [])
+    stores = [s for s in load(STORES, []) if s.get("enabled", True)]
     if args.stores:
         wanted = set(args.stores.split(","))
         stores = [s for s in stores if s["id"] in wanted]
@@ -65,7 +75,8 @@ def main():
     for p in prev_products:
         for o in p["offers"]:
             prev_offers.setdefault(o["store"], []).append({**o, "image": p.get("image"),
-                                                            "barcode": p.get("barcode"), "line": p["line"]})
+                                                            "barcode": p.get("barcode"), "line": p["line"],
+                                                            "adult": o.get("adult", p.get("adult", False))})
 
     now = datetime.now(CHILE)
     today = now.strftime("%Y-%m-%d")
@@ -84,6 +95,8 @@ def main():
 
     offers, meta_stores = [], []
     for s in load(STORES, []):
+        if not s.get("enabled", True):
+            continue
         r = results.get(s["id"])
         pm = prev_meta.get(s["id"], {})
         entry = {"id": s["id"], "name": s["name"], "url": s["url"], "location": s.get("location", "")}

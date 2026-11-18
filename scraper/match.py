@@ -125,10 +125,11 @@ def _product(offs):
         "image": next((o["image"] for o in offs if o.get("image")), None),
         "min_price": min(o["price"] for o in (stock or offs)),
         "in_stock": bool(stock),
+        "adult": any(o.get("adult") for o in offs),
         "stores": len({o["store"] for o in offs}),
         "offers": [{
             "store": o["store"], "title": o["title"], "price": o["price"],
             "regular_price": o["regular_price"], "url": o["url"],
-            "in_stock": o["in_stock"], "preorder": o["preorder"],
+            "in_stock": o["in_stock"], "preorder": o["preorder"], "adult": bool(o.get("adult")),
         } for o in offs],
     }

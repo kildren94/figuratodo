@@ -35,7 +35,7 @@ input:focus,select:focus{border-color:var(--pink)}
 .img .noimg{position:absolute;inset:0;display:grid;place-items:center;color:var(--line);font:900 40px "Zen Kaku Gothic New"}
 .badges{position:absolute;top:8px;left:8px;display:flex;gap:4px;flex-wrap:wrap}
 .b{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:rgba(15,14,20,.85);color:var(--ink)}
-.b.pre{color:var(--gold)}.b.off{color:var(--mute)}.b.drop{color:var(--mint)}
+.b.pre{color:var(--gold)}.b.adult{background:var(--pink);color:#1a0b12}.b.off{color:var(--mute)}.b.drop{color:var(--mint)}
 .body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
 .ln{font-size:11px;color:var(--pink);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
 .nm{font-size:14px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -98,6 +98,7 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
       <select id="fLine"><option value="">Todas las líneas</option></select>
       <select id="fStore"><option value="">Todas las tiendas</option></select>
       <input id="fMax" type="number" placeholder="Precio máx." style="width:130px">
+      <select id="fAdult"><option value="">+18: mostrar</option><option value="hide">+18: ocultar</option><option value="only">Solo +18</option></select>
       <label><input type="checkbox" id="fStock" checked> Solo disponibles</label>
       <label><input type="checkbox" id="fPre"> Ocultar preventas</label>
       <label><input type="checkbox" id="fMulti"> En 2+ tiendas</label>
@@ -133,7 +134,7 @@ Promise.all([
   P = prod.products.map(p => {
     const regs = p.offers.filter(o => o.in_stock).map(o => o.regular_price || o.price);
     const drop = regs.length ? Math.max(0, 1 - p.min_price / Math.max(...regs)) : 0;
-    return {...p, _q: norm(p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + p.offers.map(o => o.title).join(' ')),
+    return {...p, _q: norm((p.adult ? '18 ecchi adulto ' : '') + p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + p.offers.map(o => o.title).join(' ')),
             _pre: p.offers.every(o => o.preorder), _drop: drop};
   });
   const d = new Date(prod.updated);
@@ -147,10 +148,13 @@ Promise.all([
 function apply(){
   const q = norm($('#q').value), words = q ? q.split(' ') : [];
   const line = $('#fLine').value, store = $('#fStore').value, max = +$('#fMax').value || Infinity;
+  const adult = $('#fAdult').value;
   const stock = $('#fStock').checked, nopre = $('#fPre').checked, multi = $('#fMulti').checked;
   list = P.filter(p => {
     if (line && p.line !== line) return false;
     if (store && !p.offers.some(o => o.store === store)) return false;
+    if (adult === 'hide' && p.adult) return false;
+    if (adult === 'only' && !p.adult) return false;
     if (stock && !p.in_stock) return false;
     if (nopre && p._pre) return false;
     if (multi && p.stores < 2) return false;
@@ -174,7 +178,7 @@ function draw(){
 function card(p){
   return `<div class="card" onclick="location.hash='f-${encodeURIComponent(p.id)}'">
     <div class="img" style="${p.image?`background-image:url('${esc(p.image)}')`:''}">${p.image?'':'<div class="noimg">?</div>'}
-      <div class="badges">${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}</div></div>
+      <div class="badges">${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}</div></div>
     <div class="body"><div class="ln">${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><div class="nm">${esc(p.name)}</div>
       <div class="pr"><b>${fmt(p.min_price)}</b><span>${p.stores} ${p.stores>1?'tiendas':'tienda'}</span></div></div></div>`;
 }
@@ -186,7 +190,7 @@ async function openDetail(id){
   const best = offs.find(o=>o.in_stock) || offs[0];
   $('#det').innerHTML = `<button class="x" onclick="location.hash=''">×</button>
     <div class="dtop"><div class="dimg" style="${p.image?`background-image:url('${esc(p.image)}')`:''}"></div>
-      <div><div class="ln">${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><h2>${esc(p.name)}</h2>
+      <div><div class="ln">${esc(p.line_name)}${p.num?' '+esc(p.num):''}${p.adult?' · +18':''}</div><h2>${esc(p.name)}</h2>
       <div class="big">${fmt(p.min_price)}</div>
       <div class="meta">Mejor precio en <b style="color:var(--ink)">${esc(STORES[best.store]?.name||best.store)}</b> · ${p.stores} ${p.stores>1?'tiendas':'tienda'}${p.barcode?' · JAN '+esc(p.barcode):''}</div>
       <div style="margin-top:12px"><a class="go" href="${esc(best.url)}" target="_blank" rel="noopener">Ir a la tienda ↗</a></div></div></div>
@@ -243,7 +247,7 @@ window.addEventListener('hashchange', route);
 $('#ov').addEventListener('click', e => { if (e.target.id === 'ov') location.hash = ''; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#ov').classList.contains('on')) location.hash = ''; });
 let t; $('#q').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 150); });
-['sort','fLine','fStore','fMax','fStock','fPre','fMulti'].forEach(id => $('#'+id).addEventListener('change', apply));
+['sort','fLine','fStore','fMax','fAdult','fStock','fPre','fMulti'].forEach(id => $('#'+id).addEventListener('change', apply));
 $('#fMax').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 250); });
 $('#more').onclick = () => { shown += 60; draw(); };
 </script>
