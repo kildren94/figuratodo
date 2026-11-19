@@ -178,6 +178,7 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
 <script>
 const $ = s => document.querySelector(s);
 const fmt = n => '$' + Math.round(n).toLocaleString('es-CL');
+const safeUrl = u => /^https?:\/\//i.test(String(u||'')) ? u : '#';
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9/ ]+/g,' ').replace(/\s+/g,' ').trim();
 let P = [], STORES = {}, HIST = {}, META = null, shown = 60, list = [];
@@ -200,7 +201,12 @@ Promise.all([
   $('#fLine').innerHTML += Object.entries(lines).sort((a,b)=>a[1].localeCompare(b[1])).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('');
   $('#fStore').innerHTML += meta.stores.filter(s=>s.count).map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
   renderStores(); apply(); route();
-}).catch(() => { $('#upd').textContent = 'Aún no hay datos. La primera actualización corre en GitHub Actions.'; });
+}).catch(e => {
+  console.error(e);
+  $('#upd').textContent = (e instanceof SyntaxError || String(e).includes('fetch'))
+    ? 'Aún no hay datos. La primera actualización corre en GitHub Actions.'
+    : 'Hubo un error al mostrar las figuras. Recarga la página; si sigue, repórtalo.';
+});
 
 function apply(){
   const q = norm($('#q').value), words = q ? q.split(' ') : [];
@@ -271,7 +277,7 @@ function draw(){
 }
 function card(p, extra = ''){
   return `<div class="card${p.alternative?' alt':''}" onclick="location.hash='f-${encodeURIComponent(p.id)}'">
-    <div class="img" style="${p.image?`background-image:url('${esc(p.image)}')`:''}">${p.image?'':'<div class="noimg">?</div>'}
+    <div class="img" style="${p.image?`background-image:url('${esc(safeUrl(p.image))}')`:''}">${p.image?'':'<div class="noimg">?</div>'}
       <button class="heart${wlHas(p)?' on':''}" aria-label="${wlHas(p)?'Quitar de':'Agregar a'} mi lista de deseos" onclick="event.stopPropagation();wlToggle('${esc(p.id)}',this)">${wlHas(p)?'♥':'♡'}</button>
       <div class="badges">${p.alternative?`<span class="b alt">${p.alt_unknown?'Posible alternativa':'Alternativa · no original'}</span>`:''}${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p.drop?`<span class="b drop2">↓ ${p.drop.pct}% reciente</span>`:p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}${p.back?'<span class="b back">Volvió al stock</span>':''}</div></div>
     <div class="body"><div class="ln">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><div class="nm">${esc(p.name)}</div>
@@ -284,17 +290,17 @@ async function openDetail(id){
   const offs = [...p.offers].sort((a,b)=>(!a.in_stock)-(!b.in_stock) || a.price-b.price);
   const best = offs.find(o=>o.in_stock) || offs[0];
   $('#det').innerHTML = `<button class="x" onclick="closeDetail()">×</button>
-    <div class="dtop"><div class="dimg" style="${p.image?`background-image:url('${esc(p.image)}')`:''}"></div>
+    <div class="dtop"><div class="dimg" style="${p.image?`background-image:url('${esc(safeUrl(p.image))}')`:''}"></div>
       <div><div class="ln" style="${p.alternative?'color:var(--gold)':''}">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}${p.adult?' · +18':''}</div><h2>${esc(p.name)}</h2>
       <div class="big" style="${p.alternative?'color:var(--mute)':''}">${fmt(p.min_price)}</div>
       <div class="meta">Mejor precio en <b style="color:var(--ink)">${esc(STORES[best.store]?.name||best.store)}</b> · ${p.stores} ${p.stores>1?'tiendas':'tienda'}${p.barcode?' · JAN '+esc(p.barcode):''}</div>
-      <div style="margin-top:12px"><a class="go" href="${esc(best.url)}" target="_blank" rel="noopener">Ir a la tienda ↗</a>
+      <div style="margin-top:12px"><a class="go" href="${esc(safeUrl(best.url))}" target="_blank" rel="noopener">Ir a la tienda ↗</a>
       <button class="go ghost${wlHas(p)?' on':''}" style="cursor:pointer;margin-left:6px" onclick="wlToggle('${esc(p.id)}');openDetail('${esc(p.id)}')">${wlHas(p)?'♥ En mi lista':'♡ Agregar a mi lista'}</button></div></div></div>
     <table><thead><tr><th>Tienda</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>
     ${offs.map(o=>`<tr class="${o===best?'best':''}"><td><b>${esc(STORES[o.store]?.name||o.store)}</b><div class="meta">${esc(o.title)}</div></td>
       <td><b>${fmt(o.price)}</b>${o.regular_price>o.price?`<div class="meta" style="text-decoration:line-through">${fmt(o.regular_price)}</div>`:''}</td>
       <td class="st ${!o.in_stock?'no':o.preorder?'pre':'ok'}">${!o.in_stock?'Agotada':o.preorder?'Preventa / encargo':'Disponible'}</td>
-      <td style="text-align:right"><a class="go" href="${esc(o.url)}" target="_blank" rel="noopener">Ver ↗</a></td></tr>`).join('')}
+      <td style="text-align:right"><a class="go" href="${esc(safeUrl(o.url))}" target="_blank" rel="noopener">Ver ↗</a></td></tr>`).join('')}
     </tbody></table>${altNote(p)}${chart(p)}
     <div class="meta" style="margin-top:14px">¿Algo está mal en esta figura (no es la misma figura, no es anime, precio raro)? <a href="${reportUrl(p)}" target="_blank" rel="noopener" style="color:var(--pink)">Reportar error ↗</a></div>`;
   $('#ov').classList.add('on');
@@ -369,11 +375,12 @@ function wlToggle(id, btn){
   const p = P.find(x => x.id === id); if (!p) return;
   const it = wlItem(p);
   if (it) WL = WL.filter(w => w !== it);
-  else WL.unshift({id: p.id, urls: p.offers.map(o => urlKey(o.url)), name: p.name, price: p.min_price, date: new Date().toISOString().slice(0,10)});
+  else WL.unshift({id: p.id, urls: p.offers.map(o => urlKey(o.url)), name: p.name, price: p.min_price, date: localDate()});
   wlSave();
   if (btn) { const on = !it; btn.classList.toggle('on', on); btn.textContent = on ? '♥' : '♡'; btn.setAttribute('aria-label', (on?'Quitar de':'Agregar a') + ' mi lista de deseos'); }
   if (!$('#vWl').hidden) drawWl();
 }
+function localDate(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function wlBadge(){ $('#wlCount').textContent = WL.length; $('#wlCount').hidden = !WL.length; }
 function drawWl(){
   const rows = WL.map(w => ({w, p: wlFind(w)}));
@@ -405,7 +412,13 @@ $('#wlImpOk').onclick = () => {
     const raw = $('#wlTxt').value.trim().replace(/^FT1:/, '');
     const items = JSON.parse(decodeURIComponent(escape(atob(raw))));
     let n = 0;
-    items.forEach(it => { if (it && it.id && !WL.some(w => w.id === it.id)) { WL.push(it); n++; } });
+    items.forEach(it => {
+      if (!it || typeof it.id !== 'string' || !/^[a-z0-9-]{1,80}$/i.test(it.id) || WL.some(w => w.id === it.id)) return;
+      WL.push({id: it.id, urls: Array.isArray(it.urls) ? it.urls.filter(u => typeof u === 'string').slice(0, 50) : [],
+               name: String(it.name || 'Figura').slice(0, 200), price: Math.max(0, +it.price || 0),
+               date: /^\d{4}-\d{2}-\d{2}$/.test(it.date) ? it.date : localDate()});
+      n++;
+    });
     wlSave(); drawWl(); $('#wlTxt').value = '';
     $('#wlImpMsg').textContent = n ? `Se agregaron ${n} ${n>1?'figuras':'figura'}.` : 'Esas figuras ya estaban en tu lista.';
   } catch (e) { $('#wlImpMsg').textContent = 'Ese texto no es una lista válida. Cópiala de nuevo con "Copiar lista".'; }

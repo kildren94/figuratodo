@@ -52,8 +52,9 @@ def test_grouping():
         off("animestore", "Figura Vegeto Grandista Dragon Ball Z", 41990),
         off("burubox", "Figura Banpresto Demon Slayer Yushiro Vol. 21 B", 25990),
         off("otakuverso", "Figura Banpresto Demon Slayer Makomo Vol. 21 A", 25990),
-        off("x", "Jan item uno", 10000, barcode="4580590126947"),
-        off("y", "Otro nombre totalmente distinto", 11000, barcode="4580590126947"),
+        off("x", "Nami Grandline Lady Egghead", 10000, barcode="4580590126947"),
+        off("y", "Figura One Piece Nami Grandline Lady Egghead Ver.", 11000, barcode="4580590126947"),
+        off("z", "Sanji Film Red DXF", 12000, barcode="4580590126947"),      # mismo código, otra figura
     ]
     prods = {p["id"]: p for p in group(offers)}
     import re
@@ -65,7 +66,8 @@ def test_grouping():
     assert len(by_name("shanks")) == 2           # premio A y premio B son figuras distintas
     assert len(by_name("vegeto")) == 1 and by_name("vegeto")[0]["stores"] == 2
     assert len([p for p in prods.values() if "21" in p["name"]]) == 2   # Vol. 21 A ≠ Vol. 21 B
-    assert prods["jan-4580590126947"]["stores"] == 2
+    assert prods["jan-4580590126947"]["stores"] == 2          # el Sanji con el mismo código no se une
+    assert len(prods) == len({p["id"] for p in prods.values()})
 
 
 def test_jsonld_page():
@@ -140,10 +142,10 @@ def test_shopify_deposit_variants():
 
 
 def test_manual_rules():
-    a = off("kinue", "Figura Vegeto Grandista Dragon Ball Z", 39990, url="https://kinuestore.cl/products/vegeto")
+    a = off("kinue", "Figura Vegeto Grandista Resolution of Soldiers", 39990, url="https://kinuestore.cl/products/vegeto")
     b = off("irion", "VEGETTO GRANDISTA RESOLUTION OF SOLDIERS", 41990, url="https://irion.cl/products/vegetto-grandista")
-    c = off("anezaki", "Figura Vegeto Grandista Dragon Ball Z", 38990, url="https://anezakistore.cl/products/vegeto?v=1")
-    d = off("burubox", "Figura Vegeto Grandista Dragon Ball Z", 37990, url="https://burubox.cl/p/vegeto-otra")
+    c = off("anezaki", "Figura Vegeto Grandista Resolution of Soldiers", 38990, url="https://anezakistore.cl/products/vegeto?v=1")
+    d = off("burubox", "Figura Vegeto Grandista Resolution of Soldiers", 37990, url="https://burubox.cl/p/vegeto-otra")
     rules = {"unir": [["https://www.kinuestore.cl/products/vegeto/", "irion.cl/products/vegetto-grandista"]],
              "separar": [["https://burubox.cl/p/vegeto-otra", "https://kinuestore.cl/products/vegeto"]],
              "nombres": {"https://irion.cl/products/vegetto-grandista": "Vegetto Grandista (Resolution of Soldiers)"}}
@@ -159,3 +161,46 @@ def test_non_anime():
     assert not is_figure("Spider-Man 2099 (Comic Ver.) MAFEX")
     assert is_figure("Funko Pop Marvel x Naruto anime crossover figura")  # nombra una serie anime
     assert is_figure("BEASTARS - Legoshi - POP UP PARADE")
+
+
+def test_reused_barcode_in_store():
+    a = off("friitoys", "Figura Sanji Film Red WCF", 9990, barcode="4983164290813")
+    b = off("friitoys", "Figura Woop Slap WCF One Piece", 9990, barcode="4983164290813")
+    c = off("animestore", "One Piece The Shukko Monkey D Luffy", 29990, barcode="4983164290813")
+    prods = group([a, b, c])
+    assert len(prods) == 3                                     # código repetido en la tienda: se ignora
+    assert len({p["id"] for p in prods}) == 3
+
+
+def test_funko_numbers():
+    assert line_number("Funko Pop! Animation: Naruto - Kakashi #1199", "funko") == "1199"
+    assert line_number("Funko Pop Dragon Ball Z Goku 10 inch", "funko") is None
+    assert line_number("Funko Pop Holiday 2023 Pikachu", "funko") is None
+
+
+def test_alternative_false_positives():
+    from scraper.classify import is_alternative
+    assert is_alternative("S.H.Figuarts Super Saiyan Trunks", "Incluye manos alternativas y rostros alternativos.") is not True
+    assert is_alternative("Figma Samus Aran", "Réplica exacta del personaje con piezas intercambiables.") is not True
+    assert is_alternative("Boa Hancock - Flag Diamond Ship", "Excelente Figura de Boa Hancock Versión alternativa Nuevo") is True
+    assert is_alternative("Figura Goku (Réplica)", "") is True
+    assert is_figure("Base Soporte Para Hot Toys, Muñecas barbie, Figuras 1/6") is False
+    assert is_figure("HG Gundam Aerial Rebuild", "Gunpla", strict=True)
+
+
+def test_character_swaps_not_merged():
+    # en datos reales "naruto", "shippuden", "vibration", "stars" son palabras comunes; los personajes no
+    filler = [off(f"s{i}", f"Naruto Shippuden Vibration Stars Personaje{i}", 30000 + i) for i in range(60)]
+    a = off("mranime", "Figura Naruto Shippuden Vibration Stars Kakuzu", 34990)
+    b = off("kinue", "Naruto Shippuden Kakuzu Vibration Stars Banpresto", 32990)
+    c = off("anezaki", "Naruto Shippuden - Sasuke Uchiha (Vibration Stars)", 33990)
+    prods = group(filler + [a, b, c])
+    kak = [p for p in prods if "kakuzu" in p["name"].lower()]
+    assert len(kak) == 1 and kak[0]["stores"] == 2
+    assert all(o["store"] != "anezaki" for o in kak[0]["offers"])
+
+
+def test_same_store_listings_not_merged():
+    a = off("figuartschile", "Figura WCF One Piece", 9990, url="https://x.cl/p/1")
+    b = off("figuartschile", "Figura WCF One Piece", 9990, url="https://x.cl/p/2")
+    assert len(group([a, b])) == 2

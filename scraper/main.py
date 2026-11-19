@@ -90,8 +90,8 @@ def main():
     prev_offers = {}
     for p in prev_products:
         for o in p["offers"]:
-            prev_offers.setdefault(o["store"], []).append({**o, "image": p.get("image"),
-                                                            "barcode": p.get("barcode"), "line": p["line"],
+            prev_offers.setdefault(o["store"], []).append({**o, "image": o.get("image") or p.get("image"),
+                                                            "barcode": o.get("barcode"), "line": p["line"],
                                                             "adult": o.get("adult", p.get("adult", False)),
                                                             "alternative": o.get("alternative", False),
                                                             "alt_unknown": o.get("alt_unknown", False)})
@@ -154,6 +154,13 @@ def main():
         u = norm_url(o["url"])
         if u in excl or is_non_anime(o["title"]):
             continue
+        if not str(o.get("url", "")).startswith(("http://", "https://")):
+            continue
+        # precios de relleno (9.999.999 = "no a la venta") o absurdos
+        if not o.get("price") or o["price"] < 1000 or o["price"] >= 5_000_000:
+            continue
+        if not o.get("regular_price") or o["regular_price"] > o["price"] * 10 or o["regular_price"] < o["price"]:
+            o["regular_price"] = o["price"]
         if u in flags["alternativa"]:
             o["alternative"], o["alt_unknown"] = True, False
         if u in flags["original"]:

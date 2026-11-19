@@ -34,7 +34,8 @@ LINES = [
     ("revoltech", "Revoltech", r"\brevoltech\b"),
     ("funko", "Funko Pop", r"\bfunko\b"),
     ("scale", "Escala", r"\b1/(4|5|6|7|8|10)\b|\bscale figure\b|\bescala\b"),
-    ("gunpla", "Gunpla / Model kit", r"\bgunpla\b|\bmaster grade\b|\bhigh grade\b|\b(mg|hg|rg|pg) 1/\d+|\bfigure ?rise\b|\bmodel kit\b"),
+    ("gunpla", "Gunpla / Model kit", r"\bgunpla\b|\bmaster grade\b|\bhigh grade\b|\breal grade\b|\bperfect grade\b|\bentry grade\b|"
+               r"\b(mg|hg|rg|pg) 1/\d+|\b(hg|hguc|rg|mg|mgex|pg|sd|sdcs|eg)\b.*\bgundam\b|\bfigure ?rise\b|\bmodel kit\b|\b30mm\b|\b30ms\b"),
 ]
 LINES_RE = [(i, n, re.compile(r)) for i, n, r in LINES]
 LINE_NAMES = {i: n for i, n, _ in LINES}
@@ -48,7 +49,8 @@ EXCLUDE = re.compile(
     r"\bcamiseta|\bcalcet|\bpin(es)?\b|\bchapita|\bcarta(s)?\b|\btcg\b|\bbooster|\bsobre\b|\bmazo\b|\bdeck\b|"
     r"\btaza\b|\bmug\b|\bstickers?\b|\bpegatina|\bmochila|\bbilletera|\bgorro|\bcojin|\bfunda\b|\bartbook|"
     r"\blamina|\bacrylic stand\b|\bstand acrilico|\brubber strap|\bstrap\b|\bbadge|\bcan badge|\bvitrina|\bdisplay case|"
-    r"\bgift card|\btarjeta de regalo|\benvio\b|\bdespacho\b|\babono\b")
+    r"\bgift card|\btarjeta de regalo|\benvio\b|\bdespacho\b|\babono\b|\bbase soporte|\bsoporte para|"
+    r"\bbase para (figura|munec)|\bdisplay stand\b|\bstand para\b|\bpintura\b|\bpincel|\baerografo|\bherramienta")
 ANIME_HINT = re.compile(
     r"\bbandai\b|\bbanpresto\b|\bgood smile\b|\bmax factory\b|\btamashii\b|\bmegahouse\b|\baniplex\b|\balter\b|"
     r"\bkotobukiya\b|\bsega\b|\btaito\b|\bfuryu\b|\bfreeing\b|\bamakuni\b|\banime\b|\bmanga\b|\bnendoroid\b|\bfigma\b|"
@@ -68,7 +70,7 @@ NON_ANIME = re.compile(
     r"\blooney tunes\b|\bbarbie\b|\bminecraft\b|\bfortnite\b|\bfive nights\b|\bfnaf\b|\bsquid game\b|\blego\b|"
     r"\bvenom\b|\bharley quinn\b|\bwonder woman\b|\bthe flash\b|\baquaman\b|\bcaptain america\b|\bcapitan america\b|"
     r"\bdarth vader\b|\bbaby yoda\b|\bmarvel legends\b|\bblack series\b|\bvintage collection\b|\bsonic prime\b|"
-    r"\bwalking dead\b|\bfriday the 13th\b|\bhalloween\b|\bscream\b|\bchucky\b|\bbeetlejuice\b|\bwednesday\b")
+    r"\bblack adam\b|\bshazam\b|\bwalking dead\b|\bfriday the 13th\b|\bhalloween\b|\bscream\b|\bchucky\b|\bbeetlejuice\b|\bwednesday\b")
 ANIME_SERIES = re.compile(
     r"\banime\b|\bjapanese tv series\b|\bdragon ball\b|\bone piece\b|\bnaruto\b|\bboruto\b|\bdemon slayer\b|\bkimetsu\b|"
     r"\bjujutsu\b|\bchainsaw\b|\bpokemon\b|\bevangelion\b|\bmy hero\b|\bboku no hero\b|\bspy x family\b|"
@@ -118,6 +120,8 @@ preventa pre venta order preorder reserva encargo express nuevo nueva new ob ver
 the of a con sin para coleccion coleccionable collection collectible pvc abs cm cms aprox approx tienda
 banpresto bandai spirits good smile company gsc sega taito furyu kotobukiya max factory megahouse
 premio prize figurine estatua statue action accion articulada edicion limited limitada exclusive exclusiva
+usado usada sin caja expuesto expuesta sellado sellada open re run rerun restock japones japonesa jp import importado
+tamashii nations vol volumen series serie set jap the of
 """.split())
 
 
@@ -135,8 +139,12 @@ def line_number(title, line):
             re.search(r"(?<!20)\b(\d{3,4})(?: release| re ?run)?$", t)
         return m.group(1) if m else None
     if line == "funko":
-        m = re.search(r"\bpop\b[^0-9]{0,40}?(\d{1,4})\b", t) or re.search(r"\b(\d{2,4})\b", t)
-        return m.group(1) if m else None
+        # solo números que claramente son de catálogo: "#932", "(932)" o al final del nombre
+        m = re.search(r"#\s*(\d{1,4})\b", title or "") or re.search(r"\((\d{2,4})\)", title or "") or \
+            re.search(r"\b(\d{2,4})$", t)
+        if m and not re.fullmatch(r"(19|20)\d\d", m.group(1)):
+            return m.group(1)
+        return None
     return None
 
 
@@ -163,16 +171,21 @@ def is_adult(title, kind="", brand=""):
 
 
 # Figuras alternativas (réplicas / bootlegs)
-ALT_RE = re.compile(r"versi[oó]n alternativa|\balternativ[ao]s?\b|r[eé]plica|bootleg|\bno (es )?original|"
-                    r"gen[eé]ric[ao]|imitaci[oó]n|\bfake\b|\bknock ?off\b", re.I)
+# en la descripción solo cuentan frases inequívocas ("versión alternativa"); "manos alternativas",
+# "rostros alternativos" o "réplica exacta del personaje" aparecen en figuras originales
+ALT_DESC = re.compile(r"versi[oó]n alternativa|figura alternativa|\bes alternativa\b|\bbootleg\b|"
+                      r"\bno es (una figura |un producto )?original\b|\bproducto no original\b|\bimitaci[oó]n\b|"
+                      r"\bknock ?off\b|versi[oó]n gen[eé]rica|figura gen[eé]rica", re.I)
+# en el título se acepta un poco más
+ALT_TITLE = re.compile(r"\balternativ[ao]\b(?! (ver|version|color|outfit|costume))|\bbootleg\b|\bno original\b|"
+                       r"\bgen[eé]ric[ao]\b|\bimitaci[oó]n\b|\(r[eé]plica\)|\br[eé]plica\b(?! (de|del) (espada|arma|casco|katana|sable))", re.I)
 ORIG_RE = re.compile(r"\boriginal(es)?\b|100 ?% original|licenciad[ao]|aut[eé]ntic[ao]", re.I)
 
 
 def is_alternative(title, desc=""):
     """True = alternativa, False = dice ser original, None = no lo indica."""
-    text = f"{title} {desc}"
-    if ALT_RE.search(text):
+    if ALT_TITLE.search(title or "") or ALT_DESC.search(desc or ""):
         return True
-    if ORIG_RE.search(text):
+    if ORIG_RE.search(f"{title} {desc}"):
         return False
     return None

@@ -22,6 +22,7 @@ class DSU:
         # forbid: {índice: set(índices con los que nunca debe juntarse)}
         self.forbid = {i: set(v) for i, v in (forbid or {}).items()}
         self.members = {i: {i} for i in self.forbid}
+        self.all = {i: [i] for i in range(n)}       # integrantes de cada grupo
 
     def find(self, a):
         while self.p[a] != a:
@@ -37,13 +38,67 @@ class DSU:
         if any(self.forbid.get(x, set()) & mb for x in ma):
             return   # una regla manual dice que estas ofertas son figuras distintas
         self.p[b] = a
+        self.all[a].extend(self.all.pop(b))
         if mb:
             self.members[a] = ma | mb
             self.members.pop(b, None)
 
+    def group_of(self, a):
+        return self.all[self.find(a)]
+
 
 def _nums(toks):
     return {t for t in toks if re.search(r"\d", t)}
+
+
+_DF = {}          # frecuencia de cada palabra en la corrida actual (la llena _group)
+_DF_LIMIT = [40]  # palabras más frecuentes que esto son de serie/línea ("dragon", "ball", "saiyan")
+
+
+def _distinct(ta, tb):
+    """True si los nombres tienen palabras propias en conflicto: uno tiene una palabra poco común
+    ('kakuzu', 'vegitto') y el otro una propia que no sea de serie ('sasuke', 'goku'). Indica personajes
+    o versiones distintas aunque compartan serie y línea."""
+    n = _DF_LIMIT[0]
+    ok = lambda t: len(t) > 2 and not t.isdigit()
+    rare_a = {t for t in ta - tb if ok(t) and _DF.get(t, 0) <= n}
+    rare_b = {t for t in tb - ta if ok(t) and _DF.get(t, 0) <= n}
+    med_a = {t for t in ta - tb if ok(t) and _DF.get(t, 0) <= 4 * n}
+    med_b = {t for t in tb - ta if ok(t) and _DF.get(t, 0) <= 4 * n}
+
+    def conflict(own, other):
+        # tolera errores de tipeo o variantes ("kakuzu"/"kakusu", "shoto"/"shouto")
+        return any(not any(fuzz.ratio(x, y) >= 86 for y in other) for x in own)
+    return bool((rare_a and med_b and conflict(rare_a, med_b)) or (rare_b and med_a and conflict(rare_b, med_a)))
+
+
+def _fits(dsu, offers, i, j):
+    """Para unir dos grupos por parecido de nombre, ninguna pareja entre ellos puede tener
+    palabras propias en conflicto (evita cadenas: A≈B, B≈C pero A≠C)."""
+    gi, gj = dsu.group_of(i), dsu.group_of(j)
+    if len(gi) * len(gj) > 400:      # grupos grandes: se revisa una muestra
+        gi, gj = gi[:20], gj[:20]
+    for x in gi:
+        tx = set(offers[x]["toks"])
+        for y in gj:
+            if _distinct(tx, set(offers[y]["toks"])):
+                return False
+    return True
+
+
+def _compatible(a, b, numbered=False):
+    """Para uniones por código de barras o número de catálogo: los nombres deben parecerse algo."""
+    if a.get("prize") != b.get("prize"):
+        return False
+    sa, sb = " ".join(a["toks"]), " ".join(b["toks"])
+    if not sa or not sb:
+        return True
+    if numbered:      # Nendoroid 2205 / figma 567: el número manda, basta un parecido bajo
+        return fuzz.token_set_ratio(sa, sb) >= 50
+    if _distinct(set(a["toks"]), set(b["toks"])):
+        return False
+    # código de barras: las tiendas a veces copian el de otra figura, así que el nombre debe parecerse de verdad
+    return fuzz.token_set_ratio(sa, sb) >= 80 and fuzz.token_sort_ratio(sa, sb) >= 55
 
 
 def _same(a, b):
@@ -60,13 +115,20 @@ def _same(a, b):
     sa, sb = " ".join(a["toks"]), " ".join(b["toks"])
     if not sa or not sb:
         return False
-    sort = fuzz.token_sort_ratio(sa, sb)
+    if _distinct(set(a["toks"]), set(b["toks"])):
+        return False
     if a["store"] == b["store"]:
-        return sort == 100
+        return False      # dos publicaciones distintas de una misma tienda son productos distintos
+    sort = fuzz.token_sort_ratio(sa, sb)
     if sort >= 90:
         return True
-    shared = len(set(a["toks"]) & set(b["toks"]))
-    return shared >= 3 and fuzz.token_set_ratio(sa, sb) >= 96
+    ta, tb = set(a["toks"]), set(b["toks"])
+    shared = len(ta & tb)
+    # un nombre contenido en otro ("luffy gear 5" ⊂ "luffy gear 5 extra battle") no basta si al otro le sobra mucho
+    small = min(len(ta), len(tb))
+    if small < 4 or small / max(len(ta), len(tb)) < 0.5:
+        return False      # títulos genéricos ("figura wcf one piece") no sirven de puente
+    return shared >= 4 and fuzz.token_set_ratio(sa, sb) >= 96
 
 
 def _group(offers, rules=None):
@@ -75,6 +137,15 @@ def _group(offers, rules=None):
         o["toks"] = tokens(o["title"])
         o["num"] = line_number(o["title"], o["line"])
         o["prize"] = kuji_prize(o["title"]) if o["line"] in ("ichiban-kuji", "masterlise") else None
+
+    per_store = defaultdict(int)
+    for o in offers:
+        if o.get("barcode"):
+            per_store[(o["store"], o["barcode"])] += 1
+    for o in offers:
+        b = o.get("barcode")
+        if b and (per_store[(o["store"], b)] > 1 or len(set(b)) <= 2):
+            o["barcode"] = None   # la tienda usa el mismo código en varios productos: no es confiable
 
     n = len(offers)
     pos = defaultdict(list)
@@ -93,7 +164,15 @@ def _group(offers, rules=None):
         idx = [i for u in grp for i in pos[norm_url(u)]]
         for i in idx[1:]:
             dsu.union(idx[0], i)
-    strong = {}
+    # índice invertido para comparar sólo candidatos razonables
+    df = defaultdict(int)
+    for o in offers:
+        for t in set(o["toks"]):
+            df[t] += 1
+    _DF.clear()
+    _DF.update(df)
+    _DF_LIMIT[0] = max(40, int(0.01 * len(offers)))
+    strong = defaultdict(list)
     for i, o in enumerate(offers):
         keys = []
         if o.get("barcode"):
@@ -101,16 +180,15 @@ def _group(offers, rules=None):
         if o["num"]:
             keys.append(f"{o['line']}:{o['num']}")
         for k in keys:
-            if k in strong:
-                dsu.union(strong[k], i)
-            else:
-                strong[k] = i
+            numbered = k[0] != "b"
+            for j in strong[k]:
+                if o["store"] == offers[j]["store"] and not numbered:
+                    continue
+                if _compatible(o, offers[j], numbered=numbered) and (numbered or _fits(dsu, offers, i, j)):
+                    dsu.union(j, i)
+                    break
+            strong[k].append(i)
 
-    # índice invertido para comparar sólo candidatos razonables
-    df = defaultdict(int)
-    for o in offers:
-        for t in set(o["toks"]):
-            df[t] += 1
     index = defaultdict(list)
     for i, o in enumerate(offers):
         o["_rare"] = sorted(set(o["toks"]), key=lambda t: (df[t], t))[:2]
@@ -125,7 +203,7 @@ def _group(offers, rules=None):
         for j in cands:
             if j == i or offers[j]["num"]:
                 continue
-            if dsu.find(i) != dsu.find(j) and _same(o, offers[j]):
+            if dsu.find(i) != dsu.find(j) and _same(o, offers[j]) and _fits(dsu, offers, i, j):
                 dsu.union(i, j)
 
     clusters = defaultdict(list)
@@ -173,7 +251,7 @@ def _product(offs):
         "stores": len({o["store"] for o in offs}),
         "offers": [{
             "store": o["store"], "title": o["title"], "price": o["price"],
-            "regular_price": o["regular_price"], "url": o["url"],
+            "regular_price": o["regular_price"], "url": o["url"], "barcode": o.get("barcode"),
             "in_stock": o["in_stock"], "preorder": o["preorder"], "adult": bool(o.get("adult")),
             "alternative": bool(o.get("alternative")), "alt_unknown": bool(o.get("alt_unknown")),
         } for o in offs],
@@ -187,6 +265,13 @@ def group(offers, rules=None):
     alts = _group([o for o in offers if o.get("alternative")], rules)
     for p in alts:
         p["id"] = "alt-" + p["id"]
+    seen = set()
+    for p in orig + alts:      # dos grupos distintos pueden calcular el mismo id
+        base, k = p["id"], 2
+        while p["id"] in seen:
+            p["id"] = f"{base}-{k}"
+            k += 1
+        seen.add(p["id"])
     by_key = {}
     for p in orig:
         if p["num"]:
