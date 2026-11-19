@@ -36,6 +36,7 @@ def scrape_store(store):
     t0 = time.time()
     deadline = min(time.time() + STORE_BUDGET, RUN_START + RUN_BUDGET)
     client = Client(store["url"], deadline=deadline)
+    client.opts = store
     diag = []
     cache_file = CACHE / f"{store['id']}.json"
     cache = load(cache_file, {})

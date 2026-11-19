@@ -108,6 +108,9 @@ def woocommerce(client):
                 return int(round(v / div)) if v is not None else None
 
             price = money("price")
+            rng = pr.get("price_range") or {}
+            if getattr(client, "opts", {}).get("max_price") and rng.get("max_amount"):
+                price = int(round(_int_price(rng["max_amount"]) / div))   # variantes de abono: precio completo
             if not price:
                 continue
             avail = (p.get("stock_availability") or {}).get("class", "")

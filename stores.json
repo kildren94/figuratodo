@@ -19,9 +19,19 @@
   {"id": "burubox", "name": "Burubox", "url": "https://burubox.cl", "platform": "auto", "location": "Online"},
   {"id": "zonaanime", "name": "Zona Anime", "url": "https://zonaanime.cl", "platform": "auto", "location": "Online", "all_figures": true},
   {"id": "otakuverso", "name": "OtakuVerso", "url": "https://otakuverso.cl", "platform": "auto", "location": "Online"},
-  {"id": "chilerobots", "name": "Chile Robots", "url": "https://www.chilerobots.cl", "platform": "auto", "location": "Online (entrega presencial en Santiago)"},
+  {"id": "chilerobots", "name": "Chile Robots", "url": "https://www.chilerobots.cl", "platform": "auto", "location": "Villa Alemana (despacho a todo Chile)"},
   {"id": "tomatorepublic", "name": "Tomato Republic", "url": "https://tomatorepublic.cl", "platform": "woocommerce", "location": "Online"},
   {"id": "mranime", "name": "Figuras MR Anime", "url": "https://figurasmranime.cl", "platform": "auto", "location": "Galpón Bío Bío, Santiago"},
   {"id": "bocchita", "name": "Bocchita Store", "url": "https://bocchitastore.cl", "platform": "auto", "location": "Online", "enabled": false, "nota": "Rechaza la conexión a lectores automáticos (nov 2026)"},
-  {"id": "universotoys", "name": "Universo Toys", "url": "https://universotoys.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true, "nota": "www.universotoys.cl dio error de certificado SSL; se prueba sin www"}
+  {"id": "universotoys", "name": "Universo Toys", "url": "https://universotoys.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true, "nota": "www.universotoys.cl dio error de certificado SSL; se prueba sin www"},
+  {"id": "figurasdeku", "name": "Figuras Deku Chile", "url": "https://figurasdekuchile.cl", "platform": "auto", "location": "Online (despacho gratis en RM)"},
+  {"id": "ryogatoys", "name": "Ryoga Toys", "url": "https://www.ryogatoys.cl", "platform": "auto", "location": "Online"},
+  {"id": "shaggitoys", "name": "Shaggi Toys", "url": "https://www.shaggitoys.cl", "platform": "auto", "location": "Online"},
+  {"id": "jftoys", "name": "JF Toys", "url": "https://www.jftoys.cl", "platform": "auto", "location": "Online (entrega en metro U. de Chile)", "strict": true},
+  {"id": "charlytoys", "name": "Charly Colección Toys", "url": "https://www.charlycolecciontoys.cl", "platform": "woocommerce", "location": "Online", "strict": true, "max_price": true, "nota": "Las preventas tienen variantes de abono; se usa el precio completo"},
+  {"id": "gwshop", "name": "GW Shop (Funko)", "url": "https://gwshop.cl", "platform": "auto", "location": "Online", "strict": true},
+  {"id": "metalstore", "name": "Metal Store Chile", "url": "https://metalstorechile.cl", "platform": "auto", "location": "Online", "strict": true},
+  {"id": "otakuworld", "name": "Otakuworld", "url": "https://www.otakuworld.cl", "platform": "auto", "location": "Online"},
+  {"id": "chilemanga", "name": "Chile Manga", "url": "https://www.chilemanga.cl", "platform": "auto", "location": "Persa Bío Bío, Santiago"},
+  {"id": "animecorp", "name": "Animecorp", "url": "https://www.animecorp.cl", "platform": "auto", "location": "Viña del Mar"}
 ]
