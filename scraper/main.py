@@ -9,7 +9,7 @@ from pathlib import Path
 
 from .http import Client
 from .platforms import detect_and_scrape
-from .classify import is_figure, detect_line, is_adult, is_alternative
+from .classify import is_figure, detect_line, is_adult, is_alternative, is_non_anime
 from .match import group, norm_url
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -152,7 +152,7 @@ def main():
     kept = []
     for o in offers:
         u = norm_url(o["url"])
-        if u in excl:
+        if u in excl or is_non_anime(o["title"]):
             continue
         if u in flags["alternativa"]:
             o["alternative"], o["alt_unknown"] = True, False
