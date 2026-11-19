@@ -16,7 +16,10 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = Path(os.environ.get("FIGURATODO_DATA", ROOT / "docs" / "data"))
 STORES = Path(os.environ.get("FIGURATODO_STORES", ROOT / "stores.json"))
 CHILE = timezone(timedelta(hours=-3))
-STALE_DAYS = 3   # si una tienda falla, se muestran sus últimos precios por este tiempo
+STALE_DAYS = 3
+STORE_BUDGET = int(os.environ.get("FIGURATODO_STORE_MINUTES", "55")) * 60   # tiempo máximo por tienda
+RUN_BUDGET = int(os.environ.get("FIGURATODO_RUN_MINUTES", "95")) * 60       # tiempo máximo de la corrida
+RUN_START = time.time()   # si una tienda falla, se muestran sus últimos precios por este tiempo
 
 
 def load(path, default):
@@ -31,7 +34,8 @@ CACHE = ROOT / "cache"
 
 def scrape_store(store):
     t0 = time.time()
-    client = Client(store["url"])
+    deadline = min(time.time() + STORE_BUDGET, RUN_START + RUN_BUDGET)
+    client = Client(store["url"], deadline=deadline)
     diag = []
     cache_file = CACHE / f"{store['id']}.json"
     cache = load(cache_file, {})
@@ -53,6 +57,7 @@ def scrape_store(store):
     return {
         "id": store["id"], "platform": platform, "total": len(items), "figures": figs,
         "requests": client.requests, "seconds": round(time.time() - t0),
+        "partial": client.out_of_time(),
         "diag": {"intentos": diag, "descartados_ejemplo": dropped if len(figs) < 20 else []},
     }
 
@@ -91,7 +96,8 @@ def main():
                 r = {"id": s["id"], "platform": None, "total": 0, "figures": [], "error": repr(e)}
             results[s["id"]] = r
             print(f"{s['id']:<14} plataforma={r['platform']} productos={r['total']} figuras={len(r['figures'])} "
-                  f"pedidos={r.get('requests')} {r.get('seconds')}s {r.get('error', '')}")
+                  f"pedidos={r.get('requests')} {r.get('seconds')}s {'PARCIAL ' if r.get('partial') else ''}"
+                  f"{r.get('error', '')}", flush=True)
 
     offers, meta_stores = [], []
     for s in load(STORES, []):
@@ -108,7 +114,8 @@ def main():
             entry["diag"] = r["diag"]
         if r and r["figures"]:
             offers += r["figures"]
-            entry.update(status="ok", platform=r["platform"], count=len(r["figures"]), last_ok=today)
+            entry.update(status="ok", platform=r["platform"], count=len(r["figures"]), last_ok=today,
+                         partial=r.get("partial", False))
         else:
             last_ok = pm.get("last_ok")
             keep = last_ok and (now.date() - datetime.strptime(last_ok, "%Y-%m-%d").date()).days <= STALE_DAYS

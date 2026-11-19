@@ -195,7 +195,7 @@ def _crawl(client, limit=1500):
     from urllib.parse import urljoin, urlparse, urlunparse, parse_qsl, urlencode
     host = urlparse(client.base).netloc
     queue, seen, out = [client.base + "/"], set(), []
-    while queue and len(seen) < limit:
+    while queue and len(seen) < limit and not client.out_of_time():
         url = queue.pop(0)
         if url in seen:
             continue
@@ -315,7 +315,7 @@ def generic(client, cache=None):
     if not entries:
         return _crawl(client)
     out, fresh = [], {}
-    # primero las que hay que leer sí o sí; el resto se reparte en el tiempo
+    entries.sort(key=lambda e: e[0] in cache)   # primero las nunca leídas
     for url, lastmod in entries:
         c = cache.get(url)
         if c:
@@ -332,6 +332,12 @@ def generic(client, cache=None):
                 if c.get("item"):
                     out.append(c["item"])
                 continue
+        if client.out_of_time():
+            if c:
+                fresh[url] = c
+                if c.get("item"):
+                    out.append(c["item"])
+            continue
         r = client.get(url)
         if r is None or "html" not in r.headers.get("content-type", "html"):
             if c:
