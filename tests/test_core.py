@@ -114,3 +114,26 @@ def test_alternatives():
     assert len(orig) == 1 and orig[0]["min_price"] == 32990 and orig[0]["stores"] == 2
     assert len(alts) == 1 and alts[0]["original_id"] == orig[0]["id"]
     assert orig[0]["alternatives"][0]["min_price"] == 14990
+
+
+def test_shopify_deposit_variants():
+    from scraper.platforms import shopify
+
+    class C:
+        base = "https://x"
+        opts = {}
+        def get(self, path, params=None, expect_json=False):
+            if params["page"] > 1:
+                return {"products": []}
+            return {"products": [{"title": "Levi Ichiban Kuji B Prize", "handle": "levi", "tags": [], "images": [],
+                     "variants": [{"title": "Reserva 50%", "price": "42495.00", "available": True},
+                                  {"title": "Pago total", "price": "84990.00", "available": True}]},
+                    {"title": "Luffy DXF", "handle": "luffy", "tags": [], "images": [],
+                     "variants": [{"title": "Default Title", "price": "19995.00", "compare_at_price": "39990.00", "available": True},
+                                  {"title": "Default Title", "price": "39990.00", "available": True}]}]}
+    c = C()
+    items = {i["title"]: i["price"] for i in shopify(c)}
+    assert items["Levi Ichiban Kuji B Prize"] == 84990
+    c.opts = {"max_price": True}
+    items = {i["title"]: i["price"] for i in shopify(c)}
+    assert items["Luffy DXF"] == 39990

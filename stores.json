@@ -15,7 +15,7 @@
   {"id": "avsotoyz", "name": "AvsoToyz", "url": "https://www.avsotoyz.cl", "platform": "auto", "location": "Online"},
   {"id": "yumeshoku", "name": "Yumeshoku Store", "url": "https://www.yumeshokustore.cl", "platform": "auto", "location": "Online"},
   {"id": "anezaki", "name": "Anezaki Store", "url": "https://anezakistore.cl", "platform": "auto", "location": "Online"},
-  {"id": "kinue", "name": "Kinue Store", "url": "https://kinuestore.cl", "platform": "auto", "location": "Online"},
+  {"id": "kinue", "name": "Kinue Store", "url": "https://kinuestore.cl", "platform": "auto", "location": "Online", "max_price": true, "nota": "Las preventas tienen variante de reserva (50%) y pago total; se usa el precio total"},
   {"id": "burubox", "name": "Burubox", "url": "https://burubox.cl", "platform": "auto", "location": "Online"},
   {"id": "zonaanime", "name": "Zona Anime", "url": "https://zonaanime.cl", "platform": "auto", "location": "Online", "all_figures": true},
   {"id": "otakuverso", "name": "OtakuVerso", "url": "https://otakuverso.cl", "platform": "auto", "location": "Online"},

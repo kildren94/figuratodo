@@ -55,8 +55,11 @@ def shopify(client):
             variants = p.get("variants") or []
             if not variants:
                 continue
-            avail = [v for v in variants if v.get("available", True)]
-            v = min(avail or variants, key=lambda x: _int_price(x.get("price")) or 10**12)
+            # variantes de reserva / abono: no son el precio de la figura
+            full = [v for v in variants if not DEPOSIT_RE.search(str(v.get("title") or ""))] or variants
+            avail = [v for v in full if v.get("available", True)]
+            pick = max if getattr(client, "opts", {}).get("max_price") else min
+            v = pick(avail or full, key=lambda x: _int_price(x.get("price")) or (0 if pick is max else 10**12))
             price = _int_price(v.get("price"))
             if not price:
                 continue
@@ -387,6 +390,7 @@ def generic(client, cache=None):
 
 
 # ---------------------------------------------------------------- utilidades
+DEPOSIT_RE = re.compile(r"reserva|abono|anticipo|se[ñn]a\b|\bpie\b|pago parcial|\b50 ?%|primer pago|dep[oó]sito", re.I)
 PREORDER_RE = re.compile(r"pre[\s-]?venta|preorder|pre[\s-]?order|reserva|por encargo|encargo", re.I)
 
 
