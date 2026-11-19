@@ -60,6 +60,13 @@ input:focus,select:focus{border-color:var(--pink)}
 .more{display:block;margin:22px auto 0;background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:11px 22px;border-radius:10px;font:600 14px Inter;cursor:pointer}
 [hidden]{display:none!important}
 .grid .empty{grid-column:1/-1;text-align:left}
+.heart{position:absolute;top:6px;right:6px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(15,14,20,.8);color:var(--ink);font-size:18px;line-height:34px;cursor:pointer;padding:0}
+.heart:hover{transform:scale(1.08)}.heart.on{color:var(--pink)}
+.wlc{background:var(--pink);color:#1a0b12;font-size:11px;font-weight:700;border-radius:99px;padding:0 6px;margin-left:2px}
+.wlhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:4px 0 12px}
+.wlh{font-family:"Zen Kaku Gothic New";font-size:22px;margin:0}.wlact{display:flex;gap:8px;flex-wrap:wrap}
+.wlnote{font-size:12px;padding:6px 12px 10px;color:var(--mute)}.wlnote b.dn{color:var(--mint)}.wlnote b.up{color:var(--pink)}
+.go.ghost{background:none;border:1px solid var(--line);color:var(--ink)}.go.ghost.on{border-color:var(--pink);color:var(--pink)}
 .osec{margin:18px 0 30px}.osec h2{font-family:"Zen Kaku Gothic New";font-size:20px;margin:0 0 12px;display:flex;gap:10px;align-items:baseline}
 .osec .more2{background:none;border:1px solid var(--line);color:var(--mute);font:600 13px Inter;padding:8px 14px;border-radius:10px;cursor:pointer;margin-top:12px}
 .b.drop2{background:var(--mint);color:#062a1f}.b.back{color:var(--mint)}.b.new{color:var(--pink)}
@@ -100,7 +107,7 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
       <h1 onclick="location.hash=''">Figura<span>Todo</span></h1>
       <div class="upd" id="upd">Cargando…</div>
     </div>
-    <nav><a href="#" id="nFig" class="on">Figuras</a><a href="#ofertas" id="nOf">Ofertas</a><a href="#tiendas" id="nSt">Tiendas</a></nav>
+    <nav><a href="#" id="nFig" class="on">Figuras</a><a href="#ofertas" id="nOf">Ofertas</a><a href="#deseos" id="nWl">Deseos <span class="wlc" id="wlCount" hidden></span></a><a href="#tiendas" id="nSt">Tiendas</a></nav>
   </header>
 
   <main id="vFig">
@@ -139,6 +146,23 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
     <section class="osec"><h2>Bajaron de precio <span class="meta" id="cDrop"></span></h2><div class="grid" id="gDrop"></div></section>
     <section class="osec"><h2>Volvieron a tener stock <span class="meta" id="cBack"></span></h2><div class="grid" id="gBack"></div></section>
     <section class="osec"><h2>Recién llegadas <span class="meta" id="cNew"></span></h2><div class="grid" id="gNew"></div></section>
+  </main>
+
+  <main id="vWl" hidden>
+    <div class="wlhead">
+      <div><h2 class="wlh">Mi lista de deseos</h2><div class="meta" id="wlSum"></div></div>
+      <div class="wlact">
+        <select id="wlSort"><option value="added">Agregadas recientemente</option><option value="change">Mayor baja desde que la guardé</option><option value="price">Menor precio</option></select>
+        <button class="freset" id="wlExp" type="button">Copiar lista</button>
+        <button class="freset" id="wlImpBtn" type="button">Pegar lista</button>
+      </div>
+    </div>
+    <div class="fpanel" id="wlImp" hidden style="grid-template-columns:1fr">
+      <label class="fl">Pega aquí una lista copiada desde otro navegador o dispositivo<textarea id="wlTxt" rows="3" style="background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px;font:13px Inter"></textarea></label>
+      <div style="display:flex;gap:8px"><button class="freset" id="wlImpOk" type="button" style="color:var(--ink)">Agregar a mi lista</button><span class="meta" id="wlImpMsg"></span></div>
+    </div>
+    <p class="meta">La lista se guarda en este navegador. Para verla en otro dispositivo, usa "Copiar lista" y pégala allá.</p>
+    <div class="grid" id="gWl"></div>
   </main>
 
   <main id="vSt" hidden>
@@ -222,7 +246,7 @@ function drawOffers(){
    ['gBack', back, 'cBack', 'Ninguna figura volvió a tener stock en los últimos 3 días.'],
    ['gNew', neu, 'cNew', 'No llegaron figuras nuevas en los últimos 3 días.']].forEach(([g, arr, c, empty]) => {
     $('#'+c).textContent = arr.length ? `${arr.length}` : '';
-    $('#'+g).innerHTML = arr.length ? arr.slice(0, offShown[g]).map(card).join('') : `<div class="empty" style="padding:20px">${empty}</div>`;
+    $('#'+g).innerHTML = arr.length ? arr.slice(0, offShown[g]).map(p => card(p)).join('') : `<div class="empty" style="padding:20px">${empty}</div>`;
     const btn = $('#'+g).nextElementSibling;
     if (btn && btn.classList.contains('more2')) btn.remove();
     if (arr.length > offShown[g]) {
@@ -242,15 +266,16 @@ $('#fReset').onclick = () => { Object.entries(DEFAULTS).forEach(([id, v]) => { c
 
 function draw(){
   $('#count').textContent = `${list.length.toLocaleString('es-CL')} resultados`;
-  $('#grid').innerHTML = list.length ? list.slice(0, shown).map(card).join('') : '<div class="empty">No encontré figuras con esos filtros.</div>';
+  $('#grid').innerHTML = list.length ? list.slice(0, shown).map(p => card(p)).join('') : '<div class="empty">No encontré figuras con esos filtros.</div>';
   $('#more').hidden = list.length <= shown;
 }
-function card(p){
+function card(p, extra = ''){
   return `<div class="card${p.alternative?' alt':''}" onclick="location.hash='f-${encodeURIComponent(p.id)}'">
     <div class="img" style="${p.image?`background-image:url('${esc(p.image)}')`:''}">${p.image?'':'<div class="noimg">?</div>'}
+      <button class="heart${wlHas(p)?' on':''}" aria-label="${wlHas(p)?'Quitar de':'Agregar a'} mi lista de deseos" onclick="event.stopPropagation();wlToggle('${esc(p.id)}',this)">${wlHas(p)?'♥':'♡'}</button>
       <div class="badges">${p.alternative?`<span class="b alt">${p.alt_unknown?'Posible alternativa':'Alternativa · no original'}</span>`:''}${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p.drop?`<span class="b drop2">↓ ${p.drop.pct}% reciente</span>`:p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}${p.back?'<span class="b back">Volvió al stock</span>':''}</div></div>
     <div class="body"><div class="ln">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><div class="nm">${esc(p.name)}</div>
-      <div class="pr"><b>${fmt(p.min_price)}${p.drop?`<span class="was">${fmt(p.drop.from)}</span>`:''}</b><span>${p.stores} ${p.stores>1?'tiendas':'tienda'}</span></div></div></div>`;
+      <div class="pr"><b>${fmt(p.min_price)}${p.drop?`<span class="was">${fmt(p.drop.from)}</span>`:''}</b><span>${p.stores} ${p.stores>1?'tiendas':'tienda'}</span></div></div>${extra}</div>`;
 }
 
 async function openDetail(id){
@@ -263,7 +288,8 @@ async function openDetail(id){
       <div><div class="ln" style="${p.alternative?'color:var(--gold)':''}">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}${p.adult?' · +18':''}</div><h2>${esc(p.name)}</h2>
       <div class="big" style="${p.alternative?'color:var(--mute)':''}">${fmt(p.min_price)}</div>
       <div class="meta">Mejor precio en <b style="color:var(--ink)">${esc(STORES[best.store]?.name||best.store)}</b> · ${p.stores} ${p.stores>1?'tiendas':'tienda'}${p.barcode?' · JAN '+esc(p.barcode):''}</div>
-      <div style="margin-top:12px"><a class="go" href="${esc(best.url)}" target="_blank" rel="noopener">Ir a la tienda ↗</a></div></div></div>
+      <div style="margin-top:12px"><a class="go" href="${esc(best.url)}" target="_blank" rel="noopener">Ir a la tienda ↗</a>
+      <button class="go ghost${wlHas(p)?' on':''}" style="cursor:pointer;margin-left:6px" onclick="wlToggle('${esc(p.id)}');openDetail('${esc(p.id)}')">${wlHas(p)?'♥ En mi lista':'♡ Agregar a mi lista'}</button></div></div></div>
     <table><thead><tr><th>Tienda</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>
     ${offs.map(o=>`<tr class="${o===best?'best':''}"><td><b>${esc(STORES[o.store]?.name||o.store)}</b><div class="meta">${esc(o.title)}</div></td>
       <td><b>${fmt(o.price)}</b>${o.regular_price>o.price?`<div class="meta" style="text-decoration:line-through">${fmt(o.regular_price)}</div>`:''}</td>
@@ -328,16 +354,76 @@ function why(d){
   return 'no se encontró catálogo ni sitemap';
 }
 
+/* ---------- lista de deseos (se guarda en este navegador) ---------- */
+let WL = [];
+try { WL = JSON.parse(localStorage.getItem('ft_wishlist') || '[]'); } catch (e) { WL = []; }
+const wlSave = () => { try { localStorage.setItem('ft_wishlist', JSON.stringify(WL)); } catch (e) {} wlBadge(); };
+const urlKey = u => String(u||'').replace(/^https?:\/\/(www\.)?/,'').replace(/[?#].*$/,'').replace(/\/$/,'').toLowerCase();
+// los ids de figuras agrupadas por nombre pueden cambiar entre lecturas: también se busca por los links de las tiendas
+function wlFind(item){
+  return P.find(p => p.id === item.id) || P.find(p => p.offers.some(o => (item.urls||[]).includes(urlKey(o.url))));
+}
+function wlItem(p){ return WL.find(w => w.id === p.id || p.offers.some(o => (w.urls||[]).includes(urlKey(o.url)))); }
+function wlHas(p){ return !!wlItem(p); }
+function wlToggle(id, btn){
+  const p = P.find(x => x.id === id); if (!p) return;
+  const it = wlItem(p);
+  if (it) WL = WL.filter(w => w !== it);
+  else WL.unshift({id: p.id, urls: p.offers.map(o => urlKey(o.url)), name: p.name, price: p.min_price, date: new Date().toISOString().slice(0,10)});
+  wlSave();
+  if (btn) { const on = !it; btn.classList.toggle('on', on); btn.textContent = on ? '♥' : '♡'; btn.setAttribute('aria-label', (on?'Quitar de':'Agregar a') + ' mi lista de deseos'); }
+  if (!$('#vWl').hidden) drawWl();
+}
+function wlBadge(){ $('#wlCount').textContent = WL.length; $('#wlCount').hidden = !WL.length; }
+function drawWl(){
+  const rows = WL.map(w => ({w, p: wlFind(w)}));
+  const found = rows.filter(r => r.p);
+  const s = $('#wlSort').value;
+  if (s === 'change') found.sort((a,b) => (a.p.min_price - a.w.price) - (b.p.min_price - b.w.price));
+  else if (s === 'price') found.sort((a,b) => a.p.min_price - b.p.min_price);
+  const total = found.filter(r => r.p.in_stock).reduce((t, r) => t + r.p.min_price, 0);
+  $('#wlSum').textContent = WL.length ? `${WL.length} ${WL.length>1?'figuras':'figura'} · ${fmt(total)} en total al mejor precio disponible` : '';
+  const html = found.map(({w, p}) => {
+    const d = p.min_price - w.price;
+    const note = `<div class="wlnote">Guardada el ${w.date.split('-').reverse().join('/')} a ${fmt(w.price)}${d ? ` · ahora <b class="${d<0?'dn':'up'}">${d<0?'↓':'↑'} ${fmt(Math.abs(d))}</b>` : ' · mismo precio'}</div>`;
+    return card(p, note);
+  }).join('') + rows.filter(r => !r.p).map(({w}) => `<div class="card" style="cursor:default"><div class="body"><div class="nm">${esc(w.name)}</div>
+      <div class="meta" style="margin:6px 0">Ya no aparece en ninguna tienda. Guardada a ${fmt(w.price)}.</div>
+      <button class="freset" onclick="WL=WL.filter(x=>x.id!=='${esc(w.id)}');wlSave();drawWl()">Quitar</button></div></div>`).join('');
+  $('#gWl').innerHTML = html || '<div class="empty">Tu lista está vacía. Toca el ♡ de cualquier figura para guardarla aquí y seguir su precio.</div>';
+}
+$('#wlSort').onchange = drawWl;
+$('#wlExp').onclick = async () => {
+  const txt = 'FT1:' + btoa(unescape(encodeURIComponent(JSON.stringify(WL))));
+  try { await navigator.clipboard.writeText(txt); $('#wlExp').textContent = 'Copiada ✓'; }
+  catch (e) { $('#wlImp').hidden = false; $('#wlTxt').value = txt; $('#wlImpMsg').textContent = 'Copia este texto y pégalo en el otro dispositivo.'; }
+  setTimeout(() => $('#wlExp').textContent = 'Copiar lista', 2000);
+};
+$('#wlImpBtn').onclick = () => { $('#wlImp').hidden = !$('#wlImp').hidden; $('#wlImpMsg').textContent = ''; };
+$('#wlImpOk').onclick = () => {
+  try {
+    const raw = $('#wlTxt').value.trim().replace(/^FT1:/, '');
+    const items = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    let n = 0;
+    items.forEach(it => { if (it && it.id && !WL.some(w => w.id === it.id)) { WL.push(it); n++; } });
+    wlSave(); drawWl(); $('#wlTxt').value = '';
+    $('#wlImpMsg').textContent = n ? `Se agregaron ${n} ${n>1?'figuras':'figura'}.` : 'Esas figuras ya estaban en tu lista.';
+  } catch (e) { $('#wlImpMsg').textContent = 'Ese texto no es una lista válida. Cópiala de nuevo con "Copiar lista".'; }
+};
+wlBadge();
+
 let lastView = '';
 function route(){
   const h = decodeURIComponent(location.hash.slice(1));
   if (h.startsWith('f-')) { openDetail(h.slice(2)); return; }
   $('#ov').classList.remove('on');
-  const v = h === 'tiendas' || h === 'ofertas' ? h : '';
+  const v = ['tiendas', 'ofertas', 'deseos'].includes(h) ? h : '';
   lastView = v;
-  $('#vFig').hidden = v !== ''; $('#vSt').hidden = v !== 'tiendas'; $('#vOf').hidden = v !== 'ofertas';
+  $('#vFig').hidden = v !== ''; $('#vSt').hidden = v !== 'tiendas'; $('#vOf').hidden = v !== 'ofertas'; $('#vWl').hidden = v !== 'deseos';
+  $('#nWl').classList.toggle('on', v === 'deseos');
   $('#nFig').classList.toggle('on', v === ''); $('#nSt').classList.toggle('on', v === 'tiendas'); $('#nOf').classList.toggle('on', v === 'ofertas');
   if (v === 'ofertas') drawOffers();
+  if (v === 'deseos') drawWl();
 }
 const closeDetail = () => { location.hash = lastView; };
 window.addEventListener('hashchange', route);
