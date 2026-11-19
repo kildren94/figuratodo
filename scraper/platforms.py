@@ -358,7 +358,18 @@ def generic(client, cache=None):
                 if c.get("item"):
                     out.append(c["item"])
             continue
-        r = client.get(url)
+        cond = {}
+        if c and c.get("etag"):
+            cond["If-None-Match"] = c["etag"]
+        if c and c.get("lastmodh"):
+            cond["If-Modified-Since"] = c["lastmodh"]
+        r = client.get(url, headers=cond or None)
+        if r is not None and r.status_code == 304 and c:
+            c = {**c, "fetched": today.isoformat(), "lastmod": lastmod}
+            fresh[url] = c
+            if c.get("item"):
+                out.append(c["item"])
+            continue
         if r is None or "html" not in r.headers.get("content-type", "html"):
             if c:
                 fresh[url] = c
@@ -366,7 +377,8 @@ def generic(client, cache=None):
                     out.append(c["item"])
             continue
         item = parse_product_page(r.text, url)
-        fresh[url] = {"lastmod": lastmod, "fetched": today.isoformat(), "item": item}
+        fresh[url] = {"lastmod": lastmod, "fetched": today.isoformat(), "item": item,
+                      "etag": r.headers.get("ETag"), "lastmodh": r.headers.get("Last-Modified")}
         if item:
             out.append(item)
     cache.clear()
@@ -384,8 +396,12 @@ def _looks_preorder(title, extra):
 
 def detect_and_scrape(client, platform="auto", diag=None, cache=None):
     """Devuelve (plataforma_usada, ofertas). Si se pasa `diag` (lista), anota cada intento."""
+    known = getattr(client, "known_platform", None)
+    fns = {"shopify": shopify, "woocommerce": woocommerce, "generic": generic}
     order = {"shopify": [shopify], "woocommerce": [woocommerce], "generic": [generic]}.get(
         platform, [shopify, woocommerce, generic])
+    if platform == "auto" and known in fns:      # la que funcionó la vez anterior va primero
+        order = [fns[known]] + [f for f in order if f is not fns[known]]
     if platform in ("shopify", "woocommerce"):
         order = order + [generic]          # si la API está cerrada, intenta por sitemap
     for fn in order:

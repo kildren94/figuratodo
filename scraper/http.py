@@ -6,7 +6,7 @@ from urllib.parse import urljoin, urlparse
 import requests
 
 USER_AGENT = "FiguraTodoBot/1.0 (comparador de precios de figuras; +https://github.com/kildren94/figuratodo)"
-DELAY = float(__import__("os").environ.get("FIGURATODO_DELAY", "1.0"))          # segundos entre pedidos a una misma tienda
+DELAY = float(__import__("os").environ.get("FIGURATODO_DELAY", "0.6"))          # segundos entre pedidos a una misma tienda
 TIMEOUT = 20
 
 
@@ -38,7 +38,7 @@ class Client:
     def allowed(self, url: str) -> bool:
         return self.robots.can_fetch(USER_AGENT, url)
 
-    def get(self, path_or_url: str, *, params=None, expect_json=False, retries=2):
+    def get(self, path_or_url: str, *, params=None, expect_json=False, retries=2, headers=None):
         url = path_or_url if path_or_url.startswith("http") else urljoin(self.base + "/", path_or_url.lstrip("/"))
         if self.out_of_time():
             self._err("tiempo agotado" if self.consecutive_fail < 15 else "la tienda dejó de responder")
@@ -53,7 +53,7 @@ class Client:
             self._last = time.time()
             self.requests += 1
             try:
-                r = self.s.get(url, params=params, timeout=TIMEOUT)
+                r = self.s.get(url, params=params, timeout=TIMEOUT, headers=headers)
             except requests.RequestException as e:
                 if attempt < retries:
                     time.sleep(3 * (attempt + 1))
@@ -64,6 +64,9 @@ class Client:
             if r.status_code in (429, 503) and attempt < retries:
                 time.sleep(10 * (attempt + 1))
                 continue
+            if r.status_code == 304:      # no cambió desde la última lectura
+                self.consecutive_fail = 0
+                return r
             if not r.ok:
                 self._err(f"HTTP {r.status_code}")
                 if r.status_code >= 500 or r.status_code in (403, 429):

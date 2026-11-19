@@ -37,6 +37,7 @@ def scrape_store(store):
     deadline = min(time.time() + STORE_BUDGET, RUN_START + RUN_BUDGET)
     client = Client(store["url"], deadline=deadline)
     client.opts = store
+    client.known_platform = store.get("_known_platform")
     diag = []
     cache_file = CACHE / f"{store['id']}.json"
     cache = load(cache_file, {})
@@ -71,7 +72,7 @@ def scrape_store(store):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stores", help="ids separados por coma (por defecto todas)")
-    ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--workers", type=int, default=0, help="0 = una hebra por tienda")
     args = ap.parse_args()
 
     stores = [s for s in load(STORES, []) if s.get("enabled", True)]
@@ -91,10 +92,16 @@ def main():
                                                             "alternative": o.get("alternative", False),
                                                             "alt_unknown": o.get("alt_unknown", False)})
 
+    # plataforma detectada la vez anterior; las tiendas lentas (página por página) parten primero
+    for s in stores:
+        s["_known_platform"] = prev_meta.get(s["id"], {}).get("platform")
+    stores.sort(key=lambda s: 0 if s["_known_platform"] in ("generic", None) else 1)
+    workers = args.workers or min(len(stores), 48) or 1
+
     now = datetime.now(CHILE)
     today = now.strftime("%Y-%m-%d")
     results = {}
-    with ThreadPoolExecutor(max_workers=args.workers) as ex:
+    with ThreadPoolExecutor(max_workers=workers) as ex:
         futs = {ex.submit(scrape_store, s): s for s in stores}
         for f in as_completed(futs):
             s = futs[f]
