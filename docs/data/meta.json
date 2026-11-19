@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-18T14:02-03:00",
+ "updated": "2026-11-19T08:58-03:00",
  "stores": [
   {
    "id": "richirocko",
@@ -20,7 +20,7 @@
       "intento": "generic",
       "productos": 0,
       "errores": {
-       "HTTP 403": 3
+       "HTTP 403": 7
       },
       "excepcion": null
      }
@@ -38,10 +38,22 @@
    "name": "Juguetería Irion",
    "url": "https://irion.cl",
    "location": "Santiago Centro y Dos Caracoles (Providencia)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 4249,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
    "status": "ok",
    "platform": "shopify",
    "count": 2621,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "bydanime",
@@ -70,7 +82,8 @@
       "intento": "generic",
       "productos": 0,
       "errores": {
-       "HTTP 503": 2
+       "HTTP 503": 16,
+       "ConnectionError": 1
       },
       "excepcion": null
      }
@@ -84,52 +97,34 @@
    "total": 0
   },
   {
-   "id": "ikigaibazar",
-   "name": "Ikigai Bazar",
-   "url": "https://www.ikigaibazar.cl",
-   "location": "Santiago Centro",
-   "diag": {
-    "intentos": [
-     {
-      "intento": "shopify",
-      "productos": 61,
-      "errores": {},
-      "excepcion": null
-     }
-    ],
-    "descartados_ejemplo": [
-     "Katana Jin Sakai Ghost Of Tushima Versión De Lujo || ",
-     "Poncho Demon Slayer || ",
-     "Katana De Alma Dividida JJK || ",
-     "Llavero DenDen Mushi Ace con Sonido ||  llavero",
-     "Llavero DenDen Mushi Luffy con Sonido ||  llavero",
-     "Daga Solo Leveling Kasaka's Venom Fang De Madera L1 ||  props",
-     "Poncho Kimetsu Inozuke || ",
-     "Poncho Jujutsu Kaisen || ",
-     "Poncho Jujutsu Kaisen Sukuna || ",
-     "Poncho Jack || ",
-     "Katana Led Tokito Demon Slayer Usb Recargable || ",
-     "Katana Led Sanemi Demon Slayer Usb Recargable || ",
-     "Llavero Gojo Neko Peluche || ",
-     "Aros Frieren || ",
-     "Llavero tipo tecla Rana con sonido || "
-    ]
-   },
-   "status": "error",
-   "platform": "shopify",
-   "count": 0,
-   "last_ok": null,
-   "total": 61
-  },
-  {
    "id": "figurasdbz",
    "name": "Figuras DBZ Chile",
    "url": "https://www.figurasdbzchile.cl",
    "location": "Paseo San Agustín, Santiago Centro",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 2248,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
    "status": "ok",
    "platform": "woocommerce",
    "count": 531,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "nakamahouse",
@@ -174,17 +169,46 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 4,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "figuartschile",
    "name": "Figuarts Chile",
    "url": "https://www.figuartschile.com",
    "location": "San Miguel",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 728,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
    "status": "ok",
    "platform": "generic",
    "count": 410,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "holygeek",
@@ -211,87 +235,107 @@
      },
      {
       "intento": "generic",
-      "productos": 0,
+      "productos": 1077,
       "errores": {
-       "HTTP 404": 2
+       "HTTP 404": 6
       },
       "excepcion": null
      }
     ],
     "descartados_ejemplo": []
    },
-   "status": "error",
-   "platform": null,
-   "count": 0,
-   "last_ok": null,
-   "total": 0
+   "status": "ok",
+   "platform": "generic",
+   "count": 286,
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "svader",
    "name": "SVADER Coleccionables",
    "url": "https://www.svadercoleccionables.cl",
    "location": "Providencia (Metro Tobalaba)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 1206,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
    "status": "ok",
    "platform": "generic",
    "count": 32,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "luffytoys",
    "name": "LuffyToys",
    "url": "https://luffytoys.cl",
    "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 997,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
    "status": "ok",
    "platform": "shopify",
-   "count": 836,
-   "last_ok": "2026-11-18"
+   "count": 838,
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "animestore",
    "name": "Anime Store",
    "url": "https://animestore.cl",
    "location": "Online",
-   "status": "ok",
-   "platform": "shopify",
-   "count": 255,
-   "last_ok": "2026-11-18"
-  },
-  {
-   "id": "figuartszone",
-   "name": "Figuarts Zone Toys",
-   "url": "https://www.figuartszonetoys.cl",
-   "location": "Online",
    "diag": {
     "intentos": [
      {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "ConnectionError": 2
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "generic",
-      "productos": 0,
-      "errores": {
-       "ConnectionError": 3
-      },
+      "intento": "shopify",
+      "productos": 294,
+      "errores": {},
       "excepcion": null
      }
     ],
     "descartados_ejemplo": []
    },
-   "status": "error",
-   "platform": null,
-   "count": 0,
-   "last_ok": null,
-   "total": 0
+   "status": "ok",
+   "platform": "shopify",
+   "count": 255,
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
-   "id": "newtype",
-   "name": "Newtype Chile",
-   "url": "https://newtypechile.com",
+   "id": "avsotoyz",
+   "name": "AvsoToyz",
+   "url": "https://www.avsotoyz.cl",
    "location": "Online",
    "diag": {
     "intentos": [
@@ -299,7 +343,7 @@
       "intento": "shopify",
       "productos": 0,
       "errores": {
-       "ConnectionError": 1
+       "HTTP 404": 1
       },
       "excepcion": null
      },
@@ -307,36 +351,24 @@
       "intento": "woocommerce",
       "productos": 0,
       "errores": {
-       "ConnectionError": 2
+       "HTTP 404": 2
       },
       "excepcion": null
      },
      {
       "intento": "generic",
-      "productos": 0,
-      "errores": {
-       "ConnectionError": 3
-      },
+      "productos": 1346,
+      "errores": {},
       "excepcion": null
      }
     ],
     "descartados_ejemplo": []
    },
-   "status": "error",
-   "platform": null,
-   "count": 0,
-   "last_ok": null,
-   "total": 0
-  },
-  {
-   "id": "avsotoyz",
-   "name": "AvsoToyz",
-   "url": "https://www.avsotoyz.cl",
-   "location": "Online",
    "status": "ok",
    "platform": "generic",
    "count": 766,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "yumeshoku",
@@ -389,37 +421,90 @@
    "status": "ok",
    "platform": "generic",
    "count": 4,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "anezaki",
    "name": "Anezaki Store",
    "url": "https://anezakistore.cl",
    "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 3316,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
    "status": "ok",
    "platform": "shopify",
-   "count": 1513,
-   "last_ok": "2026-11-18"
+   "count": 1519,
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "kinue",
    "name": "Kinue Store",
    "url": "https://kinuestore.cl",
    "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 1921,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
    "status": "ok",
    "platform": "shopify",
    "count": 1532,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "burubox",
    "name": "Burubox",
    "url": "https://burubox.cl",
    "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "HTTP 403": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 132,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
    "status": "ok",
    "platform": "generic",
    "count": 74,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "zonaanime",
@@ -443,28 +528,222 @@
       "excepcion": null
      }
     ],
-    "descartados_ejemplo": [
-     "MAGIN VEGETA || DRAGON BALL Z ",
-     "GOKU ULTRA INSTINTO || DRAGON BALL Z ",
-     "MERUEM || HUNTER X HUNTER ",
-     "NEFERPITOU || HUNTER X HUNTER ",
-     "Naruto Uzumaki Combination Battle || NARUTO "
-    ]
+    "descartados_ejemplo": []
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 11,
-   "last_ok": "2026-11-18"
+   "count": 16,
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "otakuverso",
    "name": "OtakuVerso",
    "url": "https://otakuverso.cl",
    "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "HTTP 403": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 355,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
    "status": "ok",
    "platform": "generic",
    "count": 150,
-   "last_ok": "2026-11-18"
+   "last_ok": "2026-11-19",
+   "partial": false
+  },
+  {
+   "id": "chilerobots",
+   "name": "Chile Robots",
+   "url": "https://www.chilerobots.cl",
+   "location": "Online (entrega presencial en Santiago)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "HTTP 403": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 191,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 144,
+   "last_ok": "2026-11-19",
+   "partial": false
+  },
+  {
+   "id": "tomatorepublic",
+   "name": "Tomato Republic",
+   "url": "https://tomatorepublic.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 1134,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 701,
+   "last_ok": "2026-11-19",
+   "partial": false
+  },
+  {
+   "id": "mranime",
+   "name": "Figuras MR Anime",
+   "url": "https://figurasmranime.cl",
+   "location": "Galpón Bío Bío, Santiago",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 992,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 430,
+   "last_ok": "2026-11-19",
+   "partial": false
+  },
+  {
+   "id": "bocchita",
+   "name": "Bocchita Store",
+   "url": "https://bocchitastore.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 7
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
+  },
+  {
+   "id": "universotoys",
+   "name": "Universo Toys",
+   "url": "https://www.universotoys.cl",
+   "location": "Dos Caracoles (Providencia)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 2,
+       "SSLError": 5
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
   }
  ]
 }
