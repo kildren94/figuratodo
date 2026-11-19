@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-19T14:55-03:00",
+ "updated": "2026-11-19T15:23-03:00",
  "stores": [
   {
    "id": "richirocko",
@@ -51,7 +51,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 2621,
+   "count": 2443,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -113,7 +113,7 @@
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 531,
+   "count": 530,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -151,7 +151,7 @@
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 4,
+   "count": 3,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -173,7 +173,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 410,
+   "count": 352,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -188,8 +188,7 @@
       "intento": "generic",
       "productos": 1077,
       "errores": {
-       "HTTP 404": 6,
-       "HTTP 525": 1
+       "HTTP 404": 6
       },
       "excepcion": null
      }
@@ -233,7 +232,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 997,
+      "productos": 999,
       "errores": {},
       "excepcion": null
      }
@@ -242,7 +241,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 838,
+   "count": 677,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -264,7 +263,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 255,
+   "count": 254,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -286,7 +285,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 766,
+   "count": 480,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -337,7 +336,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 3316,
+      "productos": 3317,
       "errores": {},
       "excepcion": null
      }
@@ -368,7 +367,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 1532,
+   "count": 1527,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -456,7 +455,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 144,
+   "count": 149,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -469,18 +468,28 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 1134,
-      "errores": {},
+      "productos": 0,
+      "errores": {
+       "ReadTimeout": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 420,
+      "errores": {
+       "ReadTimeout": 9
+      },
       "excepcion": null
      }
     ],
     "descartados_ejemplo": []
    },
    "status": "ok",
-   "platform": "woocommerce",
-   "count": 701,
+   "platform": "generic",
+   "count": 150,
    "last_ok": "2026-11-19",
-   "partial": false
+   "partial": true
   },
   {
    "id": "mranime",
@@ -500,7 +509,7 @@
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 430,
+   "count": 360,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -592,22 +601,6 @@
    "diag": {
     "intentos": [
      {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 2
-      },
-      "excepcion": null
-     },
-     {
       "intento": "generic",
       "productos": 630,
       "errores": {},
@@ -618,7 +611,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 332,
+   "count": 321,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -630,22 +623,6 @@
    "diag": {
     "intentos": [
      {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 2
-      },
-      "excepcion": null
-     },
-     {
       "intento": "generic",
       "productos": 312,
       "errores": {},
@@ -656,7 +633,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 21,
+   "count": 20,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -667,22 +644,6 @@
    "location": "Online (entrega en metro U. de Chile)",
    "diag": {
     "intentos": [
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 2
-      },
-      "excepcion": null
-     },
      {
       "intento": "generic",
       "productos": 616,
@@ -738,14 +699,6 @@
    "diag": {
     "intentos": [
      {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
-     {
       "intento": "woocommerce",
       "productos": 2314,
       "errores": {},
@@ -756,7 +709,7 @@
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 1379,
+   "count": 1114,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -771,34 +724,40 @@
       "intento": "shopify",
       "productos": 0,
       "errores": {
-       "ConnectTimeout": 1
+       "HTTP 404": 1
       },
       "excepcion": null
      },
      {
       "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "ConnectTimeout": 2
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "generic",
-      "productos": 0,
-      "errores": {
-       "ConnectTimeout": 7
-      },
+      "productos": 230,
+      "errores": {},
       "excepcion": null
      }
     ],
-    "descartados_ejemplo": []
+    "descartados_ejemplo": [
+     "CD – Helloween – Helloween || Música Vinilos y Cds ",
+     "LP Gatefold – Thy Catafalque – XII: A Gyönyörü Álmok Ezután Jönnek || Música Vinilos y Cds ",
+     "LP Gatefold Sleeve – Thy Catafalque – Naiv – Vinilo Negro || Música Vinilos y Cds ",
+     "CD – System Of A Down – Steal This Album! || Música Vinilos y Cds ",
+     "DVD + 2CD – OPETH – Garden Of The Titans – Limited edition – Live at Red Rocks Ampitheatre || Blu-ray &amp; DVDs Música ",
+     "DOUBLE CD – Judas Priest – Stained Class / Ram It Down – (Remasters) || Música Vinilos y Cds ",
+     "LP Gatefold – Immortal – Battles In The North || Música Vinilos y Cds ",
+     "3 DVD BOX SET – Helloween – United Alive || Blu-ray &amp; DVDs Música ",
+     "DVD – Helloween – Live At Budokan – Limited edition || Blu-ray &amp; DVDs Música ",
+     "LP COLOURED – Hate Forest – Sorrow – Mustard / Black Marbled Vinyl || Música Vinilos y Cds ",
+     "Vinilo – Hate Forest – Justice EP – Cloudy red Vinyl || Música Vinilos y Cds ",
+     "CD – Cradle Of Filth – Dusk And Her Embrace || Música Vinilos y Cds ",
+     "LP – Behemoth – Thelema 6 – Vinilo Negro || Música Vinilos y Cds ",
+     "LP – Behemoth – Satanica – Vinilo Negro 180g || Música Vinilos y Cds ",
+     "LP – Bathory – Blood Fire Death || Música Vinilos y Cds "
+    ]
    },
-   "status": "error",
-   "platform": null,
-   "count": 0,
-   "last_ok": null,
-   "total": 0
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 5,
+   "last_ok": "2026-11-19",
+   "partial": false
   },
   {
    "id": "otakuworld",
@@ -807,22 +766,6 @@
    "location": "Online",
    "diag": {
     "intentos": [
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 2
-      },
-      "excepcion": null
-     },
      {
       "intento": "generic",
       "productos": 608,
@@ -834,7 +777,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 76,
+   "count": 75,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -845,22 +788,6 @@
    "location": "Persa Bío Bío, Santiago",
    "diag": {
     "intentos": [
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 2
-      },
-      "excepcion": null
-     },
      {
       "intento": "generic",
       "productos": 1549,
@@ -950,7 +877,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 1915,
+   "count": 1843,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -962,27 +889,10 @@
    "diag": {
     "intentos": [
      {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 2
-      },
-      "excepcion": null
-     },
-     {
       "intento": "generic",
-      "productos": 1225,
+      "productos": 1796,
       "errores": {
-       "HTTP 404": 19,
-       "ReadTimeout": 1
+       "HTTP 404": 19
       },
       "excepcion": null
      }
@@ -991,9 +901,9 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 338,
+   "count": 442,
    "last_ok": "2026-11-19",
-   "partial": true
+   "partial": false
   },
   {
    "id": "jugueterialeon",
@@ -1003,27 +913,9 @@
    "diag": {
     "intentos": [
      {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 2
-      },
-      "excepcion": null
-     },
-     {
       "intento": "generic",
       "productos": 577,
-      "errores": {
-       "HTTP 404": 2
-      },
+      "errores": {},
       "excepcion": null
      }
     ],
@@ -1047,7 +939,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 15,
+   "count": 14,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -1100,7 +992,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 1540,
+      "productos": 1549,
       "errores": {},
       "excepcion": null
      }
@@ -1109,7 +1001,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 133,
+   "count": 129,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -1120,14 +1012,6 @@
    "location": "Online",
    "diag": {
     "intentos": [
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
      {
       "intento": "woocommerce",
       "productos": 2269,
@@ -1166,14 +1050,6 @@
    "location": "Online",
    "diag": {
     "intentos": [
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
      {
       "intento": "woocommerce",
       "productos": 1889,
@@ -1247,7 +1123,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 266,
+   "count": 180,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -1269,49 +1145,9 @@
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 723,
+   "count": 780,
    "last_ok": "2026-11-19",
    "partial": false
-  },
-  {
-   "id": "stargames",
-   "name": "Star Games",
-   "url": "https://www.stargames.cl",
-   "location": "Online",
-   "diag": {
-    "intentos": [
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "bloqueado por robots.txt": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "bloqueado por robots.txt": 2
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "generic",
-      "productos": 0,
-      "errores": {
-       "bloqueado por robots.txt": 7
-      },
-      "excepcion": null
-     }
-    ],
-    "descartados_ejemplo": []
-   },
-   "status": "error",
-   "platform": null,
-   "count": 0,
-   "last_ok": null,
-   "total": 0
   },
   {
    "id": "blaster",
@@ -1331,49 +1167,9 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 1617,
+   "count": 1555,
    "last_ok": "2026-11-19",
    "partial": false
-  },
-  {
-   "id": "mirax",
-   "name": "Mirax Hobbies",
-   "url": "https://www.mirax.cl",
-   "location": "Mall Apumanque y otros",
-   "diag": {
-    "intentos": [
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "bloqueado por robots.txt": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "bloqueado por robots.txt": 2
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "generic",
-      "productos": 0,
-      "errores": {
-       "bloqueado por robots.txt": 7
-      },
-      "excepcion": null
-     }
-    ],
-    "descartados_ejemplo": []
-   },
-   "status": "error",
-   "platform": null,
-   "count": 0,
-   "last_ok": null,
-   "total": 0
   },
   {
    "id": "animetoyz",
@@ -1382,22 +1178,6 @@
    "location": "Online",
    "diag": {
     "intentos": [
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "HTTP 404": 2
-      },
-      "excepcion": null
-     },
      {
       "intento": "generic",
       "productos": 345,
@@ -1409,7 +1189,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 51,
+   "count": 36,
    "last_ok": "2026-11-19",
    "partial": false
   }
