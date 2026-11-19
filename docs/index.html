@@ -20,14 +20,29 @@ h1 span{color:var(--pink)}
 nav{display:flex;gap:6px}
 nav a{color:var(--mute);text-decoration:none;font-weight:600;font-size:14px;padding:7px 12px;border-radius:8px}
 nav a.on{background:var(--panel2);color:var(--ink)}
-.bar{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:10px}
+.bar{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-bottom:10px}
+@media(max-width:640px){.bar{grid-template-columns:1fr 1fr}.bar #q{grid-column:1/-1}}
+.fbtn{background:var(--panel2);border:1px solid var(--line);color:var(--ink);font:600 14px Inter;padding:0 16px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.fbtn[aria-expanded=true],.fbtn:hover{border-color:var(--pink)}
+.fcount{background:var(--pink);color:#1a0b12;font-size:12px;font-weight:700;border-radius:99px;padding:1px 7px}
+.fpanel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;align-items:end}
+.fl{display:flex;flex-direction:column;gap:6px;color:var(--mute);font-size:12px;font-weight:600}
+.fl.checks{gap:8px;font-weight:500}
+.fl.checks label{display:flex;gap:8px;align-items:center;color:var(--ink);font-size:13px;cursor:pointer}
+.fl input[type=checkbox]{accent-color:var(--pink)}
+.freset{background:none;border:1px solid var(--line);color:var(--mute);font:600 13px Inter;padding:9px 12px;border-radius:10px;cursor:pointer;justify-self:start}
+.freset:hover{color:var(--ink)}
 input,select{background:var(--panel2);border:1px solid var(--line);color:var(--ink);font:14px Inter;padding:10px 12px;border-radius:10px;outline:none;min-width:0}
 input:focus,select:focus{border-color:var(--pink)}
 #q{font-size:17px;padding:14px 16px}
 .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
 .filters label{display:flex;gap:6px;align-items:center;color:var(--mute);font-size:13px;cursor:pointer}
 .filters input[type=checkbox]{accent-color:var(--pink)}
-.count{color:var(--mute);font-size:13px;margin-left:auto}
+.count{color:var(--mute);font-size:13px;margin:4px 0 14px}
+.card.alt{border-color:#7a5a1f}.card.alt .pr b{color:var(--mute)}.card.alt .ln{color:var(--gold)}
+.b.alt{background:var(--gold);color:#2a1d05}
+.altnote{margin-top:14px;padding:10px 12px;border-radius:10px;background:rgba(255,198,93,.1);border:1px solid rgba(255,198,93,.35);color:var(--gold);font-size:13px}
+.altnote a{color:var(--gold);font-weight:700}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:.15s;display:flex;flex-direction:column}
 .card:hover{border-color:var(--pink);transform:translateY(-2px)}
@@ -93,17 +108,22 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
         <option value="stores">Más tiendas</option>
         <option value="drop">Mayor descuento</option>
       </select>
+      <button class="fbtn" id="fBtn" aria-expanded="false" aria-controls="fPanel">Filtros <span class="fcount" id="fCount" hidden></span></button>
     </div>
-    <div class="filters">
-      <select id="fLine"><option value="">Todas las líneas</option></select>
-      <select id="fStore"><option value="">Todas las tiendas</option></select>
-      <input id="fMax" type="number" placeholder="Precio máx." style="width:130px">
-      <select id="fAdult"><option value="">+18: mostrar</option><option value="hide">+18: ocultar</option><option value="only">Solo +18</option></select>
-      <label><input type="checkbox" id="fStock" checked> Solo disponibles</label>
-      <label><input type="checkbox" id="fPre"> Ocultar preventas</label>
-      <label><input type="checkbox" id="fMulti"> En 2+ tiendas</label>
-      <span class="count" id="count"></span>
+    <div class="fpanel" id="fPanel" hidden>
+      <label class="fl">Línea<select id="fLine"><option value="">Todas</option></select></label>
+      <label class="fl">Tienda<select id="fStore"><option value="">Todas</option></select></label>
+      <label class="fl">Precio máximo<input id="fMax" type="number" min="0" placeholder="Sin límite"></label>
+      <label class="fl">Originalidad<select id="fOrig"><option value="orig">Solo originales</option><option value="">Originales y alternativas</option><option value="alt">Solo alternativas</option></select></label>
+      <label class="fl">Contenido +18<select id="fAdult"><option value="hide">Ocultar</option><option value="">Mostrar</option><option value="only">Solo +18</option></select></label>
+      <div class="fl checks">
+        <label><input type="checkbox" id="fStock" checked> Solo disponibles</label>
+        <label><input type="checkbox" id="fPre"> Ocultar preventas</label>
+        <label><input type="checkbox" id="fMulti"> En 2+ tiendas</label>
+      </div>
+      <button class="freset" id="fReset" type="button">Restablecer filtros</button>
     </div>
+    <div class="count" id="count"></div>
     <div class="grid" id="grid"></div>
     <button class="more" id="more" hidden>Ver más</button>
   </main>
@@ -134,7 +154,7 @@ Promise.all([
   P = prod.products.map(p => {
     const regs = p.offers.filter(o => o.in_stock).map(o => o.regular_price || o.price);
     const drop = regs.length ? Math.max(0, 1 - p.min_price / Math.max(...regs)) : 0;
-    return {...p, _q: norm((p.adult ? '18 ecchi adulto ' : '') + p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + p.offers.map(o => o.title).join(' ')),
+    return {...p, _q: norm((p.adult ? '18 ecchi adulto ' : '') + (p.alternative ? 'alternativa replica ' : '') + p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + p.offers.map(o => o.title).join(' ')),
             _pre: p.offers.every(o => o.preorder), _drop: drop};
   });
   const d = new Date(prod.updated);
@@ -148,11 +168,13 @@ Promise.all([
 function apply(){
   const q = norm($('#q').value), words = q ? q.split(' ') : [];
   const line = $('#fLine').value, store = $('#fStore').value, max = +$('#fMax').value || Infinity;
-  const adult = $('#fAdult').value;
+  const adult = $('#fAdult').value, orig = $('#fOrig').value;
   const stock = $('#fStock').checked, nopre = $('#fPre').checked, multi = $('#fMulti').checked;
   list = P.filter(p => {
     if (line && p.line !== line) return false;
     if (store && !p.offers.some(o => o.store === store)) return false;
+    if (orig === 'orig' && p.alternative) return false;
+    if (orig === 'alt' && !p.alternative) return false;
     if (adult === 'hide' && p.adult) return false;
     if (adult === 'only' && !p.adult) return false;
     if (stock && !p.in_stock) return false;
@@ -167,8 +189,15 @@ function apply(){
   else if (s === 'stores') list.sort((a,b)=>b.stores-a.stores || a.min_price-b.min_price);
   else if (s === 'drop') list.sort((a,b)=>b._drop-a._drop);
   else if (words.length) list.sort((a,b)=> (norm(b.name).startsWith(words[0])) - (norm(a.name).startsWith(words[0])) || b.stores-a.stores);
-  shown = 60; draw();
+  shown = 60; draw(); markActive();
 }
+const DEFAULTS = {fLine:'', fStore:'', fMax:'', fOrig:'orig', fAdult:'hide', fStock:true, fPre:false, fMulti:false};
+function markActive(){
+  const n = Object.entries(DEFAULTS).filter(([id, v]) => { const el = $('#'+id); return (el.type === 'checkbox' ? el.checked : el.value) !== v; }).length;
+  $('#fCount').textContent = n; $('#fCount').hidden = !n;
+}
+$('#fBtn').onclick = () => { const open = $('#fPanel').hidden; $('#fPanel').hidden = !open; $('#fBtn').setAttribute('aria-expanded', open); };
+$('#fReset').onclick = () => { Object.entries(DEFAULTS).forEach(([id, v]) => { const el = $('#'+id); if (el.type === 'checkbox') el.checked = v; else el.value = v; }); apply(); };
 
 function draw(){
   $('#count').textContent = `${list.length.toLocaleString('es-CL')} resultados`;
@@ -176,10 +205,10 @@ function draw(){
   $('#more').hidden = list.length <= shown;
 }
 function card(p){
-  return `<div class="card" onclick="location.hash='f-${encodeURIComponent(p.id)}'">
+  return `<div class="card${p.alternative?' alt':''}" onclick="location.hash='f-${encodeURIComponent(p.id)}'">
     <div class="img" style="${p.image?`background-image:url('${esc(p.image)}')`:''}">${p.image?'':'<div class="noimg">?</div>'}
-      <div class="badges">${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}</div></div>
-    <div class="body"><div class="ln">${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><div class="nm">${esc(p.name)}</div>
+      <div class="badges">${p.alternative?`<span class="b alt">${p.alt_unknown?'Posible alternativa':'Alternativa · no original'}</span>`:''}${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}</div></div>
+    <div class="body"><div class="ln">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><div class="nm">${esc(p.name)}</div>
       <div class="pr"><b>${fmt(p.min_price)}</b><span>${p.stores} ${p.stores>1?'tiendas':'tienda'}</span></div></div></div>`;
 }
 
@@ -190,8 +219,8 @@ async function openDetail(id){
   const best = offs.find(o=>o.in_stock) || offs[0];
   $('#det').innerHTML = `<button class="x" onclick="location.hash=''">×</button>
     <div class="dtop"><div class="dimg" style="${p.image?`background-image:url('${esc(p.image)}')`:''}"></div>
-      <div><div class="ln">${esc(p.line_name)}${p.num?' '+esc(p.num):''}${p.adult?' · +18':''}</div><h2>${esc(p.name)}</h2>
-      <div class="big">${fmt(p.min_price)}</div>
+      <div><div class="ln" style="${p.alternative?'color:var(--gold)':''}">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}${p.adult?' · +18':''}</div><h2>${esc(p.name)}</h2>
+      <div class="big" style="${p.alternative?'color:var(--mute)':''}">${fmt(p.min_price)}</div>
       <div class="meta">Mejor precio en <b style="color:var(--ink)">${esc(STORES[best.store]?.name||best.store)}</b> · ${p.stores} ${p.stores>1?'tiendas':'tienda'}${p.barcode?' · JAN '+esc(p.barcode):''}</div>
       <div style="margin-top:12px"><a class="go" href="${esc(best.url)}" target="_blank" rel="noopener">Ir a la tienda ↗</a></div></div></div>
     <table><thead><tr><th>Tienda</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>
@@ -199,8 +228,22 @@ async function openDetail(id){
       <td><b>${fmt(o.price)}</b>${o.regular_price>o.price?`<div class="meta" style="text-decoration:line-through">${fmt(o.regular_price)}</div>`:''}</td>
       <td class="st ${!o.in_stock?'no':o.preorder?'pre':'ok'}">${!o.in_stock?'Agotada':o.preorder?'Preventa / encargo':'Disponible'}</td>
       <td style="text-align:right"><a class="go" href="${esc(o.url)}" target="_blank" rel="noopener">Ver ↗</a></td></tr>`).join('')}
-    </tbody></table>${chart(p)}`;
+    </tbody></table>${altNote(p)}${chart(p)}`;
   $('#ov').classList.add('on');
+}
+
+function altNote(p){
+  if (p.alternative) {
+    const o = p.original_id && P.find(x => x.id === p.original_id);
+    return `<div class="altnote">${p.alt_unknown
+      ? 'La tienda no indica si esta figura es original. Como vende originales y alternativas, se muestra como posible alternativa.'
+      : 'Esta es una figura alternativa (no original).'}${o ? ` La versión original está desde <b>${fmt(o.min_price)}</b>: <a href="#f-${encodeURIComponent(o.id)}">ver figura original</a>.` : ''}</div>`;
+  }
+  if (p.alternatives && p.alternatives.length) {
+    const a = p.alternatives.reduce((m, x) => x.min_price < m.min_price ? x : m);
+    return `<div class="altnote">También hay una versión alternativa (no original) desde <b>${fmt(a.min_price)}</b>. <a href="#f-${encodeURIComponent(a.id)}">Ver alternativa</a></div>`;
+  }
+  return '';
 }
 
 function chart(p){
@@ -247,7 +290,7 @@ window.addEventListener('hashchange', route);
 $('#ov').addEventListener('click', e => { if (e.target.id === 'ov') location.hash = ''; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#ov').classList.contains('on')) location.hash = ''; });
 let t; $('#q').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 150); });
-['sort','fLine','fStore','fMax','fAdult','fStock','fPre','fMulti'].forEach(id => $('#'+id).addEventListener('change', apply));
+['sort','fLine','fStore','fMax','fOrig','fAdult','fStock','fPre','fMulti'].forEach(id => $('#'+id).addEventListener('change', apply));
 $('#fMax').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 250); });
 $('#more').onclick = () => { shown += 60; draw(); };
 </script>

@@ -96,3 +96,21 @@ def test_adult():
     assert not is_adult("Nendoroid Frieren 2367", "Nendoroid")
     assert not is_adult("Figura Alternative Ver. Miku", "Figuras")
     assert not is_adult("Figura Tsuyu Asui Frog Form My Hero Academia", "Figuras")
+
+
+def test_alternatives():
+    from scraper.classify import is_alternative
+    assert is_alternative("Boa Hancock - Flag Diamond Ship", "Excelente Figura de Boa Hancock Versión alternativa Nuevo") is True
+    assert is_alternative("Figura Banpresto Nami", "Figura 100% original") is False
+    assert is_alternative("Figura Banpresto Nami", "") is None
+    offers = [
+        off("kinue", "One Piece - Luffy - King of the Artist 20th Anniversary (Banpresto)", 32990),
+        off("anezaki", "Luffy King of the Artist 20th Anniversary Ver - Banpresto", 34990),
+        off("figurasonline", "Monkey D Luffy - King of the Artist - 20th Anniversary Ver Banpresto", 14990, alternative=True),
+    ]
+    prods = group(offers)
+    orig = [p for p in prods if not p["alternative"]]
+    alts = [p for p in prods if p["alternative"]]
+    assert len(orig) == 1 and orig[0]["min_price"] == 32990 and orig[0]["stores"] == 2
+    assert len(alts) == 1 and alts[0]["original_id"] == orig[0]["id"]
+    assert orig[0]["alternatives"][0]["min_price"] == 14990

@@ -51,7 +51,7 @@ def _same(a, b):
     return shared >= 3 and fuzz.token_set_ratio(sa, sb) >= 96
 
 
-def group(offers):
+def _group(offers):
     for o in offers:
         o["toks"] = tokens(o["title"])
         o["num"] = line_number(o["title"], o["line"])
@@ -126,10 +126,56 @@ def _product(offs):
         "min_price": min(o["price"] for o in (stock or offs)),
         "in_stock": bool(stock),
         "adult": any(o.get("adult") for o in offs),
+        "alternative": bool(offs[0].get("alternative")),
+        "alt_unknown": all(o.get("alt_unknown") for o in offs),
         "stores": len({o["store"] for o in offs}),
         "offers": [{
             "store": o["store"], "title": o["title"], "price": o["price"],
             "regular_price": o["regular_price"], "url": o["url"],
             "in_stock": o["in_stock"], "preorder": o["preorder"], "adult": bool(o.get("adult")),
+            "alternative": bool(o.get("alternative")), "alt_unknown": bool(o.get("alt_unknown")),
         } for o in offs],
     }
+
+
+def group(offers):
+    """Agrupa originales y alternativas por separado (una réplica nunca es el 'mejor precio' de una original)
+    y enlaza cada alternativa con su figura original cuando se puede identificar."""
+    orig = _group([o for o in offers if not o.get("alternative")])
+    alts = _group([o for o in offers if o.get("alternative")])
+    for p in alts:
+        p["id"] = "alt-" + p["id"]
+    by_key = {}
+    for p in orig:
+        if p["num"]:
+            by_key[f"{p['line']}:{p['num']}"] = p
+        if p["barcode"]:
+            by_key["b:" + p["barcode"]] = p
+    by_line = defaultdict(list)
+    for p in orig:
+        for o in p["offers"]:
+            by_line[p["line"]].append((p, " ".join(tokens(o["title"]))))
+
+    def score(at, t):
+        if _nums(at.split()) != _nums(t.split()):
+            return 0
+        sort = fuzz.token_sort_ratio(at, t)
+        if sort >= 90:
+            return sort
+        shared = len(set(at.split()) & set(t.split()))
+        return 95 if shared >= 3 and fuzz.token_set_ratio(at, t) >= 96 else 0
+
+    for a in alts:
+        target = by_key.get(f"{a['line']}:{a['num']}") if a["num"] else None
+        target = target or (by_key.get("b:" + a["barcode"]) if a["barcode"] else None)
+        if not target:
+            at = " ".join(tokens(a["name"]))
+            best = max(((score(at, t), p) for p, t in by_line[a["line"]] if t),
+                       key=lambda x: x[0], default=(0, None))
+            if best[0] >= 90:
+                target = best[1]
+        if target:
+            a["original_id"] = target["id"]
+            alt_list = target.setdefault("alternatives", [])
+            alt_list.append({"id": a["id"], "min_price": a["min_price"]})
+    return orig + alts

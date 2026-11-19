@@ -77,6 +77,7 @@ def shopify(client):
                 "sku": v.get("sku") or None,
                 "brand": p.get("vendor") or None,
                 "kind": " ".join([p.get("product_type") or ""] + tags),
+                "desc": _clean(p.get("body_html"))[:800],
             })
         if len(data["products"]) < 250:
             break
@@ -130,6 +131,7 @@ def woocommerce(client):
                 "sku": p.get("sku") or None,
                 "brand": None,
                 "kind": f"{cats} {tags}",
+                "desc": _clean(p.get("short_description") or p.get("description"))[:800],
             })
         if page >= MAX_WOO_PAGES or (total_pages and page >= total_pages) or (not total_pages and len(data) < 10):
             break
@@ -231,6 +233,20 @@ def _iter_ld(obj):
         yield obj
 
 
+def _page_desc(soup, prod):
+    """Descripción del producto: JSON-LD, metadatos o el bloque de descripción de la página."""
+    parts = []
+    if isinstance(prod, dict) and isinstance(prod.get("description"), str):
+        parts.append(prod["description"])
+    for sel in ('meta[name="description"]', 'meta[property="og:description"]'):
+        m = soup.select_one(sel)
+        if m and m.get("content"):
+            parts.append(m["content"])
+    for el in soup.select('[itemprop="description"], .product-description, #description, .woocommerce-product-details__short-description')[:3]:
+        parts.append(el.get_text(" ", strip=True))
+    return _clean(" ".join(parts))[:800]
+
+
 def parse_product_page(html_text, url):
     soup = BeautifulSoup(html_text, "lxml")
     prod = None
@@ -302,6 +318,7 @@ def parse_product_page(html_text, url):
         "sku": (prod or {}).get("sku"),
         "brand": brand,
         "kind": " ".join(c.get_text(" ") for c in soup.select(".breadcrumb a, nav.breadcrumb a")[:6]),
+        "desc": _page_desc(soup, prod),
     }
 
 

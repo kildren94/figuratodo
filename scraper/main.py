@@ -9,7 +9,7 @@ from pathlib import Path
 
 from .http import Client
 from .platforms import detect_and_scrape
-from .classify import is_figure, detect_line, is_adult
+from .classify import is_figure, detect_line, is_adult, is_alternative
 from .match import group
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -54,6 +54,11 @@ def scrape_store(store):
         it["store"] = store["id"]
         it["line"] = detect_line(it["title"], it.get("kind", ""))
         it["adult"] = is_adult(it["title"], it.get("kind", ""), it.get("brand") or "")
+        alt = is_alternative(it["title"], it.get("desc", ""))
+        # en tiendas que mezclan originales y alternativas, lo que no dice nada se trata como alternativa
+        it["alternative"] = bool(alt) or (alt is None and store.get("alt_default", False))
+        it["alt_unknown"] = alt is None and it["alternative"]
+        it.pop("desc", None)
         figs.append(it)
     return {
         "id": store["id"], "platform": platform, "total": len(items), "figures": figs,
@@ -82,7 +87,9 @@ def main():
         for o in p["offers"]:
             prev_offers.setdefault(o["store"], []).append({**o, "image": p.get("image"),
                                                             "barcode": p.get("barcode"), "line": p["line"],
-                                                            "adult": o.get("adult", p.get("adult", False))})
+                                                            "adult": o.get("adult", p.get("adult", False)),
+                                                            "alternative": o.get("alternative", False),
+                                                            "alt_unknown": o.get("alt_unknown", False)})
 
     now = datetime.now(CHILE)
     today = now.strftime("%Y-%m-%d")

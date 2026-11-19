@@ -132,3 +132,19 @@ def is_adult(title, kind="", brand=""):
         return True
     # los fabricantes se miran solo en marca/categorías: en un título "Frog" o "Native" puede ser otra cosa
     return bool(ADULT_BRANDS.search(norm(f"{kind} {brand}")))
+
+
+# Figuras alternativas (réplicas / bootlegs)
+ALT_RE = re.compile(r"versi[oó]n alternativa|\balternativ[ao]s?\b|r[eé]plica|bootleg|\bno (es )?original|"
+                    r"gen[eé]ric[ao]|imitaci[oó]n|\bfake\b|\bknock ?off\b", re.I)
+ORIG_RE = re.compile(r"\boriginal(es)?\b|100 ?% original|licenciad[ao]|aut[eé]ntic[ao]", re.I)
+
+
+def is_alternative(title, desc=""):
+    """True = alternativa, False = dice ser original, None = no lo indica."""
+    text = f"{title} {desc}"
+    if ALT_RE.search(text):
+        return True
+    if ORIG_RE.search(text):
+        return False
+    return None

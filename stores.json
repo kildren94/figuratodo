@@ -40,5 +40,6 @@
   {"id": "weplay", "name": "Weplay", "url": "https://www.weplay.cl", "platform": "auto", "location": "Costanera Center, Arauco Maipú y otros malls", "strict": true},
   {"id": "takanodan", "name": "Taka No Dan", "url": "https://takanodan.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true},
   {"id": "pasatime", "name": "Pasatime", "url": "https://pasatime.cl", "platform": "auto", "location": "Online", "strict": true},
-  {"id": "topgames", "name": "TopGames", "url": "https://topgames.cl", "platform": "auto", "location": "Online", "strict": true}
+  {"id": "topgames", "name": "TopGames", "url": "https://topgames.cl", "platform": "auto", "location": "Online", "strict": true},
+  {"id": "figurasonline", "name": "Figuras Online Chile", "url": "https://figurasonlinechile.cl", "platform": "auto", "location": "Santiago (online)", "strict": true, "alt_default": true, "nota": "Vende originales y alternativas; lo que no indica 'original' se muestra como posible alternativa"}
 ]
