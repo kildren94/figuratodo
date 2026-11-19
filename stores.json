@@ -23,7 +23,7 @@
   {"id": "tomatorepublic", "name": "Tomato Republic", "url": "https://tomatorepublic.cl", "platform": "woocommerce", "location": "Online"},
   {"id": "mranime", "name": "Figuras MR Anime", "url": "https://figurasmranime.cl", "platform": "auto", "location": "Galpón Bío Bío, Santiago"},
   {"id": "bocchita", "name": "Bocchita Store", "url": "https://bocchitastore.cl", "platform": "auto", "location": "Online", "enabled": false, "nota": "Rechaza la conexión a lectores automáticos (nov 2026)"},
-  {"id": "universotoys", "name": "Universo Toys", "url": "https://universotoys.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true, "nota": "www.universotoys.cl dio error de certificado SSL; se prueba sin www"},
+  {"id": "universotoys", "name": "Universo Toys", "url": "https://www.universotoystienda.com", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true, "nota": "Sitio actual de la tienda (universotoys.cl no responde)"},
   {"id": "figurasdeku", "name": "Figuras Deku Chile", "url": "https://figurasdekuchile.cl", "platform": "auto", "location": "Online (despacho gratis en RM)"},
   {"id": "ryogatoys", "name": "Ryoga Toys", "url": "https://www.ryogatoys.cl", "platform": "auto", "location": "Online"},
   {"id": "shaggitoys", "name": "Shaggi Toys", "url": "https://www.shaggitoys.cl", "platform": "auto", "location": "Online"},
@@ -33,5 +33,12 @@
   {"id": "metalstore", "name": "Metal Store Chile", "url": "https://metalstorechile.cl", "platform": "auto", "location": "Online", "strict": true},
   {"id": "otakuworld", "name": "Otakuworld", "url": "https://www.otakuworld.cl", "platform": "auto", "location": "Online"},
   {"id": "chilemanga", "name": "Chile Manga", "url": "https://www.chilemanga.cl", "platform": "auto", "location": "Persa Bío Bío, Santiago"},
-  {"id": "animecorp", "name": "Animecorp", "url": "https://www.animecorp.cl", "platform": "auto", "location": "Viña del Mar"}
+  {"id": "animecorp", "name": "Animecorp", "url": "https://www.animecorp.cl", "platform": "auto", "location": "Viña del Mar"},
+  {"id": "friitoys", "name": "Friitoys", "url": "https://friitoys.cl", "platform": "shopify", "location": "Eurocentro y Dos Caracoles"},
+  {"id": "geekz", "name": "Geekz", "url": "https://www.geekz.cl", "platform": "auto", "location": "Costanera Center, Mall Plaza Oeste, Los Dominicos, Barrio Independencia", "strict": true},
+  {"id": "jugueterialeon", "name": "Juguetería León", "url": "https://www.jugueterialeon.cl", "platform": "auto", "location": "Online (despacho en Santiago)", "strict": true},
+  {"id": "weplay", "name": "Weplay", "url": "https://www.weplay.cl", "platform": "auto", "location": "Costanera Center, Arauco Maipú y otros malls", "strict": true},
+  {"id": "takanodan", "name": "Taka No Dan", "url": "https://takanodan.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true},
+  {"id": "pasatime", "name": "Pasatime", "url": "https://pasatime.cl", "platform": "auto", "location": "Online", "strict": true},
+  {"id": "topgames", "name": "TopGames", "url": "https://topgames.cl", "platform": "auto", "location": "Online", "strict": true}
 ]
