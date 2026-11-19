@@ -1,7 +1,7 @@
 [
   {"id": "richirocko", "name": "Richirocko", "url": "https://tienda.richirocko.com", "platform": "woocommerce", "location": "Santiago Centro (retiro)", "nota": "Responde HTTP 403 a lectores automáticos"},
   {"id": "irion", "name": "Juguetería Irion", "url": "https://irion.cl", "platform": "shopify", "location": "Santiago Centro y Dos Caracoles (Providencia)"},
-  {"id": "bydanime", "name": "BYD Anime", "url": "https://bydanime.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)"},
+  {"id": "bydanime", "name": "BYD Anime", "url": "https://bydanime.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "nota": "Responde 503 a lectores automáticos (nov 2026)"},
   {"id": "ikigaibazar", "name": "Ikigai Bazar", "url": "https://www.ikigaibazar.cl", "platform": "auto", "location": "Santiago Centro", "enabled": false, "nota": "Catálogo web sin figuras (katanas, ponchos, llaveros)"},
   {"id": "figurasdbz", "name": "Figuras DBZ Chile", "url": "https://www.figurasdbzchile.cl", "platform": "auto", "location": "Paseo San Agustín, Santiago Centro"},
   {"id": "nakamahouse", "name": "Nakama House", "url": "https://nakamahouse.cl", "platform": "auto", "location": "Boulevard Alameda, Santiago Centro"},
@@ -22,6 +22,6 @@
   {"id": "chilerobots", "name": "Chile Robots", "url": "https://www.chilerobots.cl", "platform": "auto", "location": "Online (entrega presencial en Santiago)"},
   {"id": "tomatorepublic", "name": "Tomato Republic", "url": "https://tomatorepublic.cl", "platform": "woocommerce", "location": "Online"},
   {"id": "mranime", "name": "Figuras MR Anime", "url": "https://figurasmranime.cl", "platform": "auto", "location": "Galpón Bío Bío, Santiago"},
-  {"id": "bocchita", "name": "Bocchita Store", "url": "https://bocchitastore.cl", "platform": "auto", "location": "Online"},
-  {"id": "universotoys", "name": "Universo Toys", "url": "https://www.universotoys.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true}
+  {"id": "bocchita", "name": "Bocchita Store", "url": "https://bocchitastore.cl", "platform": "auto", "location": "Online", "enabled": false, "nota": "Rechaza la conexión a lectores automáticos (nov 2026)"},
+  {"id": "universotoys", "name": "Universo Toys", "url": "https://universotoys.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true, "nota": "www.universotoys.cl dio error de certificado SSL; se prueba sin www"}
 ]
