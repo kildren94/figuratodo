@@ -1,0 +1,19 @@
+{
+  "_ayuda": [
+    "Correcciones manuales. Se identifican las figuras por el link de la tienda (sin importar http/https, www ni parámetros).",
+    "excluir: links que no deben aparecer en el sitio (no es figura, no es anime, producto equivocado).",
+    "unir: grupos de links que son la MISMA figura y el agrupador no juntó.",
+    "separar: grupos de links que son figuras DISTINTAS y el agrupador juntó por error.",
+    "nombres: nombre a mostrar para la figura que contiene ese link.",
+    "alternativa / original / adulto / no_adulto: corrigen esas marcas para un link.",
+    "Los cambios se aplican en la siguiente lectura (o corriendo el workflow a mano)."
+  ],
+  "excluir": [],
+  "unir": [],
+  "separar": [],
+  "nombres": {},
+  "alternativa": [],
+  "original": [],
+  "adulto": [],
+  "no_adulto": []
+}

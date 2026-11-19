@@ -59,6 +59,11 @@ input:focus,select:focus{border-color:var(--pink)}
 .pr span{font-size:12px;color:var(--mute)}
 .more{display:block;margin:22px auto 0;background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:11px 22px;border-radius:10px;font:600 14px Inter;cursor:pointer}
 [hidden]{display:none!important}
+.grid .empty{grid-column:1/-1;text-align:left}
+.osec{margin:18px 0 30px}.osec h2{font-family:"Zen Kaku Gothic New";font-size:20px;margin:0 0 12px;display:flex;gap:10px;align-items:baseline}
+.osec .more2{background:none;border:1px solid var(--line);color:var(--mute);font:600 13px Inter;padding:8px 14px;border-radius:10px;cursor:pointer;margin-top:12px}
+.b.drop2{background:var(--mint);color:#062a1f}.b.back{color:var(--mint)}.b.new{color:var(--pink)}
+.was{font-size:12px;color:var(--mute);text-decoration:line-through;margin-left:6px;font-weight:400}
 .empty{color:var(--mute);text-align:center;padding:50px 10px}
 /* detalle */
 .ov{position:fixed;inset:0;background:rgba(5,4,8,.75);display:none;align-items:flex-start;justify-content:center;padding:30px 14px;overflow:auto;z-index:10}
@@ -95,7 +100,7 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
       <h1 onclick="location.hash=''">Figura<span>Todo</span></h1>
       <div class="upd" id="upd">Cargando…</div>
     </div>
-    <nav><a href="#" id="nFig" class="on">Figuras</a><a href="#tiendas" id="nSt">Tiendas</a></nav>
+    <nav><a href="#" id="nFig" class="on">Figuras</a><a href="#ofertas" id="nOf">Ofertas</a><a href="#tiendas" id="nSt">Tiendas</a></nav>
   </header>
 
   <main id="vFig">
@@ -107,6 +112,7 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
         <option value="-price">Mayor precio</option>
         <option value="stores">Más tiendas</option>
         <option value="drop">Mayor descuento</option>
+        <option value="recent">Mayor baja reciente</option>
       </select>
       <button class="fbtn" id="fBtn" aria-expanded="false" aria-controls="fPanel">Filtros <span class="fcount" id="fCount" hidden></span></button>
     </div>
@@ -126,6 +132,13 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
     <div class="count" id="count"></div>
     <div class="grid" id="grid"></div>
     <button class="more" id="more" hidden>Ver más</button>
+  </main>
+
+  <main id="vOf" hidden>
+    <p class="meta">Cambios desde las últimas lecturas. Se aplican tus filtros de originalidad, +18 y tiendas.</p>
+    <section class="osec"><h2>Bajaron de precio <span class="meta" id="cDrop"></span></h2><div class="grid" id="gDrop"></div></section>
+    <section class="osec"><h2>Volvieron a tener stock <span class="meta" id="cBack"></span></h2><div class="grid" id="gBack"></div></section>
+    <section class="osec"><h2>Recién llegadas <span class="meta" id="cNew"></span></h2><div class="grid" id="gNew"></div></section>
   </main>
 
   <main id="vSt" hidden>
@@ -167,29 +180,57 @@ Promise.all([
 
 function apply(){
   const q = norm($('#q').value), words = q ? q.split(' ') : [];
+  list = P.filter(p => passes(p) && words.every(w => p._q.includes(w)));
+  sortList();
+  shown = 60; draw(); markActive(); if (!$('#vOf').hidden) drawOffers();
+}
+function passes(p, {ignoreStock = false} = {}){
   const line = $('#fLine').value, store = $('#fStore').value, max = +$('#fMax').value || Infinity;
   const adult = $('#fAdult').value, orig = $('#fOrig').value;
   const stock = $('#fStock').checked, nopre = $('#fPre').checked, multi = $('#fMulti').checked;
-  list = P.filter(p => {
+  {
     if (line && p.line !== line) return false;
     if (store && !p.offers.some(o => o.store === store)) return false;
     if (orig === 'orig' && p.alternative) return false;
     if (orig === 'alt' && !p.alternative) return false;
     if (adult === 'hide' && p.adult) return false;
     if (adult === 'only' && !p.adult) return false;
-    if (stock && !p.in_stock) return false;
+    if (stock && !ignoreStock && !p.in_stock) return false;
     if (nopre && p._pre) return false;
     if (multi && p.stores < 2) return false;
     if (p.min_price > max) return false;
-    return words.every(w => p._q.includes(w));
-  });
+    return true;
+  }
+}
+function sortList(){
   const s = $('#sort').value;
   if (s === 'price') list.sort((a,b)=>a.min_price-b.min_price);
   else if (s === '-price') list.sort((a,b)=>b.min_price-a.min_price);
   else if (s === 'stores') list.sort((a,b)=>b.stores-a.stores || a.min_price-b.min_price);
   else if (s === 'drop') list.sort((a,b)=>b._drop-a._drop);
-  else if (words.length) list.sort((a,b)=> (norm(b.name).startsWith(words[0])) - (norm(a.name).startsWith(words[0])) || b.stores-a.stores);
-  shown = 60; draw(); markActive();
+  else if (s === 'recent') list.sort((a,b)=> (b.drop?.pct||0) - (a.drop?.pct||0));
+  else if (q0()) list.sort((a,b)=> (norm(b.name).startsWith(q0())) - (norm(a.name).startsWith(q0())) || b.stores-a.stores);
+}
+const q0 = () => norm($('#q').value).split(' ')[0];
+let offShown = {gDrop: 24, gBack: 24, gNew: 24};
+function drawOffers(){
+  const today = new Date(); const daysAgo = d => (today - new Date(d + 'T12:00:00')) / 864e5;
+  const drop = P.filter(p => p.drop && p.in_stock && passes(p)).sort((a,b) => b.drop.pct - a.drop.pct);
+  const back = P.filter(p => p.back && passes(p)).sort((a,b) => b.back.localeCompare(a.back));
+  const neu = P.filter(p => p.first_seen && daysAgo(p.first_seen) <= 3 && passes(p, {ignoreStock: true})).sort((a,b) => b.first_seen.localeCompare(a.first_seen));
+  [['gDrop', drop, 'cDrop', 'Ninguna figura bajó de precio en los últimos 7 días.'],
+   ['gBack', back, 'cBack', 'Ninguna figura volvió a tener stock en los últimos 3 días.'],
+   ['gNew', neu, 'cNew', 'No llegaron figuras nuevas en los últimos 3 días.']].forEach(([g, arr, c, empty]) => {
+    $('#'+c).textContent = arr.length ? `${arr.length}` : '';
+    $('#'+g).innerHTML = arr.length ? arr.slice(0, offShown[g]).map(card).join('') : `<div class="empty" style="padding:20px">${empty}</div>`;
+    const btn = $('#'+g).nextElementSibling;
+    if (btn && btn.classList.contains('more2')) btn.remove();
+    if (arr.length > offShown[g]) {
+      const b = document.createElement('button'); b.className = 'more2'; b.textContent = `Ver ${Math.min(24, arr.length - offShown[g])} más`;
+      b.onclick = () => { offShown[g] += 24; drawOffers(); };
+      $('#'+g).after(b);
+    }
+  });
 }
 const DEFAULTS = {fLine:'', fStore:'', fMax:'', fOrig:'orig', fAdult:'hide', fStock:true, fPre:false, fMulti:false};
 function markActive(){
@@ -207,9 +248,9 @@ function draw(){
 function card(p){
   return `<div class="card${p.alternative?' alt':''}" onclick="location.hash='f-${encodeURIComponent(p.id)}'">
     <div class="img" style="${p.image?`background-image:url('${esc(p.image)}')`:''}">${p.image?'':'<div class="noimg">?</div>'}
-      <div class="badges">${p.alternative?`<span class="b alt">${p.alt_unknown?'Posible alternativa':'Alternativa · no original'}</span>`:''}${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}</div></div>
+      <div class="badges">${p.alternative?`<span class="b alt">${p.alt_unknown?'Posible alternativa':'Alternativa · no original'}</span>`:''}${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p.drop?`<span class="b drop2">↓ ${p.drop.pct}% reciente</span>`:p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}${p.back?'<span class="b back">Volvió al stock</span>':''}</div></div>
     <div class="body"><div class="ln">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><div class="nm">${esc(p.name)}</div>
-      <div class="pr"><b>${fmt(p.min_price)}</b><span>${p.stores} ${p.stores>1?'tiendas':'tienda'}</span></div></div></div>`;
+      <div class="pr"><b>${fmt(p.min_price)}${p.drop?`<span class="was">${fmt(p.drop.from)}</span>`:''}</b><span>${p.stores} ${p.stores>1?'tiendas':'tienda'}</span></div></div></div>`;
 }
 
 async function openDetail(id){
@@ -217,7 +258,7 @@ async function openDetail(id){
   if (!HIST._loaded) { try { HIST = await fetch('data/history.json').then(r=>r.json()); } catch(e){ HIST = {}; } HIST._loaded = true; }
   const offs = [...p.offers].sort((a,b)=>(!a.in_stock)-(!b.in_stock) || a.price-b.price);
   const best = offs.find(o=>o.in_stock) || offs[0];
-  $('#det').innerHTML = `<button class="x" onclick="location.hash=''">×</button>
+  $('#det').innerHTML = `<button class="x" onclick="closeDetail()">×</button>
     <div class="dtop"><div class="dimg" style="${p.image?`background-image:url('${esc(p.image)}')`:''}"></div>
       <div><div class="ln" style="${p.alternative?'color:var(--gold)':''}">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}${p.adult?' · +18':''}</div><h2>${esc(p.name)}</h2>
       <div class="big" style="${p.alternative?'color:var(--mute)':''}">${fmt(p.min_price)}</div>
@@ -228,8 +269,16 @@ async function openDetail(id){
       <td><b>${fmt(o.price)}</b>${o.regular_price>o.price?`<div class="meta" style="text-decoration:line-through">${fmt(o.regular_price)}</div>`:''}</td>
       <td class="st ${!o.in_stock?'no':o.preorder?'pre':'ok'}">${!o.in_stock?'Agotada':o.preorder?'Preventa / encargo':'Disponible'}</td>
       <td style="text-align:right"><a class="go" href="${esc(o.url)}" target="_blank" rel="noopener">Ver ↗</a></td></tr>`).join('')}
-    </tbody></table>${altNote(p)}${chart(p)}`;
+    </tbody></table>${altNote(p)}${chart(p)}
+    <div class="meta" style="margin-top:14px">¿Algo está mal en esta figura (no es la misma figura, no es anime, precio raro)? <a href="${reportUrl(p)}" target="_blank" rel="noopener" style="color:var(--pink)">Reportar error ↗</a></div>`;
   $('#ov').classList.add('on');
+}
+
+function reportUrl(p){
+  const body = `Figura: ${p.name}\nID: ${p.id}\n\nOfertas:\n` +
+    p.offers.map(o => `- ${STORES[o.store]?.name || o.store}: ${o.url}`).join('\n') +
+    `\n\n¿Qué está mal? (marca con x)\n- [ ] Hay ofertas que NO son esta figura (indica cuáles)\n- [ ] Falta unir con otra figura (pega su link)\n- [ ] No es una figura de anime\n- [ ] Precio incorrecto\n- [ ] Está mal marcada como alternativa / +18\n\nDetalle:\n`;
+  return 'https://github.com/kildren94/figuratodo/issues/new?title=' + encodeURIComponent('Corrección: ' + p.name.slice(0, 80)) + '&body=' + encodeURIComponent(body);
 }
 
 function altNote(p){
@@ -279,16 +328,21 @@ function why(d){
   return 'no se encontró catálogo ni sitemap';
 }
 
+let lastView = '';
 function route(){
   const h = decodeURIComponent(location.hash.slice(1));
-  const st = h === 'tiendas';
-  $('#vFig').hidden = st; $('#vSt').hidden = !st;
-  $('#nFig').classList.toggle('on', !st); $('#nSt').classList.toggle('on', st);
-  if (h.startsWith('f-')) openDetail(h.slice(2)); else $('#ov').classList.remove('on');
+  if (h.startsWith('f-')) { openDetail(h.slice(2)); return; }
+  $('#ov').classList.remove('on');
+  const v = h === 'tiendas' || h === 'ofertas' ? h : '';
+  lastView = v;
+  $('#vFig').hidden = v !== ''; $('#vSt').hidden = v !== 'tiendas'; $('#vOf').hidden = v !== 'ofertas';
+  $('#nFig').classList.toggle('on', v === ''); $('#nSt').classList.toggle('on', v === 'tiendas'); $('#nOf').classList.toggle('on', v === 'ofertas');
+  if (v === 'ofertas') drawOffers();
 }
+const closeDetail = () => { location.hash = lastView; };
 window.addEventListener('hashchange', route);
-$('#ov').addEventListener('click', e => { if (e.target.id === 'ov') location.hash = ''; });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#ov').classList.contains('on')) location.hash = ''; });
+$('#ov').addEventListener('click', e => { if (e.target.id === 'ov') closeDetail(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#ov').classList.contains('on')) closeDetail(); });
 let t; $('#q').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 150); });
 ['sort','fLine','fStore','fMax','fOrig','fAdult','fStock','fPre','fMulti'].forEach(id => $('#'+id).addEventListener('change', apply));
 $('#fMax').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 250); });

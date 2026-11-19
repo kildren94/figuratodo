@@ -8,9 +8,20 @@ from rapidfuzz import fuzz
 from .classify import tokens, line_number, kuji_prize, LINE_NAMES
 
 
+def norm_url(u):
+    """URL comparable: sin protocolo, www, parámetros ni barra final."""
+    from urllib.parse import urlparse
+    p = urlparse((u or "").strip())
+    host = p.netloc.lower().removeprefix("www.")
+    return f"{host}{p.path.rstrip('/')}".lower()
+
+
 class DSU:
-    def __init__(self, n):
+    def __init__(self, n, forbid=None):
         self.p = list(range(n))
+        # forbid: {índice: set(índices con los que nunca debe juntarse)}
+        self.forbid = {i: set(v) for i, v in (forbid or {}).items()}
+        self.members = {i: {i} for i in self.forbid}
 
     def find(self, a):
         while self.p[a] != a:
@@ -20,8 +31,15 @@ class DSU:
 
     def union(self, a, b):
         a, b = self.find(a), self.find(b)
-        if a != b:
-            self.p[b] = a
+        if a == b:
+            return
+        ma, mb = self.members.get(a, set()), self.members.get(b, set())
+        if any(self.forbid.get(x, set()) & mb for x in ma):
+            return   # una regla manual dice que estas ofertas son figuras distintas
+        self.p[b] = a
+        if mb:
+            self.members[a] = ma | mb
+            self.members.pop(b, None)
 
 
 def _nums(toks):
@@ -51,14 +69,30 @@ def _same(a, b):
     return shared >= 3 and fuzz.token_set_ratio(sa, sb) >= 96
 
 
-def _group(offers):
+def _group(offers, rules=None):
+    rules = rules or {}
     for o in offers:
         o["toks"] = tokens(o["title"])
         o["num"] = line_number(o["title"], o["line"])
         o["prize"] = kuji_prize(o["title"]) if o["line"] in ("ichiban-kuji", "masterlise") else None
 
     n = len(offers)
-    dsu = DSU(n)
+    pos = defaultdict(list)
+    for i, o in enumerate(offers):
+        pos[norm_url(o["url"])].append(i)
+    forbid = defaultdict(set)
+    for grp in rules.get("separar", []):
+        idx = [pos[norm_url(u)] for u in grp]
+        for a in range(len(idx)):
+            for b in range(len(idx)):
+                if a != b:
+                    for i in idx[a]:
+                        forbid[i].update(idx[b])
+    dsu = DSU(n, forbid)
+    for grp in rules.get("unir", []):     # primero las uniones manuales
+        idx = [i for u in grp for i in pos[norm_url(u)]]
+        for i in idx[1:]:
+            dsu.union(idx[0], i)
     strong = {}
     for i, o in enumerate(offers):
         keys = []
@@ -97,7 +131,15 @@ def _group(offers):
     clusters = defaultdict(list)
     for i in range(n):
         clusters[dsu.find(i)].append(offers[i])
-    return [_product(c) for c in clusters.values()]
+    names = {norm_url(u): v for u, v in rules.get("nombres", {}).items()}
+    prods = []
+    for c in clusters.values():
+        p = _product(c)
+        for o in c:
+            if norm_url(o["url"]) in names:
+                p["name"] = names[norm_url(o["url"])]
+        prods.append(p)
+    return prods
 
 
 def _product(offs):
@@ -138,11 +180,11 @@ def _product(offs):
     }
 
 
-def group(offers):
+def group(offers, rules=None):
     """Agrupa originales y alternativas por separado (una réplica nunca es el 'mejor precio' de una original)
     y enlaza cada alternativa con su figura original cuando se puede identificar."""
-    orig = _group([o for o in offers if not o.get("alternative")])
-    alts = _group([o for o in offers if o.get("alternative")])
+    orig = _group([o for o in offers if not o.get("alternative")], rules)
+    alts = _group([o for o in offers if o.get("alternative")], rules)
     for p in alts:
         p["id"] = "alt-" + p["id"]
     by_key = {}

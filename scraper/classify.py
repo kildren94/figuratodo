@@ -57,9 +57,37 @@ ANIME_HINT = re.compile(
     r"\bfrieren\b|\bbleach\b|\bjojo|\bsailor moon\b|\bhaikyuu\b|\bgundam\b|\bdandadan\b|\bsolo leveling\b")
 
 
+# Franquicias que no son anime: se descartan en todas las tiendas, salvo que el título nombre una serie anime
+NON_ANIME = re.compile(
+    r"\bstar wars\b|\bmarvel\b|\bdc (comics|champion|multiverse|direct)\b|\bdc\b(?= )|\bbatman\b|\bsuperman\b|"
+    r"\bspider ?man\b|\bspider ?gwen\b|\bavengers\b|\bharry potter\b|\bdisney\b|\bpixar\b|\btransformers?\b|"
+    r"\btortugas ninja\b|\bninja turtles\b|\btmnt\b|\bjurassic\b|\bmandalorian\b|\bgrogu\b|\bkenner\b|\bhasbro\b|"
+    r"\bmcfarlane\b|\bwwe\b|\bstranger things\b|\blord of the rings\b|\bsenor de los anillos\b|\bhalo\b|\bg ?i joe\b|"
+    r"\bmasters of the universe\b|\bhe ?man\b|\bterminator\b|\bpredator\b|\bmortal kombat\b|\bjoker\b|\bdeadpool\b|"
+    r"\bwolverine\b|\bx ?men\b|\biron man\b|\bhulk\b|\bthor\b|\bghostbusters\b|\btoy story\b|\bsimpsons?\b|"
+    r"\blooney tunes\b|\bbarbie\b|\bminecraft\b|\bfortnite\b|\bfive nights\b|\bfnaf\b|\bsquid game\b|\blego\b|"
+    r"\bvenom\b|\bharley quinn\b|\bwonder woman\b|\bthe flash\b|\baquaman\b|\bcaptain america\b|\bcapitan america\b|"
+    r"\bdarth vader\b|\bbaby yoda\b|\bmarvel legends\b|\bblack series\b|\bvintage collection\b|\bsonic prime\b|"
+    r"\bwalking dead\b|\bfriday the 13th\b|\bhalloween\b|\bscream\b|\bchucky\b|\bbeetlejuice\b|\bwednesday\b")
+ANIME_SERIES = re.compile(
+    r"\banime\b|\bjapanese tv series\b|\bdragon ball\b|\bone piece\b|\bnaruto\b|\bboruto\b|\bdemon slayer\b|\bkimetsu\b|"
+    r"\bjujutsu\b|\bchainsaw\b|\bpokemon\b|\bevangelion\b|\bmy hero\b|\bboku no hero\b|\bspy x family\b|"
+    r"\bhunter x hunter\b|\bre ?zero\b|\bhololive\b|\bhatsune miku\b|\bvocaloid\b|\bfrieren\b|\bbleach\b|\bjojo|"
+    r"\bsailor moon\b|\bhaikyuu\b|\bgundam\b|\bdandadan\b|\bsolo leveling\b|\bsaint seiya\b|\bcaballeros del zodiaco\b|"
+    r"\battack on titan\b|\bshingeki\b|\bblue lock\b|\btokyo revengers\b|\bbeastars\b|\boshi no ko\b|\bkaiju\b|"
+    r"\bmacross\b|\bultraman\b|\bkamen rider\b|\bsilent witch\b|\bsakamoto\b|\bgachiakuta\b")
+
+
+def is_non_anime(title, kind=""):
+    t = norm(f"{title} {kind}")
+    return bool(NON_ANIME.search(t)) and not ANIME_SERIES.search(norm(title))
+
+
 def is_figure(title, kind="", strict=False, all_figures=False):
     t = norm(f"{title} {kind}")
     tt = norm(title)
+    if is_non_anime(title):
+        return False
     if EXCLUDE.search(tt) and not re.search(r"\bfigur|\bnendoroid\b|\bfigma\b", tt):
         return False
     if all_figures:          # tiendas que solo venden figuras y no lo dicen en el título

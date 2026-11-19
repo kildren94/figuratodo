@@ -137,3 +137,25 @@ def test_shopify_deposit_variants():
     c.opts = {"max_price": True}
     items = {i["title"]: i["price"] for i in shopify(c)}
     assert items["Luffy DXF"] == 39990
+
+
+def test_manual_rules():
+    a = off("kinue", "Figura Vegeto Grandista Dragon Ball Z", 39990, url="https://kinuestore.cl/products/vegeto")
+    b = off("irion", "VEGETTO GRANDISTA RESOLUTION OF SOLDIERS", 41990, url="https://irion.cl/products/vegetto-grandista")
+    c = off("anezaki", "Figura Vegeto Grandista Dragon Ball Z", 38990, url="https://anezakistore.cl/products/vegeto?v=1")
+    d = off("burubox", "Figura Vegeto Grandista Dragon Ball Z", 37990, url="https://burubox.cl/p/vegeto-otra")
+    rules = {"unir": [["https://www.kinuestore.cl/products/vegeto/", "irion.cl/products/vegetto-grandista"]],
+             "separar": [["https://burubox.cl/p/vegeto-otra", "https://kinuestore.cl/products/vegeto"]],
+             "nombres": {"https://irion.cl/products/vegetto-grandista": "Vegetto Grandista (Resolution of Soldiers)"}}
+    prods = group([a, b, c, d], rules)
+    main = [p for p in prods if p["name"] == "Vegetto Grandista (Resolution of Soldiers)"]
+    assert len(main) == 1 and main[0]["stores"] == 3            # kinue + irion (manual) + anezaki (automático)
+    assert any(p["stores"] == 1 and p["offers"][0]["store"] == "burubox" for p in prods)   # separada
+
+
+def test_non_anime():
+    from scraper.classify import is_figure
+    assert not is_figure("Figura Blokees Transformers Optimus Prime model kit")
+    assert not is_figure("Spider-Man 2099 (Comic Ver.) MAFEX")
+    assert is_figure("Funko Pop Marvel x Naruto anime crossover figura")  # nombra una serie anime
+    assert is_figure("BEASTARS - Legoshi - POP UP PARADE")

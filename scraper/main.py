@@ -10,7 +10,7 @@ from pathlib import Path
 from .http import Client
 from .platforms import detect_and_scrape
 from .classify import is_figure, detect_line, is_adult, is_alternative
-from .match import group
+from .match import group, norm_url
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = Path(os.environ.get("FIGURATODO_DATA", ROOT / "docs" / "data"))
@@ -73,9 +73,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stores", help="ids separados por coma (por defecto todas)")
     ap.add_argument("--workers", type=int, default=0, help="0 = una hebra por tienda")
+    ap.add_argument("--rebuild", action="store_true",
+                    help="no lee tiendas: rearma el sitio con los últimos precios (para aplicar ajustes.json)")
     args = ap.parse_args()
 
     stores = [s for s in load(STORES, []) if s.get("enabled", True)]
+    if args.rebuild:
+        stores = []
     if args.stores:
         wanted = set(args.stores.split(","))
         stores = [s for s in stores if s["id"] in wanted]
@@ -141,7 +145,26 @@ def main():
                          count=len(old), last_ok=last_ok, total=(r or {}).get("total", 0))
         meta_stores.append(entry)
 
-    products = group(offers)
+    # correcciones manuales (ajustes.json)
+    rules = load(ROOT / "ajustes.json", {})
+    excl = {norm_url(u) for u in rules.get("excluir", [])}
+    flags = {k: {norm_url(u) for u in rules.get(k, [])} for k in ("alternativa", "original", "adulto", "no_adulto")}
+    kept = []
+    for o in offers:
+        u = norm_url(o["url"])
+        if u in excl:
+            continue
+        if u in flags["alternativa"]:
+            o["alternative"], o["alt_unknown"] = True, False
+        if u in flags["original"]:
+            o["alternative"], o["alt_unknown"] = False, False
+        if u in flags["adulto"]:
+            o["adult"] = True
+        if u in flags["no_adulto"]:
+            o["adult"] = False
+        kept.append(o)
+    offers = kept
+    products = group(offers, rules)
     products.sort(key=lambda p: (-p["stores"], p["name"].lower()))
 
     # historial por oferta (tienda + url): sólo se guarda cuando el precio cambia
@@ -155,6 +178,45 @@ def main():
                     h[-1] = [today, o["price"]]
                 else:
                     h.append([today, o["price"]])
+
+    # novedades: bajas de precio, vuelta a stock y figuras recién llegadas
+    tday = now.date()
+    recent = lambda d, days: d and (tday - datetime.strptime(d, "%Y-%m-%d").date()).days <= days
+    stock = load(CACHE / "stock.json", {})
+    seen_path = CACHE / "first_seen.json"
+    first_run = not seen_path.exists()
+    seen = load(seen_path, {})
+    known_stores = {sid for sid, m in prev_meta.items() if m.get("last_ok")}
+    for p in products:
+        prev_min, back, first = None, None, None
+        for o in p["offers"]:
+            key = f"{o['store']}|{o['url']}"
+            h = hist.get(key, [])
+            # precio anterior si cambió en los últimos 7 días
+            before = h[-2][1] if len(h) >= 2 and recent(h[-1][0], 7) else o["price"]
+            if o["in_stock"] or not p["in_stock"]:
+                prev_min = before if prev_min is None else min(prev_min, before)
+            st = stock.get(key)
+            if st is None:
+                stock[key] = {"s": o["in_stock"], "d": today, "back": False}
+            elif st["s"] != o["in_stock"]:
+                stock[key] = {"s": o["in_stock"], "d": today, "back": o["in_stock"]}
+            st = stock[key]
+            if st["s"] and st.get("back") and recent(st["d"], 3):
+                back = max(back or st["d"], st["d"])
+            if key not in seen:
+                # en la primera corrida o con una tienda recién agregada, todo su catálogo no es "nuevo"
+                seen[key] = "2000-01-01" if first_run or o["store"] not in known_stores else today
+            first = seen[key] if first is None else min(first, seen[key])
+        if prev_min and p["min_price"] < prev_min:
+            p["drop"] = {"from": prev_min, "pct": round(100 * (1 - p["min_price"] / prev_min))}
+        if back:
+            p["back"] = back
+        if first and first != "2000-01-01":
+            p["first_seen"] = first
+    CACHE.mkdir(exist_ok=True)
+    (CACHE / "stock.json").write_text(json.dumps(stock, separators=(",", ":")), encoding="utf-8")
+    seen_path.write_text(json.dumps(seen, separators=(",", ":")), encoding="utf-8")
 
     (DATA / "products.json").write_text(json.dumps({"updated": now.isoformat(timespec="minutes"),
                                                     "products": products}, ensure_ascii=False, separators=(",", ":")),

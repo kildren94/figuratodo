@@ -4,6 +4,9 @@ on:
   schedule:
     # 06:17 y 18:17 hora de Chile (UTC-3)
     - cron: "17 9,21 * * *"
+  push:
+    branches: [main]
+    paths: ["ajustes.json"]
   workflow_dispatch:
     inputs:
       stores:
@@ -37,7 +40,9 @@ jobs:
 
       - name: Leer tiendas
         run: |
-          if [ -n "${{ github.event.inputs.stores }}" ]; then
+          if [ "${{ github.event_name }}" = "push" ]; then
+            python -m scraper.main --rebuild
+          elif [ -n "${{ github.event.inputs.stores }}" ]; then
             python -m scraper.main --stores "${{ github.event.inputs.stores }}"
           else
             python -m scraper.main

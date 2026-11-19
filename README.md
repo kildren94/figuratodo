@@ -19,6 +19,23 @@ Comparador de precios de figuras de anime en tiendas chilenas, al estilo SoloTod
 
 El scraper respeta `robots.txt`, se identifica con su propio User-Agent y espera 1 segundo entre pedidos a una misma tienda. Solo guarda nombre, precio, disponibilidad, link y la URL de la imagen.
 
+## Corregir errores a mano (`ajustes.json`)
+
+Si el agrupador se equivoca, se corrige en `ajustes.json` usando el link de la tienda de cada producto:
+
+```json
+{
+  "excluir": ["https://irion.cl/products/figura-batman"],
+  "unir": [["https://kinuestore.cl/products/vegeto", "https://irion.cl/products/vegetto-grandista"]],
+  "separar": [["https://burubox.cl/p/vegeto-otra", "https://kinuestore.cl/products/vegeto"]],
+  "nombres": {"https://irion.cl/products/vegetto-grandista": "Vegetto Grandista (Resolution of Soldiers)"},
+  "alternativa": [], "original": [], "adulto": [], "no_adulto": []
+}
+```
+
+Al guardar el archivo en GitHub, el sitio se rearma solo en ~1 minuto con los últimos precios (sin volver a leer las tiendas).
+En la ficha de cada figura del sitio hay un link **Reportar error** que abre un issue con los links ya listos para copiar.
+
 ## Agregar una tienda
 
 Agrega una línea a `stores.json`:
