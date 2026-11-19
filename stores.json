@@ -41,5 +41,11 @@
   {"id": "takanodan", "name": "Taka No Dan", "url": "https://takanodan.cl", "platform": "auto", "location": "Dos Caracoles (Providencia)", "strict": true},
   {"id": "pasatime", "name": "Pasatime", "url": "https://pasatime.cl", "platform": "auto", "location": "Online", "strict": true},
   {"id": "topgames", "name": "TopGames", "url": "https://topgames.cl", "platform": "auto", "location": "Online", "strict": true},
-  {"id": "figurasonline", "name": "Figuras Online Chile", "url": "https://figurasonlinechile.cl", "platform": "auto", "location": "Santiago (online)", "strict": true, "alt_default": true, "nota": "Vende originales y alternativas; lo que no indica 'original' se muestra como posible alternativa"}
+  {"id": "figurasonline", "name": "Figuras Online Chile", "url": "https://figurasonlinechile.cl", "platform": "auto", "location": "Santiago (online)", "strict": true, "alt_default": true, "nota": "Vende originales y alternativas; lo que no indica 'original' se muestra como posible alternativa"},
+  {"id": "kanjikana", "name": "Kanjikana", "url": "https://kanjikana.cl", "platform": "shopify", "location": "Online"},
+  {"id": "hobbytoys", "name": "Hobby Toys", "url": "https://www.hobbytoys.cl", "platform": "woocommerce", "location": "Online"},
+  {"id": "stargames", "name": "Star Games", "url": "https://www.stargames.cl", "platform": "auto", "location": "Online", "strict": true},
+  {"id": "blaster", "name": "Blaster Chile", "url": "https://www.blasterchile.cl", "platform": "shopify", "location": "Online", "strict": true},
+  {"id": "mirax", "name": "Mirax Hobbies", "url": "https://www.mirax.cl", "platform": "auto", "location": "Mall Apumanque y otros", "strict": true},
+  {"id": "animetoyz", "name": "Animetoyz Chile", "url": "https://animetoyzchile.com", "platform": "auto", "location": "Online", "alt_default": true, "nota": "No indica marca ni si son originales; lo que no diga 'original' se muestra como posible alternativa"}
 ]
