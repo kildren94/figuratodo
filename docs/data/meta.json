@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-19T23:23-03:00",
+ "updated": "2026-11-20T14:52-03:00",
  "stores": [
   {
    "id": "richirocko",
@@ -52,7 +52,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 2443,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -82,7 +82,8 @@
       "intento": "generic",
       "productos": 0,
       "errores": {
-       "HTTP 503": 17
+       "HTTP 503": 16,
+       "ConnectionError": 1
       },
       "excepcion": null
      }
@@ -114,7 +115,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 530,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -126,34 +127,36 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 99,
-      "errores": {},
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 7
+      },
       "excepcion": null
      }
     ],
-    "descartados_ejemplo": [
-     "Peluca verde larga || Cosplay Pelucas peluca verde larga",
-     "Peluca Shizuku Kuroe – My Dress-Up Darling || Cosplay Lentes de Contacto my dress up darling peluca negra Peluca Shizuku Kuroe – My Dress-Up Darling",
-     "Peluca Ochaco Uraraka – My Hero Academia || Cosplay Pelucas My hero academia peluca castaño uraka",
-     "Peluca Wriothesley – Genshin Impact || Cosplay Pelucas genshin impact peluca negra con tonos grises Peluca Wriothesley – Genshin Impact",
-     "Peluca Hu Tao – Genshin Impact || Cosplay Pelucas genshin impact Peluca Hu Tao – Genshin Impact peluca negra con mechas cafes",
-     "Peluca Lucy – Cyberpunk: Edgerunners || Cosplay Pelucas cyberpunk lucy peluca blanca con plateado y tonos rosados y azules",
-     "Peluca Rin Tohsaka – Fate/stay night || Cosplay Pelucas Fate/stay night. peluca negra Rin Tohsaka",
-     "Peluca Ai Ohto – Wonder Egg Priority || Cosplay Pelucas ai ohto Oshi no ko peluca azul electrico",
-     "Peluca Keisuke Baji – Tokyo Revengers || Cosplay Pelucas baji peluca negra larga tokyo revengers",
-     "Peluca Izuku Midoriya – My Hero Academia || Cosplay Pelucas midoriya My hero academia peluca negra con verde",
-     "Peluca Kobeni Higashiyama – Chainsaw Man || Cosplay Pelucas chainsaw man kobeni peluca castaño oscuro",
-     "Peluca Xiao – Genshin Impac || Cosplay Pelucas genshin impact peluca negro verdoso Xiao",
-     "Peluca Sucrose – Genshin Impact || Cosplay Pelucas genshin impact peluca verde menta sucrose",
-     "Peluca Lucoa – Miss Kobayashi’s Dragon Maid || Cosplay Pelucas lucoa Miss Kobayashi's Dragon Maid peluca rubia con mechas azules y verdes",
-     "Peluca Bulma – Dragon Ball || Cosplay Pelucas bulma dragon ball peluca azul"
-    ]
+    "descartados_ejemplo": []
    },
-   "status": "ok",
+   "status": "stale",
    "platform": "woocommerce",
    "count": 3,
    "last_ok": "2026-11-19",
-   "partial": false
+   "total": 0
   },
   {
    "id": "figuartschile",
@@ -174,7 +177,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 352,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -198,7 +201,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 285,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -220,7 +223,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 32,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -232,7 +235,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 999,
+      "productos": 998,
       "errores": {},
       "excepcion": null
      }
@@ -241,8 +244,8 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 677,
-   "last_ok": "2026-11-19",
+   "count": 676,
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -264,7 +267,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 254,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -286,7 +289,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 480,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -324,7 +327,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 4,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -346,7 +349,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 1521,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -368,7 +371,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 1527,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -390,7 +393,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 74,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -412,7 +415,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 16,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -434,7 +437,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 150,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -456,7 +459,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 149,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -478,7 +481,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 698,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -500,7 +503,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 360,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -602,7 +605,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 321,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -624,7 +627,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 20,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -646,7 +649,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 78,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -700,7 +703,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 1114,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -712,36 +715,34 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "ConnectTimeout": 2
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "ConnectTimeout": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "generic",
-      "productos": 0,
-      "errores": {
-       "ConnectTimeout": 7
-      },
+      "productos": 229,
+      "errores": {},
       "excepcion": null
      }
     ],
-    "descartados_ejemplo": []
+    "descartados_ejemplo": [
+     "CD – Helloween – Helloween || Música Vinilos y Cds ",
+     "LP Gatefold – Thy Catafalque – XII: A Gyönyörü Álmok Ezután Jönnek || Música Vinilos y Cds ",
+     "LP Gatefold Sleeve – Thy Catafalque – Naiv – Vinilo Negro || Música Vinilos y Cds ",
+     "CD – System Of A Down – Steal This Album! || Música Vinilos y Cds ",
+     "DVD + 2CD – OPETH – Garden Of The Titans – Limited edition – Live at Red Rocks Ampitheatre || Blu-ray &amp; DVDs Música ",
+     "DOUBLE CD – Judas Priest – Stained Class / Ram It Down – (Remasters) || Música Vinilos y Cds ",
+     "LP Gatefold – Immortal – Battles In The North || Música Vinilos y Cds ",
+     "3 DVD BOX SET – Helloween – United Alive || Blu-ray &amp; DVDs Música ",
+     "DVD – Helloween – Live At Budokan – Limited edition || Blu-ray &amp; DVDs Música ",
+     "LP COLOURED – Hate Forest – Sorrow – Mustard / Black Marbled Vinyl || Música Vinilos y Cds ",
+     "Vinilo – Hate Forest – Justice EP – Cloudy red Vinyl || Música Vinilos y Cds ",
+     "CD – Cradle Of Filth – Dusk And Her Embrace || Música Vinilos y Cds ",
+     "LP – Behemoth – Thelema 6 – Vinilo Negro || Música Vinilos y Cds ",
+     "LP – Behemoth – Satanica – Vinilo Negro 180g || Música Vinilos y Cds ",
+     "LP Gatefold – Amon Amarth – Twilight Of The Thunder God – Blue Vinyl || Música Vinilos y Cds "
+    ]
    },
-   "status": "stale",
+   "status": "ok",
    "platform": "woocommerce",
    "count": 5,
-   "last_ok": "2026-11-19",
-   "total": 0
+   "last_ok": "2026-11-20",
+   "partial": false
   },
   {
    "id": "otakuworld",
@@ -762,7 +763,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 75,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -800,7 +801,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 1,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -852,7 +853,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 2175,
+      "productos": 2154,
       "errores": {},
       "excepcion": null
      }
@@ -861,8 +862,8 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 1848,
-   "last_ok": "2026-11-19",
+   "count": 1835,
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -874,9 +875,10 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1328,
+      "productos": 1313,
       "errores": {
-       "HTTP 404": 19
+       "HTTP 404": 19,
+       "HTTP 403": 3
       },
       "excepcion": null
      }
@@ -885,8 +887,8 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 356,
-   "last_ok": "2026-11-19",
+   "count": 344,
+   "last_ok": "2026-11-20",
    "partial": true
   },
   {
@@ -924,7 +926,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 14,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -976,7 +978,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 1565,
+      "productos": 1584,
       "errores": {},
       "excepcion": null
      }
@@ -986,7 +988,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 129,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -1046,7 +1048,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 276,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -1108,7 +1110,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 180,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -1120,10 +1122,8 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 100,
-      "errores": {
-       "HTTP 500": 1
-      },
+      "productos": 1059,
+      "errores": {},
       "excepcion": null
      }
     ],
@@ -1131,8 +1131,8 @@
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 99,
-   "last_ok": "2026-11-19",
+   "count": 780,
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -1154,7 +1154,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 1555,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   },
   {
@@ -1166,7 +1166,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 345,
+      "productos": 346,
       "errores": {},
       "excepcion": null
      }
@@ -1176,7 +1176,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 36,
-   "last_ok": "2026-11-19",
+   "last_ok": "2026-11-20",
    "partial": false
   }
  ]
