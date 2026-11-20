@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-19T15:23-03:00",
+ "updated": "2026-11-19T23:23-03:00",
  "stores": [
   {
    "id": "richirocko",
@@ -186,7 +186,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1077,
+      "productos": 1076,
       "errores": {
        "HTTP 404": 6
       },
@@ -197,7 +197,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 286,
+   "count": 285,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -210,7 +210,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1208,
+      "productos": 1226,
       "errores": {},
       "excepcion": null
      }
@@ -336,7 +336,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 3317,
+      "productos": 3319,
       "errores": {},
       "excepcion": null
      }
@@ -345,7 +345,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 1519,
+   "count": 1521,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -468,28 +468,18 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "ReadTimeout": 2
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "generic",
-      "productos": 420,
-      "errores": {
-       "ReadTimeout": 9
-      },
+      "productos": 1134,
+      "errores": {},
       "excepcion": null
      }
     ],
     "descartados_ejemplo": []
    },
    "status": "ok",
-   "platform": "generic",
-   "count": 150,
+   "platform": "woocommerce",
+   "count": 698,
    "last_ok": "2026-11-19",
-   "partial": true
+   "partial": false
   },
   {
    "id": "mranime",
@@ -646,7 +636,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 616,
+      "productos": 629,
       "errores": {},
       "excepcion": null
      }
@@ -721,43 +711,37 @@
    "diag": {
     "intentos": [
      {
-      "intento": "shopify",
+      "intento": "woocommerce",
       "productos": 0,
       "errores": {
-       "HTTP 404": 1
+       "ConnectTimeout": 2
       },
       "excepcion": null
      },
      {
-      "intento": "woocommerce",
-      "productos": 230,
-      "errores": {},
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 7
+      },
       "excepcion": null
      }
     ],
-    "descartados_ejemplo": [
-     "CD – Helloween – Helloween || Música Vinilos y Cds ",
-     "LP Gatefold – Thy Catafalque – XII: A Gyönyörü Álmok Ezután Jönnek || Música Vinilos y Cds ",
-     "LP Gatefold Sleeve – Thy Catafalque – Naiv – Vinilo Negro || Música Vinilos y Cds ",
-     "CD – System Of A Down – Steal This Album! || Música Vinilos y Cds ",
-     "DVD + 2CD – OPETH – Garden Of The Titans – Limited edition – Live at Red Rocks Ampitheatre || Blu-ray &amp; DVDs Música ",
-     "DOUBLE CD – Judas Priest – Stained Class / Ram It Down – (Remasters) || Música Vinilos y Cds ",
-     "LP Gatefold – Immortal – Battles In The North || Música Vinilos y Cds ",
-     "3 DVD BOX SET – Helloween – United Alive || Blu-ray &amp; DVDs Música ",
-     "DVD – Helloween – Live At Budokan – Limited edition || Blu-ray &amp; DVDs Música ",
-     "LP COLOURED – Hate Forest – Sorrow – Mustard / Black Marbled Vinyl || Música Vinilos y Cds ",
-     "Vinilo – Hate Forest – Justice EP – Cloudy red Vinyl || Música Vinilos y Cds ",
-     "CD – Cradle Of Filth – Dusk And Her Embrace || Música Vinilos y Cds ",
-     "LP – Behemoth – Thelema 6 – Vinilo Negro || Música Vinilos y Cds ",
-     "LP – Behemoth – Satanica – Vinilo Negro 180g || Música Vinilos y Cds ",
-     "LP – Bathory – Blood Fire Death || Música Vinilos y Cds "
-    ]
+    "descartados_ejemplo": []
    },
-   "status": "ok",
+   "status": "stale",
    "platform": "woocommerce",
    "count": 5,
    "last_ok": "2026-11-19",
-   "partial": false
+   "total": 0
   },
   {
    "id": "otakuworld",
@@ -868,7 +852,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 2163,
+      "productos": 2175,
       "errores": {},
       "excepcion": null
      }
@@ -877,7 +861,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 1843,
+   "count": 1848,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -890,7 +874,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1796,
+      "productos": 1328,
       "errores": {
        "HTTP 404": 19
       },
@@ -901,9 +885,9 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 442,
+   "count": 356,
    "last_ok": "2026-11-19",
-   "partial": false
+   "partial": true
   },
   {
    "id": "jugueterialeon",
@@ -992,7 +976,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 1549,
+      "productos": 1565,
       "errores": {},
       "excepcion": null
      }
@@ -1136,8 +1120,10 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 1059,
-      "errores": {},
+      "productos": 100,
+      "errores": {
+       "HTTP 500": 1
+      },
       "excepcion": null
      }
     ],
@@ -1145,7 +1131,7 @@
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 780,
+   "count": 99,
    "last_ok": "2026-11-19",
    "partial": false
   },
@@ -1158,7 +1144,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 3118,
+      "productos": 3119,
       "errores": {},
       "excepcion": null
      }
