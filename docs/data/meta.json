@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-20T23:26-03:00",
+ "updated": "2026-11-21T13:51-03:00",
  "stores": [
   {
    "id": "richirocko",
@@ -52,7 +52,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 2443,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -114,7 +114,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 530,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -152,7 +152,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 3,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -174,7 +174,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 352,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -198,7 +198,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 285,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -210,7 +210,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1222,
+      "productos": 1219,
       "errores": {},
       "excepcion": null
      }
@@ -220,7 +220,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 32,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -242,7 +242,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 677,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -264,7 +264,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 254,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -276,7 +276,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1346,
+      "productos": 1364,
       "errores": {},
       "excepcion": null
      }
@@ -285,8 +285,8 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 480,
-   "last_ok": "2026-11-20",
+   "count": 488,
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -324,7 +324,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 4,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -346,7 +346,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 1522,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -368,7 +368,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 1527,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -390,7 +390,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 74,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -412,7 +412,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 16,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -434,7 +434,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 150,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -456,7 +456,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 149,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -478,7 +478,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 698,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -490,7 +490,7 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 996,
+      "productos": 999,
       "errores": {},
       "excepcion": null
      }
@@ -499,8 +499,8 @@
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 362,
-   "last_ok": "2026-11-20",
+   "count": 365,
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -602,7 +602,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 332,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -624,7 +624,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 20,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -646,7 +646,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 78,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -700,7 +700,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 1114,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -738,7 +738,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 5,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -760,7 +760,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 75,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -798,7 +798,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 1,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -850,7 +850,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 2154,
+      "productos": 2155,
       "errores": {},
       "excepcion": null
      }
@@ -859,8 +859,8 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 1835,
-   "last_ok": "2026-11-20",
+   "count": 1836,
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -872,7 +872,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1778,
+      "productos": 1292,
       "errores": {
        "HTTP 404": 19
       },
@@ -883,9 +883,9 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 440,
-   "last_ok": "2026-11-20",
-   "partial": false
+   "count": 328,
+   "last_ok": "2026-11-21",
+   "partial": true
   },
   {
    "id": "jugueterialeon",
@@ -922,7 +922,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 14,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -974,7 +974,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 1593,
+      "productos": 1592,
       "errores": {},
       "excepcion": null
      }
@@ -984,7 +984,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 129,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -1034,18 +1034,34 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 1889,
+      "productos": 0,
+      "errores": {
+       "respuesta no es JSON": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "respuesta no es JSON": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
       "errores": {},
       "excepcion": null
      }
     ],
     "descartados_ejemplo": []
    },
-   "status": "ok",
+   "status": "stale",
    "platform": "woocommerce",
    "count": 276,
    "last_ok": "2026-11-20",
-   "partial": false
+   "total": 0
   },
   {
    "id": "figurasonline",
@@ -1106,7 +1122,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 180,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -1128,7 +1144,7 @@
    "status": "ok",
    "platform": "woocommerce",
    "count": 780,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -1150,7 +1166,7 @@
    "status": "ok",
    "platform": "shopify",
    "count": 1555,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   },
   {
@@ -1172,7 +1188,7 @@
    "status": "ok",
    "platform": "generic",
    "count": 36,
-   "last_ok": "2026-11-20",
+   "last_ok": "2026-11-21",
    "partial": false
   }
  ]
