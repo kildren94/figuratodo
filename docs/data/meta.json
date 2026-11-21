@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-20T14:52-03:00",
+ "updated": "2026-11-20T23:26-03:00",
  "stores": [
   {
    "id": "richirocko",
@@ -82,8 +82,7 @@
       "intento": "generic",
       "productos": 0,
       "errores": {
-       "HTTP 503": 16,
-       "ConnectionError": 1
+       "HTTP 503": 17
       },
       "excepcion": null
      }
@@ -127,36 +126,34 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 0,
-      "errores": {
-       "ConnectTimeout": 2
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "shopify",
-      "productos": 0,
-      "errores": {
-       "ConnectTimeout": 1
-      },
-      "excepcion": null
-     },
-     {
-      "intento": "generic",
-      "productos": 0,
-      "errores": {
-       "ConnectTimeout": 7
-      },
+      "productos": 99,
+      "errores": {},
       "excepcion": null
      }
     ],
-    "descartados_ejemplo": []
+    "descartados_ejemplo": [
+     "Peluca verde larga || Cosplay Pelucas peluca verde larga",
+     "Peluca Shizuku Kuroe – My Dress-Up Darling || Cosplay Lentes de Contacto my dress up darling peluca negra Peluca Shizuku Kuroe – My Dress-Up Darling",
+     "Peluca Ochaco Uraraka – My Hero Academia || Cosplay Pelucas My hero academia peluca castaño uraka",
+     "Peluca Wriothesley – Genshin Impact || Cosplay Pelucas genshin impact peluca negra con tonos grises Peluca Wriothesley – Genshin Impact",
+     "Peluca Hu Tao – Genshin Impact || Cosplay Pelucas genshin impact Peluca Hu Tao – Genshin Impact peluca negra con mechas cafes",
+     "Peluca Lucy – Cyberpunk: Edgerunners || Cosplay Pelucas cyberpunk lucy peluca blanca con plateado y tonos rosados y azules",
+     "Peluca Rin Tohsaka – Fate/stay night || Cosplay Pelucas Fate/stay night. peluca negra Rin Tohsaka",
+     "Peluca Ai Ohto – Wonder Egg Priority || Cosplay Pelucas ai ohto Oshi no ko peluca azul electrico",
+     "Peluca Keisuke Baji – Tokyo Revengers || Cosplay Pelucas baji peluca negra larga tokyo revengers",
+     "Peluca Izuku Midoriya – My Hero Academia || Cosplay Pelucas midoriya My hero academia peluca negra con verde",
+     "Peluca Kobeni Higashiyama – Chainsaw Man || Cosplay Pelucas chainsaw man kobeni peluca castaño oscuro",
+     "Peluca Xiao – Genshin Impac || Cosplay Pelucas genshin impact peluca negro verdoso Xiao",
+     "Peluca Sucrose – Genshin Impact || Cosplay Pelucas genshin impact peluca verde menta sucrose",
+     "Peluca Lucoa – Miss Kobayashi’s Dragon Maid || Cosplay Pelucas lucoa Miss Kobayashi's Dragon Maid peluca rubia con mechas azules y verdes",
+     "Peluca Bulma – Dragon Ball || Cosplay Pelucas bulma dragon ball peluca azul"
+    ]
    },
-   "status": "stale",
+   "status": "ok",
    "platform": "woocommerce",
    "count": 3,
-   "last_ok": "2026-11-19",
-   "total": 0
+   "last_ok": "2026-11-20",
+   "partial": false
   },
   {
    "id": "figuartschile",
@@ -213,7 +210,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1226,
+      "productos": 1222,
       "errores": {},
       "excepcion": null
      }
@@ -235,7 +232,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 998,
+      "productos": 1000,
       "errores": {},
       "excepcion": null
      }
@@ -244,7 +241,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 676,
+   "count": 677,
    "last_ok": "2026-11-20",
    "partial": false
   },
@@ -339,7 +336,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 3319,
+      "productos": 3320,
       "errores": {},
       "excepcion": null
      }
@@ -348,7 +345,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 1521,
+   "count": 1522,
    "last_ok": "2026-11-20",
    "partial": false
   },
@@ -493,7 +490,7 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 992,
+      "productos": 996,
       "errores": {},
       "excepcion": null
      }
@@ -502,7 +499,7 @@
    },
    "status": "ok",
    "platform": "woocommerce",
-   "count": 360,
+   "count": 362,
    "last_ok": "2026-11-20",
    "partial": false
   },
@@ -595,7 +592,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 630,
+      "productos": 643,
       "errores": {},
       "excepcion": null
      }
@@ -604,7 +601,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 321,
+   "count": 332,
    "last_ok": "2026-11-20",
    "partial": false
   },
@@ -875,10 +872,9 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1313,
+      "productos": 1778,
       "errores": {
-       "HTTP 404": 19,
-       "HTTP 403": 3
+       "HTTP 404": 19
       },
       "excepcion": null
      }
@@ -887,9 +883,9 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 344,
+   "count": 440,
    "last_ok": "2026-11-20",
-   "partial": true
+   "partial": false
   },
   {
    "id": "jugueterialeon",
@@ -978,7 +974,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 1584,
+      "productos": 1593,
       "errores": {},
       "excepcion": null
      }
