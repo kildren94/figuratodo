@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-21T13:51-03:00",
+ "updated": "2026-11-21T22:24-03:00",
  "stores": [
   {
    "id": "richirocko",
@@ -126,34 +126,36 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 99,
-      "errores": {},
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 7
+      },
       "excepcion": null
      }
     ],
-    "descartados_ejemplo": [
-     "Peluca verde larga || Cosplay Pelucas peluca verde larga",
-     "Peluca Shizuku Kuroe – My Dress-Up Darling || Cosplay Lentes de Contacto my dress up darling peluca negra Peluca Shizuku Kuroe – My Dress-Up Darling",
-     "Peluca Ochaco Uraraka – My Hero Academia || Cosplay Pelucas My hero academia peluca castaño uraka",
-     "Peluca Wriothesley – Genshin Impact || Cosplay Pelucas genshin impact peluca negra con tonos grises Peluca Wriothesley – Genshin Impact",
-     "Peluca Hu Tao – Genshin Impact || Cosplay Pelucas genshin impact Peluca Hu Tao – Genshin Impact peluca negra con mechas cafes",
-     "Peluca Lucy – Cyberpunk: Edgerunners || Cosplay Pelucas cyberpunk lucy peluca blanca con plateado y tonos rosados y azules",
-     "Peluca Rin Tohsaka – Fate/stay night || Cosplay Pelucas Fate/stay night. peluca negra Rin Tohsaka",
-     "Peluca Ai Ohto – Wonder Egg Priority || Cosplay Pelucas ai ohto Oshi no ko peluca azul electrico",
-     "Peluca Keisuke Baji – Tokyo Revengers || Cosplay Pelucas baji peluca negra larga tokyo revengers",
-     "Peluca Izuku Midoriya – My Hero Academia || Cosplay Pelucas midoriya My hero academia peluca negra con verde",
-     "Peluca Kobeni Higashiyama – Chainsaw Man || Cosplay Pelucas chainsaw man kobeni peluca castaño oscuro",
-     "Peluca Xiao – Genshin Impac || Cosplay Pelucas genshin impact peluca negro verdoso Xiao",
-     "Peluca Sucrose – Genshin Impact || Cosplay Pelucas genshin impact peluca verde menta sucrose",
-     "Peluca Lucoa – Miss Kobayashi’s Dragon Maid || Cosplay Pelucas lucoa Miss Kobayashi's Dragon Maid peluca rubia con mechas azules y verdes",
-     "Peluca Bulma – Dragon Ball || Cosplay Pelucas bulma dragon ball peluca azul"
-    ]
+    "descartados_ejemplo": []
    },
-   "status": "ok",
+   "status": "stale",
    "platform": "woocommerce",
    "count": 3,
    "last_ok": "2026-11-21",
-   "partial": false
+   "total": 0
   },
   {
    "id": "figuartschile",
@@ -712,34 +714,36 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 229,
-      "errores": {},
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 7
+      },
       "excepcion": null
      }
     ],
-    "descartados_ejemplo": [
-     "CD – Helloween – Helloween || Música Vinilos y Cds ",
-     "LP Gatefold – Thy Catafalque – XII: A Gyönyörü Álmok Ezután Jönnek || Música Vinilos y Cds ",
-     "LP Gatefold Sleeve – Thy Catafalque – Naiv – Vinilo Negro || Música Vinilos y Cds ",
-     "CD – System Of A Down – Steal This Album! || Música Vinilos y Cds ",
-     "DVD + 2CD – OPETH – Garden Of The Titans – Limited edition – Live at Red Rocks Ampitheatre || Blu-ray &amp; DVDs Música ",
-     "DOUBLE CD – Judas Priest – Stained Class / Ram It Down – (Remasters) || Música Vinilos y Cds ",
-     "LP Gatefold – Immortal – Battles In The North || Música Vinilos y Cds ",
-     "3 DVD BOX SET – Helloween – United Alive || Blu-ray &amp; DVDs Música ",
-     "DVD – Helloween – Live At Budokan – Limited edition || Blu-ray &amp; DVDs Música ",
-     "LP COLOURED – Hate Forest – Sorrow – Mustard / Black Marbled Vinyl || Música Vinilos y Cds ",
-     "Vinilo – Hate Forest – Justice EP – Cloudy red Vinyl || Música Vinilos y Cds ",
-     "CD – Cradle Of Filth – Dusk And Her Embrace || Música Vinilos y Cds ",
-     "LP – Behemoth – Thelema 6 – Vinilo Negro || Música Vinilos y Cds ",
-     "LP – Behemoth – Satanica – Vinilo Negro 180g || Música Vinilos y Cds ",
-     "LP Gatefold – Amon Amarth – Twilight Of The Thunder God – Blue Vinyl || Música Vinilos y Cds "
-    ]
+    "descartados_ejemplo": []
    },
-   "status": "ok",
+   "status": "stale",
    "platform": "woocommerce",
    "count": 5,
    "last_ok": "2026-11-21",
-   "partial": false
+   "total": 0
   },
   {
    "id": "otakuworld",
@@ -872,7 +876,7 @@
     "intentos": [
      {
       "intento": "generic",
-      "productos": 1292,
+      "productos": 1351,
       "errores": {
        "HTTP 404": 19
       },
@@ -883,7 +887,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 328,
+   "count": 370,
    "last_ok": "2026-11-21",
    "partial": true
   },
@@ -974,7 +978,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 1592,
+      "productos": 1606,
       "errores": {},
       "excepcion": null
      }
@@ -983,7 +987,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 129,
+   "count": 144,
    "last_ok": "2026-11-21",
    "partial": false
   },
