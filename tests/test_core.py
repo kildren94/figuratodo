@@ -204,3 +204,13 @@ def test_same_store_listings_not_merged():
     a = off("figuartschile", "Figura WCF One Piece", 9990, url="https://x.cl/p/1")
     b = off("figuartschile", "Figura WCF One Piece", 9990, url="https://x.cl/p/2")
     assert len(group([a, b])) == 2
+
+
+def test_clean_deposit_points():
+    from scraper.main import clean_deposit_points
+    h = [["2026-11-18", 19995], ["2026-11-19", 39990], ["2026-11-25", 41990]]
+    clean_deposit_points(h)
+    assert h == [["2026-11-19", 39990], ["2026-11-25", 41990]]
+    h = [["2026-11-01", 20000], ["2026-11-20", 40000]]  # cambio real, separado en el tiempo
+    clean_deposit_points(h)
+    assert len(h) == 2

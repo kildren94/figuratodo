@@ -69,6 +69,19 @@ def scrape_store(store):
     }
 
 
+def clean_deposit_points(h):
+    """Quita precios de reserva (50%) leídos antes de usar max_price: un punto seguido, en 2 días o menos,
+    por uno que vale casi exactamente el doble."""
+    i = 0
+    while i + 1 < len(h):
+        a, b = h[i], h[i + 1]
+        if a[1] and b[1] and 1.97 <= b[1] / a[1] <= 2.03 and \
+                (datetime.strptime(b[0], "%Y-%m-%d") - datetime.strptime(a[0], "%Y-%m-%d")).days <= 2:
+            del h[i]
+        else:
+            i += 1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stores", help="ids separados por coma (por defecto todas)")
@@ -174,17 +187,43 @@ def main():
     products = group(offers, rules)
     products.sort(key=lambda p: (-p["stores"], p["name"].lower()))
 
-    # historial por oferta (tienda + url): sólo se guarda cuando el precio cambia
+    # historial por oferta (tienda + url): [fecha, precio, stock] cada vez que cambia el precio o el stock
+    # (stock 1 = disponible, 0 = agotada; los registros antiguos de 2 valores se toman como disponibles)
+    # y [fecha, null] cuando la tienda se leyó completa y la figura ya no estaba publicada
     hist = load(DATA / "history.json", {})
+    max_price_stores = {s["id"] for s in load(STORES, []) if s.get("max_price")}
+    for key, h in hist.items():
+        if key.split("|", 1)[0] in max_price_stores:
+            clean_deposit_points(h)
+    def state(pt):
+        return (pt[1], (pt[2] if len(pt) > 2 else 1) if pt[1] is not None else None)
+    def record(h, point):
+        if h and state(h[-1]) == state(point):
+            return
+        if h and h[-1][0] == point[0]:
+            h.pop()  # varios cambios el mismo día: queda el último
+            if h and state(h[-1]) == state(point):
+                return
+        h.append(point)
+    stock_prev = load(CACHE / "stock.json", {})
+    live = set()
     for p in products:
         for o in p["offers"]:
             key = f"{o['store']}|{o['url']}"
+            live.add(key)
             h = hist.setdefault(key, [])
-            if not h or h[-1][1] != o["price"]:
-                if h and h[-1][0] == today:
-                    h[-1] = [today, o["price"]]
-                else:
-                    h.append([today, o["price"]])
+            d = today
+            # primera vez que se guarda el stock: si ya estaba agotada, usar la fecha en que se vio agotada
+            st = stock_prev.get(key)
+            if h and len(h[-1]) == 2 and not o["in_stock"] and st and not st.get("s"):
+                d = max(st.get("d", today), h[-1][0])
+            record(h, [d, o["price"], 1 if o["in_stock"] else 0])
+    # tiendas leídas completas en esta corrida: lo que ya no aparece se marca como retirado
+    fresh = {e["id"] for e in meta_stores
+             if e.get("status") == "ok" and e.get("last_ok") == today and not e.get("partial") and e["id"] in results}
+    for key, h in hist.items():
+        if key not in live and key.split("|", 1)[0] in fresh and h and h[-1][1] is not None:
+            record(h, [today, None])
 
     # novedades: bajas de precio, vuelta a stock y figuras recién llegadas
     tday = now.date()
@@ -200,7 +239,13 @@ def main():
             key = f"{o['store']}|{o['url']}"
             h = hist.get(key, [])
             # precio anterior si cambió en los últimos 7 días
-            before = h[-2][1] if len(h) >= 2 and recent(h[-1][0], 7) else o["price"]
+            before = o["price"]
+            pr = [x for x in h if x[1] is not None]
+            for j in range(len(pr) - 1, 0, -1):
+                if pr[j][1] != pr[j - 1][1]:
+                    if pr[j][1] == o["price"] and recent(pr[j][0], 7):
+                        before = pr[j - 1][1]
+                    break
             if o["in_stock"] or not p["in_stock"]:
                 prev_min = before if prev_min is None else min(prev_min, before)
             st = stock.get(key)
