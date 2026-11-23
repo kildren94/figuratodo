@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Cada usuario solo puede leer y escribir su propia lista de deseos
+    match /users/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['items', 'updated'])
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 2000;
+    }
+    // Todo lo demás queda cerrado
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

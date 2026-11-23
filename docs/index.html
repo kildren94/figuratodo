@@ -98,6 +98,16 @@ tr.best td:first-child{box-shadow:inset 3px 0 var(--mint)}
 .sc b{font-size:15px}.sc div{color:var(--mute);font-size:13px}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
 footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
+nav{align-items:center;flex-wrap:wrap}
+.fbtn.acc{padding:7px 12px;font-size:13px;margin-left:4px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block}
+.accbox{max-width:380px}
+.accbox h2{font-family:"Zen Kaku Gothic New";margin:0 0 6px;font-size:22px}
+.accbox input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px 12px;font:15px Inter;margin-top:4px}
+.accbox .fl{margin-top:12px}
+.accrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.accrow .main{background:var(--pink);color:#1a0b12;border-color:var(--pink)}
+.accmsg{font-size:13px;margin-top:12px;min-height:18px}.accmsg.err{color:var(--pink)}.accmsg.ok{color:var(--mint)}
+.acclink{background:none;border:0;color:var(--mute);font:13px Inter;text-decoration:underline;cursor:pointer;padding:0;margin-top:12px}
 </style>
 </head>
 <body>
@@ -107,7 +117,7 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
       <h1 onclick="location.hash=''">Figura<span>Todo</span></h1>
       <div class="upd" id="upd">Cargando…</div>
     </div>
-    <nav><a href="#" id="nFig" class="on">Figuras</a><a href="#ofertas" id="nOf">Ofertas</a><a href="#deseos" id="nWl">Deseos <span class="wlc" id="wlCount" hidden></span></a><a href="#tiendas" id="nSt">Tiendas</a></nav>
+    <nav><a href="#" id="nFig" class="on">Figuras</a><a href="#ofertas" id="nOf">Ofertas</a><a href="#deseos" id="nWl">Deseos <span class="wlc" id="wlCount" hidden></span></a><a href="#tiendas" id="nSt">Tiendas</a><button class="fbtn acc" id="accBtn" type="button" hidden>Iniciar sesión</button></nav>
   </header>
 
   <main id="vFig">
@@ -161,7 +171,7 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
       <label class="fl">Pega aquí una lista copiada desde otro navegador o dispositivo<textarea id="wlTxt" rows="3" style="background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px;font:13px Inter"></textarea></label>
       <div style="display:flex;gap:8px"><button class="freset" id="wlImpOk" type="button" style="color:var(--ink)">Agregar a mi lista</button><span class="meta" id="wlImpMsg"></span></div>
     </div>
-    <p class="meta">La lista se guarda en este navegador. Para verla en otro dispositivo, usa "Copiar lista" y pégala allá.</p>
+    <p class="meta" id="wlInfo">La lista se guarda en este navegador. Inicia sesión para verla en cualquier dispositivo, o usa "Copiar lista" y pégala allá.</p>
     <div class="grid" id="gWl"></div>
   </main>
 
@@ -174,6 +184,24 @@ footer{color:var(--mute);font-size:12px;margin-top:40px;text-align:center}
 </div>
 
 <div class="ov" id="ov"><div class="det" id="det"></div></div>
+
+<div class="ov" id="accOv"><form class="det accbox" id="accForm" novalidate>
+  <button type="button" class="x" id="accX" aria-label="Cerrar" style="position:absolute;top:12px;right:14px;background:none;border:0;color:var(--mute);font-size:22px;cursor:pointer">×</button>
+  <div id="accIn">
+    <h2>Tu cuenta</h2>
+    <div class="meta">Inicia sesión para guardar tu lista de deseos en tu cuenta y verla en el PC, el celular o cualquier navegador.</div>
+    <label class="fl">Correo<input id="accMail" type="email" autocomplete="email" required></label>
+    <label class="fl">Contraseña<input id="accPass" type="password" autocomplete="current-password" minlength="6" required></label>
+    <div class="accrow"><button class="freset main" id="accLogin" type="submit">Entrar</button><button class="freset" id="accNew" type="button">Crear cuenta</button></div>
+    <button class="acclink" id="accReset" type="button">Olvidé mi contraseña</button>
+  </div>
+  <div id="accOut" hidden>
+    <h2>Tu cuenta</h2>
+    <div class="meta">Sesión iniciada como <b id="accWho" style="color:var(--ink)"></b>. Tu lista de deseos se sincroniza sola en todos los dispositivos donde entres con esta cuenta.</div>
+    <div class="accrow"><button class="freset" id="accLogout" type="button">Cerrar sesión</button></div>
+  </div>
+  <div class="accmsg" id="accMsg" role="status"></div>
+</form></div>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -363,7 +391,25 @@ function why(d){
 /* ---------- lista de deseos (se guarda en este navegador) ---------- */
 let WL = [];
 try { WL = JSON.parse(localStorage.getItem('ft_wishlist') || '[]'); } catch (e) { WL = []; }
-const wlSave = () => { try { localStorage.setItem('ft_wishlist', JSON.stringify(WL)); } catch (e) {} wlBadge(); };
+// wlSync lo define el módulo de cuenta (Firebase); sin sesión solo se guarda en este navegador
+const wlSave = () => { try { localStorage.setItem('ft_wishlist', JSON.stringify(WL)); } catch (e) {} wlBadge(); if (window.wlSync) window.wlSync(); else { try { localStorage.removeItem('ft_wl_sync'); } catch (e) {} } };
+// valida elementos que vienen de afuera (lista pegada o cuenta)
+function wlClean(items){
+  const out = [];
+  (Array.isArray(items) ? items : []).forEach(it => {
+    if (!it || typeof it.id !== 'string' || !/^[a-z0-9-]{1,80}$/i.test(it.id) || out.some(w => w.id === it.id)) return;
+    out.push({id: it.id, urls: Array.isArray(it.urls) ? it.urls.filter(u => typeof u === 'string').slice(0, 50) : [],
+              name: String(it.name || 'Figura').slice(0, 200), price: Math.max(0, +it.price || 0),
+              date: /^\d{4}-\d{2}-\d{2}$/.test(it.date) ? it.date : localDate()});
+  });
+  return out.slice(0, 2000);
+}
+// une dos listas sin duplicar (mismo id o algún link de tienda en común)
+function wlMerge(a, b){
+  const out = wlClean(a);
+  wlClean(b).forEach(it => { if (!out.some(w => w.id === it.id || w.urls.some(u => it.urls.includes(u)))) out.push(it); });
+  return out.slice(0, 2000);
+}
 const urlKey = u => String(u||'').replace(/^https?:\/\/(www\.)?/,'').replace(/[?#].*$/,'').replace(/\/$/,'').toLowerCase();
 // los ids de figuras agrupadas por nombre pueden cambiar entre lecturas: también se busca por los links de las tiendas
 function wlFind(item){
@@ -418,14 +464,10 @@ $('#wlImpOk').onclick = () => {
   try {
     const raw = $('#wlTxt').value.trim().replace(/^FT1:/, '');
     const items = JSON.parse(decodeURIComponent(escape(atob(raw))));
-    let n = 0;
-    items.forEach(it => {
-      if (!it || typeof it.id !== 'string' || !/^[a-z0-9-]{1,80}$/i.test(it.id) || WL.some(w => w.id === it.id)) return;
-      WL.push({id: it.id, urls: Array.isArray(it.urls) ? it.urls.filter(u => typeof u === 'string').slice(0, 50) : [],
-               name: String(it.name || 'Figura').slice(0, 200), price: Math.max(0, +it.price || 0),
-               date: /^\d{4}-\d{2}-\d{2}$/.test(it.date) ? it.date : localDate()});
-      n++;
-    });
+    if (!Array.isArray(items)) throw new Error('no es lista');
+    const before = WL.length;
+    WL = wlMerge(WL, items);
+    const n = WL.length - before;
     wlSave(); drawWl(); $('#wlTxt').value = '';
     $('#wlImpMsg').textContent = n ? `Se agregaron ${n} ${n>1?'figuras':'figura'}.` : 'Esas figuras ya estaban en tu lista.';
   } catch (e) { $('#wlImpMsg').textContent = 'Ese texto no es una lista válida. Cópiala de nuevo con "Copiar lista".'; }
@@ -453,6 +495,118 @@ let t; $('#q').addEventListener('input', () => { clearTimeout(t); t = setTimeout
 ['sort','fLine','fStore','fMax','fOrig','fAdult','fStock','fPre','fMulti'].forEach(id => $('#'+id).addEventListener('change', apply));
 $('#fMax').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 250); });
 $('#more').onclick = () => { shown += 60; draw(); };
+</script>
+
+<script type="module">
+/* ---------- cuenta: inicio de sesión con correo y lista de deseos sincronizada (Firebase) ---------- */
+import { initializeApp, getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+         sendPasswordResetEmail, signOut, getFirestore, doc, onSnapshot, setDoc, serverTimestamp } from './firebase.js';
+
+const app = initializeApp({
+  apiKey: "AIzaSyCydE-tbOVK0poYLFQZQF0i2ZkVy62lqoE",
+  authDomain: "figuratodo.firebaseapp.com",
+  projectId: "figuratodo",
+  storageBucket: "figuratodo.firebasestorage.app",
+  messagingSenderId: "639152624887",
+  appId: "1:639152624887:web:59e768c54d5bbd47a3aff2"
+});
+const auth = getAuth(app); auth.languageCode = 'es';
+const db = getFirestore(app);
+
+let user = null, unsub = null, pushT = null, applying = false, pendingLocal = false, ready = false;
+const msg = (t, ok) => { const m = $('#accMsg'); m.textContent = t || ''; m.className = 'accmsg' + (t ? (ok ? ' ok' : ' err') : ''); };
+const ERR = {
+  'auth/invalid-credential': 'Correo o contraseña incorrectos.', 'auth/wrong-password': 'Correo o contraseña incorrectos.',
+  'auth/user-not-found': 'No hay una cuenta con ese correo. Usa "Crear cuenta".', 'auth/invalid-email': 'Ese correo no es válido.',
+  'auth/missing-password': 'Escribe tu contraseña.', 'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
+  'auth/email-already-in-use': 'Ya existe una cuenta con ese correo. Usa "Entrar".',
+  'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos y vuelve a probar.',
+  'auth/network-request-failed': 'Sin conexión. Revisa tu internet.',
+  'auth/unauthorized-domain': 'Este sitio no está autorizado en Firebase (Authentication → Configuración → Dominios autorizados).',
+  'auth/operation-not-allowed': 'El inicio con correo y contraseña no está activado en Firebase.',
+  'permission-denied': 'La base de datos rechazó el acceso: faltan las reglas de Firestore.',
+};
+const errText = e => ERR[e?.code] || 'No se pudo completar' + (e?.code ? ` (${e.code}).` : '.');
+
+/* --- ventana de cuenta --- */
+const openAcc = () => { msg(''); $('#accOv').classList.add('on'); if (!user) setTimeout(() => $('#accMail').focus(), 50); };
+const closeAcc = () => $('#accOv').classList.remove('on');
+$('#accBtn').onclick = openAcc;
+$('#accX').onclick = closeAcc;
+$('#accOv').onclick = e => { if (e.target.id === 'accOv') closeAcc(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAcc(); });
+const creds = () => [$('#accMail').value.trim(), $('#accPass').value];
+async function run(btn, fn){
+  btn.disabled = true; msg('');
+  try { await fn(); } catch (e) { msg(errText(e)); } finally { btn.disabled = false; }
+}
+$('#accForm').onsubmit = e => { e.preventDefault(); run($('#accLogin'), () => signInWithEmailAndPassword(auth, ...creds())); };
+$('#accNew').onclick = () => run($('#accNew'), () => createUserWithEmailAndPassword(auth, ...creds()));
+$('#accReset').onclick = () => run($('#accReset'), async () => {
+  const mail = creds()[0];
+  if (!mail) { msg('Escribe tu correo arriba y vuelve a tocar "Olvidé mi contraseña".'); return; }
+  await sendPasswordResetEmail(auth, mail);
+  msg('Si existe una cuenta con ese correo, te llegará un email para crear una nueva contraseña. Revisa también spam.', true);
+});
+$('#accLogout').onclick = () => run($('#accLogout'), () => signOut(auth));
+
+function showUser(){
+  $('#accBtn').hidden = false;
+  $('#accBtn').textContent = user ? '● ' + user.email : 'Iniciar sesión';
+  $('#accBtn').title = user ? 'Tu cuenta' : 'Inicia sesión para sincronizar tu lista de deseos';
+  $('#accIn').hidden = !!user; $('#accOut').hidden = !user;
+  if (user) { $('#accWho').textContent = user.email; $('#accPass').value = ''; }
+  $('#wlInfo').textContent = user
+    ? `Tu lista se guarda en tu cuenta (${user.email}) y se ve igual en todos tus dispositivos.`
+    : 'La lista se guarda en este navegador. Inicia sesión para verla en cualquier dispositivo, o usa "Copiar lista" y pégala allá.';
+}
+
+/* --- sincronización de la lista --- */
+const ref = () => doc(db, 'users', user.uid);
+async function push(){
+  if (!user) return;
+  pendingLocal = false;
+  try {
+    await setDoc(ref(), {items: WL.slice(0, 2000), updated: serverTimestamp()});
+    localStorage.setItem('ft_wl_sync', user.uid);
+  } catch (e) { $('#wlInfo').textContent = 'No se pudo guardar la lista en tu cuenta: ' + errText(e); }
+}
+window.wlSync = () => {
+  if (applying) return;
+  if (!user) { try { localStorage.removeItem('ft_wl_sync'); } catch (e) {} return; }
+  if (!ready) return; // todavía no llega la lista de la cuenta: se juntará al llegar
+  pendingLocal = true; clearTimeout(pushT); pushT = setTimeout(push, 400);
+};
+function useList(items){
+  applying = true; WL = wlClean(items); wlSave(); applying = false;
+  try { localStorage.setItem('ft_wl_sync', user.uid); } catch (e) {}
+  if (!$('#vWl').hidden) drawWl();
+}
+
+onAuthStateChanged(auth, u => {
+  user = u;
+  if (unsub) { unsub(); unsub = null; }
+  clearTimeout(pushT); pendingLocal = false; ready = false;
+  showUser();
+  if (!u) return;
+  closeAcc();
+  let first = true;
+  unsub = onSnapshot(ref(), snap => {
+    if (snap.metadata.hasPendingWrites || pendingLocal) return;
+    const remote = snap.exists() && Array.isArray(snap.data().items) ? snap.data().items : null;
+    if (first) {
+      first = false; ready = true;
+      // si esta lista ya estaba sincronizada con la cuenta y no se tocó sin sesión, manda la cuenta;
+      // si no, se juntan las dos para no perder nada
+      const synced = localStorage.getItem('ft_wl_sync') === u.uid;
+      const list = remote ? (synced ? remote : wlMerge(WL, remote)) : WL;
+      useList(list);
+      if (!remote || !synced) push();
+      return;
+    }
+    if (remote) useList(remote);
+  }, e => { $('#wlInfo').textContent = 'No se pudo leer tu lista desde la cuenta: ' + errText(e); });
+});
 </script>
 </body>
 </html>
