@@ -2,9 +2,10 @@
 
 Comparador de precios de figuras de anime en tiendas chilenas, al estilo SoloTodo.
 
-- **Sitio:** `docs/index.html`, publicado con GitHub Pages.
-- **Datos:** `docs/data/` (`products.json`, `meta.json`, `history.json`), generados automáticamente.
-- **Actualización:** GitHub Actions corre `.github/workflows/actualizar-precios.yml` tres veces al día (05:17, 13:17 y 21:17, hora de Chile; GitHub puede atrasarlas unas horas) y guarda los precios nuevos en el repositorio.
+- **Sitio:** `docs/index.html`, publicado con GitHub Pages desde Actions (Settings → Pages → Source: GitHub Actions).
+- **Datos:** viven en la rama `datos` (`data/products.json`, `meta.json`, `history.json` y el caché del lector). Cada lectura la reemplaza por un único commit, así el repositorio no crece con cada actualización.
+- **Actualización:** GitHub Actions corre `.github/workflows/actualizar-precios.yml` tres veces al día (05:17, 13:17 y 21:17, hora de Chile; GitHub puede atrasarlas unas horas) guarda los precios en la rama `datos` y publica el sitio. Si cambia el código de `docs/`, `publicar-sitio.yml` vuelve a publicar con los últimos datos.
+- **Correr localmente:** `git fetch origin datos && git worktree add ../datos datos`, copiar `../datos/data` a `docs/data` y `../datos/cache` a `cache`.
 
 ## Cómo funciona
 

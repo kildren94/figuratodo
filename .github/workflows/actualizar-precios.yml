@@ -16,7 +16,9 @@ on:
         default: ""
 
 permissions:
-  contents: write
+  contents: write   # guardar la rama datos
+  pages: write      # publicar el sitio
+  id-token: write
 
 concurrency:
   group: actualizar-precios
@@ -28,6 +30,18 @@ jobs:
     timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
+
+      # los datos viven en la rama "datos" (un solo commit que se reemplaza), no en main
+      - uses: actions/checkout@v4
+        with:
+          ref: datos
+          path: _datos
+
+      - name: Traer datos de la lectura anterior
+        run: |
+          rm -rf docs/data cache
+          cp -r _datos/data docs/data
+          cp -r _datos/cache cache
 
       - uses: actions/setup-python@v5
         with:
@@ -49,15 +63,32 @@ jobs:
             python -m scraper.main
           fi
 
-      - name: Guardar datos
+      - name: Guardar datos (reemplaza la rama datos por un solo commit)
+        working-directory: _datos
         run: |
+          rm -rf data cache
+          cp -r ../docs/data data
+          cp -r ../cache cache
           git config user.name "figuratodo-bot"
           git config user.email "figuratodo-bot@users.noreply.github.com"
-          git add docs/data cache
-          if git diff --cached --quiet; then
-            echo "Sin cambios"
-          else
-            git commit -m "Precios $(TZ=America/Santiago date '+%Y-%m-%d %H:%M')"
-            # si alguien subió cambios mientras corría, se integran antes de guardar
-            for i in 1 2 3; do git pull --rebase -X theirs && git push && break; sleep 5; done
-          fi
+          git checkout -q --orphan nuevo
+          git add -A
+          git commit -qm "Datos $(TZ=America/Santiago date '+%Y-%m-%d %H:%M')"
+          git push -f origin nuevo:datos
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  publicar:
+    needs: scrape
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
