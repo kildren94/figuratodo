@@ -90,8 +90,12 @@ def shopify(client):
 # ---------------------------------------------------------------- WooCommerce
 def woocommerce(client):
     out = []
+    per_page = 100
     for base in ("/wp-json/wc/store/v1/products", "/wp-json/wc/store/products"):
-        first = client.get(base, params={"per_page": 100, "page": 1}, expect_json=True)
+        first = client.get(base, params={"per_page": per_page, "page": 1}, expect_json=True)
+        if not isinstance(first, list) and client.errors.get("ReadTimeout"):
+            per_page = 25   # servidores lentos: páginas más chicas responden a tiempo
+            first = client.get(base, params={"per_page": per_page, "page": 1}, expect_json=True)
         if isinstance(first, list):
             break
     else:
@@ -139,7 +143,7 @@ def woocommerce(client):
         if page >= MAX_WOO_PAGES or (total_pages and page >= total_pages) or (not total_pages and len(data) < 10):
             break
         page += 1
-        data = client.get(base, params={"per_page": 100, "page": page}, expect_json=True)
+        data = client.get(base, params={"per_page": per_page, "page": page}, expect_json=True)
     return out
 
 
@@ -198,21 +202,35 @@ CRAWL_SKIP = re.compile(r"\.(jpe?g|png|gif|webp|svg|pdf|zip|css|js|xml)(\?|$)|/(
                         r"account|mi-cuenta|my-account|contact|contacto|wishlist|module/|blog)", re.I)
 
 
-def _crawl(client, limit=1500):
-    """Para tiendas sin sitemap: recorre los links internos desde la portada buscando páginas de producto."""
+def _crawl(client, limit=1500, cache=None):
+    """Para tiendas sin sitemap: recorre los links internos desde la portada buscando páginas de producto.
+    Con `cache`, las páginas de producto ya leídas y vigentes no se vuelven a abrir: solo se recorren
+    las páginas de listado para descubrir productos nuevos."""
+    import datetime as _dt
     from urllib.parse import urljoin, urlparse, urlunparse, parse_qsl, urlencode
+    today = _dt.date.today()
+    cache = cache if cache is not None else {}
     host = urlparse(client.base).netloc
-    queue, seen, out = [client.base + "/"], set(), []
+    queue, seen, out, fresh = [client.base + "/"], set(), [], {}
     while queue and len(seen) < limit and not client.out_of_time():
         url = queue.pop(0)
         if url in seen:
             continue
         seen.add(url)
+        c = cache.get(url)
+        if c and c.get("item") and (today - _dt.date.fromisoformat(c["fetched"])).days < _refresh_days(client, c, url):
+            fresh[url] = c
+            out.append(c["item"])
+            continue
         r = client.get(url)
         if r is None or "html" not in r.headers.get("content-type", ""):
+            if c and c.get("item"):
+                fresh[url] = c
+                out.append(c["item"])
             continue
         item = parse_product_page(r.text, url)
         if item:
+            fresh[url] = {"lastmod": "", "fetched": today.isoformat(), "item": item, "w": _wanted(client, item)}
             out.append(item)
             continue   # en una página de producto no hace falta seguir links
         for a in BeautifulSoup(r.text, "lxml").find_all("a", href=True):
@@ -223,6 +241,13 @@ def _crawl(client, limit=1500):
             clean = urlunparse((u.scheme, u.netloc, u.path, "", urlencode(q), ""))
             if clean not in seen:
                 queue.append(clean)
+    # productos que no se alcanzaron a visitar esta vez (tiempo o límite) se conservan desde el caché
+    for url, c in cache.items():
+        if url not in fresh and c.get("item") and (today - _dt.date.fromisoformat(c["fetched"])).days <= 14:
+            fresh[url] = c
+            out.append(c["item"])
+    cache.clear()
+    cache.update(fresh)
     return out
 
 
@@ -326,6 +351,18 @@ def parse_product_page(html_text, url):
 
 
 REFRESH_DAYS = 4   # aunque el sitemap no indique cambios, cada producto se vuelve a leer cada tantos días
+REFRESH_OTHER_DAYS = 30   # páginas que no son figura (mangas, CDs, pinturas…) o no son producto: casi nunca cambian a figura
+
+
+def _wanted(client, item):
+    """¿Esta página interesa (es figura)? Si la tienda no dio un criterio, todo interesa."""
+    fn = getattr(client, "opts", {}).get("_wanted")
+    return bool(item) and (fn is None or fn(item))
+
+
+def _refresh_days(client, c, url):
+    base = REFRESH_DAYS if c.get("w", _wanted(client, c.get("item"))) else REFRESH_OTHER_DAYS
+    return base + (zlib.crc32(url.encode()) % 3)   # el desfase por url reparte las relecturas entre días
 
 
 def generic(client, cache=None):
@@ -336,15 +373,14 @@ def generic(client, cache=None):
     cache = cache if cache is not None else {}
     entries = _sitemap_urls(client)
     if not entries:
-        return _crawl(client)
+        return _crawl(client, cache=cache)
     out, fresh = [], {}
     entries.sort(key=lambda e: e[0] in cache)   # primero las nunca leídas
     for url, lastmod in entries:
         c = cache.get(url)
         if c:
             age = (today - _dt.date.fromisoformat(c["fetched"])).days
-            # el desfase por url reparte las relecturas entre días distintos
-            stale = age >= REFRESH_DAYS + (zlib.crc32(url.encode()) % 3)
+            stale = age >= _refresh_days(client, c, url)
             if c.get("lastmod") == lastmod and lastmod and not stale:
                 fresh[url] = c
                 if c.get("item"):
@@ -380,7 +416,7 @@ def generic(client, cache=None):
                     out.append(c["item"])
             continue
         item = parse_product_page(r.text, url)
-        fresh[url] = {"lastmod": lastmod, "fetched": today.isoformat(), "item": item,
+        fresh[url] = {"lastmod": lastmod, "fetched": today.isoformat(), "item": item, "w": _wanted(client, item),
                       "etag": r.headers.get("ETag"), "lastmodh": r.headers.get("Last-Modified")}
         if item:
             out.append(item)

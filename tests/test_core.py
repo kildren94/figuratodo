@@ -214,3 +214,26 @@ def test_clean_deposit_points():
     h = [["2026-11-01", 20000], ["2026-11-20", 40000]]  # cambio real, separado en el tiempo
     clean_deposit_points(h)
     assert len(h) == 2
+
+
+def test_generic_cache_slow_refresh_for_non_figures(monkeypatch):
+    import datetime as dt
+    from scraper import platforms
+    today = dt.date.today()
+    old = (today - dt.timedelta(days=8)).isoformat()   # vencido para figuras, vigente para lo demás
+    cache = {
+        "https://t.cl/manga": {"lastmod": "", "fetched": old, "w": False,
+                                "item": {"title": "Manga One Piece 01", "price": 9990}},
+        "https://t.cl/fig": {"lastmod": "", "fetched": old, "w": True,
+                              "item": {"title": "Figura Nendoroid Frieren", "price": 59990}},
+    }
+    monkeypatch.setattr(platforms, "_sitemap_urls", lambda c: [(u, "") for u in cache])
+    fetched = []
+
+    class C:
+        opts = {}
+        def out_of_time(self): return False
+        def get(self, url, headers=None):
+            fetched.append(url); return None
+    platforms.generic(C(), cache)
+    assert fetched == ["https://t.cl/fig"]

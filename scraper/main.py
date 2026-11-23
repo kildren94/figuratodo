@@ -36,7 +36,10 @@ def scrape_store(store):
     t0 = time.time()
     deadline = min(time.time() + STORE_BUDGET, RUN_START + RUN_BUDGET)
     client = Client(store["url"], deadline=deadline)
-    client.opts = store
+    client.opts = dict(store)
+    # criterio para el caché: las páginas que no son figura se releen con mucha menos frecuencia
+    client.opts["_wanted"] = lambda it: is_figure(it["title"], it.get("kind", ""), strict=store.get("strict", False),
+                                                  all_figures=store.get("all_figures", False))
     client.known_platform = store.get("_known_platform")
     diag = []
     cache_file = CACHE / f"{store['id']}.json"
