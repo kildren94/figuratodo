@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-22T14:13-03:00",
+ "updated": "2026-11-22T22:49-03:00",
  "stores": [
   {
    "id": "richirocko",
@@ -468,18 +468,29 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 1134,
-      "errores": {},
+      "productos": 0,
+      "errores": {
+       "ReadTimeout": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 673,
+      "errores": {
+       "ReadTimeout": 5,
+       "HTTP 503": 1
+      },
       "excepcion": null
      }
     ],
     "descartados_ejemplo": []
    },
    "status": "ok",
-   "platform": "woocommerce",
-   "count": 698,
+   "platform": "generic",
+   "count": 223,
    "last_ok": "2026-11-22",
-   "partial": false
+   "partial": true
   },
   {
    "id": "mranime",
@@ -712,7 +723,7 @@
     "intentos": [
      {
       "intento": "woocommerce",
-      "productos": 228,
+      "productos": 227,
       "errores": {},
       "excepcion": null
      }
@@ -974,7 +985,7 @@
     "intentos": [
      {
       "intento": "shopify",
-      "productos": 1624,
+      "productos": 1633,
       "errores": {},
       "excepcion": null
      }
@@ -983,7 +994,7 @@
    },
    "status": "ok",
    "platform": "shopify",
-   "count": 162,
+   "count": 171,
    "last_ok": "2026-11-22",
    "partial": false
   },
@@ -1171,7 +1182,7 @@
    },
    "status": "ok",
    "platform": "generic",
-   "count": 36,
+   "count": 33,
    "last_ok": "2026-11-22",
    "partial": false
   }
