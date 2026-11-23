@@ -237,16 +237,17 @@ const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/
 let P = [], STORES = {}, HIST = {}, META = null, shown = 60, list = [];
 
 Promise.all([
-  fetch('data/products.json').then(r => r.json()),
+  fetch('data/list.json').then(r => r.json()),
   fetch('data/meta.json').then(r => r.json()),
 ]).then(([prod, meta]) => {
   META = meta;
   meta.stores.forEach(s => STORES[s.id] = s);
+  // lista liviana: las ofertas de cada figura se bajan al abrirla (data/o/NN.json)
   P = prod.products.map(p => {
-    const regs = p.offers.filter(o => o.in_stock).map(o => o.regular_price || o.price);
-    const drop = regs.length ? Math.max(0, 1 - p.min_price / Math.max(...regs)) : 0;
-    return {...p, _q: norm((p.adult ? '18 ecchi adulto ' : '') + (p.alternative ? 'alternativa replica ' : '') + p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + p.offers.map(o => o.title).join(' ')),
-            _pre: p.offers.every(o => o.preorder), _drop: drop};
+    p.line_name = prod.lines[p.line] || p.line;
+    const drop = p.reg ? Math.max(0, 1 - p.min_price / p.reg) : 0;
+    return {...p, _q: norm((p.adult ? '18 ecchi adulto ' : '') + (p.alternative ? 'alternativa replica ' : '') + p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + (p.q||'')),
+            _pre: !!p.pre, _drop: drop};
   });
   const d = new Date(prod.updated);
   $('#upd').textContent = `${P.length.toLocaleString('es-CL')} figuras · ${meta.stores.filter(s=>s.status==='ok'||s.status==='stale').length} tiendas · actualizado ${d.toLocaleString('es-CL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
@@ -273,7 +274,7 @@ function passes(p, {ignoreStock = false} = {}){
   const stock = $('#fStock').checked, nopre = $('#fPre').checked, multi = $('#fMulti').checked;
   {
     if (line && p.line !== line) return false;
-    if (store && !p.offers.some(o => o.store === store)) return false;
+    if (store && !p.st.includes(store)) return false;
     if (orig === 'orig' && p.alternative) return false;
     if (orig === 'alt' && !p.alternative) return false;
     if (adult === 'hide' && p.adult) return false;
@@ -337,8 +338,20 @@ function card(p, extra = ''){
       <div class="pr"><b>${fmt(p.min_price)}${p.drop?`<span class="was">${fmt(p.drop.from)}</span>`:''}</b><span>${p.stores} ${p.stores>1?'tiendas':'tienda'}</span></div></div>${extra}</div>`;
 }
 
+// FNV-1a 32 bits, igual que scraper/publish.py
+function fnv(s){ let h = 0x811c9dc5; for (const b of new TextEncoder().encode(s)) { h ^= b; h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, '0'); }
+const SHARDS = 64, OFF = {};
+async function loadOffers(p){
+  if (p.offers) return p.offers;
+  const n = String(parseInt(fnv(p.id), 16) % SHARDS).padStart(2, '0');
+  OFF[n] ||= fetch(`data/o/${n}.json`).then(r => r.json()).catch(e => { delete OFF[n]; throw e; });
+  p.offers = (await OFF[n])[p.id] || [];
+  return p.offers;
+}
+
 async function openDetail(id){
   const p = P.find(x => x.id === id); if (!p) return;
+  try { await loadOffers(p); } catch (e) { alert('No se pudo cargar el detalle. Revisa tu conexión y vuelve a intentar.'); return; }
   if (!HIST._loaded) { try { HIST = await fetch('data/history.json').then(r=>r.json()); } catch(e){ HIST = {}; } HIST._loaded = true; }
   const offs = [...p.offers].sort((a,b)=>(!a.in_stock)-(!b.in_stock) || a.price-b.price);
   const best = offs.find(o=>o.in_stock) || offs[0];
@@ -348,7 +361,7 @@ async function openDetail(id){
       <div class="big" style="${p.alternative?'color:var(--mute)':''}">${fmt(p.min_price)}</div>
       <div class="meta">Mejor precio en <b style="color:var(--ink)">${esc(STORES[best.store]?.name||best.store)}</b> · ${p.stores} ${p.stores>1?'tiendas':'tienda'}${p.barcode?' · JAN '+esc(p.barcode):''}</div>
       <div style="margin-top:12px"><a class="go" href="${esc(safeUrl(best.url))}" target="_blank" rel="noopener">Ir a la tienda ↗</a>
-      <button class="go ghost${wlHas(p)?' on':''}" style="cursor:pointer;margin-left:6px" onclick="wlToggle('${esc(p.id)}');openDetail('${esc(p.id)}')">${wlHas(p)?'♥ En mi lista':'♡ Agregar a mi lista'}</button></div></div></div>
+      <button class="go ghost${wlHas(p)?' on':''}" style="cursor:pointer;margin-left:6px" onclick="wlToggle('${esc(p.id)}').then(()=>openDetail('${esc(p.id)}'))">${wlHas(p)?'♥ En mi lista':'♡ Agregar a mi lista'}</button></div></div></div>
     <table><thead><tr><th>Tienda</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>
     ${offs.map(o=>`<tr class="${o===best?'best':''}"><td><b>${esc(STORES[o.store]?.name||o.store)}</b><div class="meta">${esc(o.title)}</div></td>
       <td><b>${fmt(o.price)}</b>${o.regular_price>o.price?`<div class="meta" style="text-decoration:line-through">${fmt(o.regular_price)}</div>`:''}</td>
@@ -494,16 +507,22 @@ function wlMerge(a, b){
 }
 const urlKey = u => String(u||'').replace(/^https?:\/\/(www\.)?/,'').replace(/[?#].*$/,'').replace(/\/$/,'').toLowerCase();
 // los ids de figuras agrupadas por nombre pueden cambiar entre lecturas: también se busca por los links de las tiendas
+const WLH = new WeakMap();   // links guardados → mismos códigos que p.u (fuera del objeto para no guardarlos)
+const wlH = w => { let h = WLH.get(w); if (!h) { h = new Set((w.urls||[]).map(fnv)); WLH.set(w, h); } return h; };
 function wlFind(item){
-  return P.find(p => p.id === item.id) || P.find(p => p.offers.some(o => (item.urls||[]).includes(urlKey(o.url))));
+  const h = wlH(item);
+  return P.find(p => p.id === item.id) || P.find(p => (p.u||[]).some(x => h.has(x)));
 }
-function wlItem(p){ return WL.find(w => w.id === p.id || p.offers.some(o => (w.urls||[]).includes(urlKey(o.url)))); }
+function wlItem(p){ return WL.find(w => w.id === p.id || (p.u||[]).some(x => wlH(w).has(x))); }
 function wlHas(p){ return !!wlItem(p); }
-function wlToggle(id, btn){
+async function wlToggle(id, btn){
   const p = P.find(x => x.id === id); if (!p) return;
   const it = wlItem(p);
   if (it) WL = WL.filter(w => w !== it);
-  else WL.unshift({id: p.id, urls: p.offers.map(o => urlKey(o.url)), name: p.name, price: p.min_price, date: localDate()});
+  else {
+    try { await loadOffers(p); } catch (e) { alert('No se pudo agregar. Revisa tu conexión y vuelve a intentar.'); return; }
+    WL.unshift({id: p.id, urls: p.offers.map(o => urlKey(o.url)), name: p.name, price: p.min_price, date: localDate()});
+  }
   wlSave();
   if (btn) { const on = !it; btn.classList.toggle('on', on); btn.textContent = on ? '♥' : '♡'; btn.setAttribute('aria-label', (on?'Quitar de':'Agregar a') + ' mi lista de deseos'); }
   if (!$('#vWl').hidden) drawWl();

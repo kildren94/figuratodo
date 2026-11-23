@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+from .publish import write_site_files
 from .http import Client
 from .platforms import detect_and_scrape
 from .classify import is_figure, detect_line, is_adult, is_alternative, is_non_anime
@@ -273,6 +274,7 @@ def main():
     (CACHE / "stock.json").write_text(json.dumps(stock, separators=(",", ":")), encoding="utf-8")
     seen_path.write_text(json.dumps(seen, separators=(",", ":")), encoding="utf-8")
 
+    write_site_files(DATA, now.isoformat(timespec="minutes"), products)
     (DATA / "products.json").write_text(json.dumps({"updated": now.isoformat(timespec="minutes"),
                                                     "products": products}, ensure_ascii=False, separators=(",", ":")),
                                         encoding="utf-8")

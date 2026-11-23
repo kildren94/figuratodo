@@ -267,3 +267,19 @@ def test_volume_numbers_roman_and_arabic():
 def test_character_named_like_series():
     g = _grp(["Ranma 1/2 - Ranma (Glitter & Glamours)", "Ranma 1/2 Glitter & Glamours Shampoo"])
     assert len(g) == 2
+
+
+def test_site_files(tmp_path):
+    import json
+    from scraper.publish import write_site_files, fnv, url_key, shard_of
+    prods = [{"id": "f-1", "name": "Gojo Satoru", "line": "luminasta", "min_price": 20000, "image": None, "stores": 1,
+              "in_stock": True, "offers": [{"store": "a", "title": "Jujutsu Kaisen Gojo Satoru Luminasta", "price": 20000,
+                                            "regular_price": 25000, "url": "https://www.A.cl/p/gojo/?x=1",
+                                            "in_stock": True, "preorder": False}]}]
+    write_site_files(tmp_path, "2026-11-23T10:00", prods)
+    lst = json.loads((tmp_path / "list.json").read_text())
+    p = lst["products"][0]
+    assert "offers" not in p and "jujutsu" in p["q"] and p["st"] == ["a"] and p["reg"] == 25000
+    assert p["u"] == [fnv("a.cl/p/gojo")] and url_key("https://www.A.cl/p/gojo/?x=1") == "a.cl/p/gojo"
+    shard = json.loads((tmp_path / "o" / f"{shard_of('f-1'):02d}.json").read_text())
+    assert shard["f-1"][0]["price"] == 20000
