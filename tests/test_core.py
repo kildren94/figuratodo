@@ -282,4 +282,4 @@ def test_site_files(tmp_path):
     assert "offers" not in p and "jujutsu" in p["q"] and p["st"] == ["a"] and p["reg"] == 25000
     assert p["u"] == [fnv("a.cl/p/gojo")] and url_key("https://www.A.cl/p/gojo/?x=1") == "a.cl/p/gojo"
     shard = json.loads((tmp_path / "o" / f"{shard_of('f-1'):02d}.json").read_text())
-    assert shard["f-1"][0]["price"] == 20000
+    assert shard["f-1"]["o"][0]["price"] == 20000 and shard["f-1"]["h"] == {}

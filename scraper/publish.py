@@ -41,7 +41,9 @@ OPTIONAL = ("imgs", "adult", "alternative", "alt_unknown", "drop", "back", "firs
             "original_id", "alternatives")
 
 
-def write_site_files(data_dir, updated, products):
+def write_site_files(data_dir, updated, products, hist=None):
+    """hist: {"tienda|url": [[fecha, precio, stock], ...]}; va junto a las ofertas de cada figura."""
+    hist = hist or {}
     data_dir.mkdir(parents=True, exist_ok=True)
     lst, shards = [], [dict() for _ in range(SHARDS)]
     for p in products:
@@ -62,7 +64,9 @@ def write_site_files(data_dir, updated, products):
         if all(o.get("preorder") for o in p["offers"]):
             d["pre"] = 1
         lst.append(d)
-        shards[shard_of(p["id"])][p["id"]] = p["offers"]
+        h = {f'{o["store"]}|{o["url"]}': hist[f'{o["store"]}|{o["url"]}'] for o in p["offers"]
+             if f'{o["store"]}|{o["url"]}' in hist}
+        shards[shard_of(p["id"])][p["id"]] = {"o": p["offers"], "h": h}
     dump = lambda obj: json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
     (data_dir / "list.json").write_text(dump({"updated": updated, "lines": LINE_NAMES, "products": lst}), encoding="utf-8")
     odir = data_dir / "o"

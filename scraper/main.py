@@ -275,7 +275,7 @@ def main():
     (CACHE / "stock.json").write_text(json.dumps(stock, separators=(",", ":")), encoding="utf-8")
     seen_path.write_text(json.dumps(seen, separators=(",", ":")), encoding="utf-8")
 
-    write_site_files(DATA, now.isoformat(timespec="minutes"), products)
+    write_site_files(DATA, now.isoformat(timespec="minutes"), products, hist)
     (DATA / "products.json").write_text(json.dumps({"updated": now.isoformat(timespec="minutes"),
                                                     "products": products}, ensure_ascii=False, separators=(",", ":")),
                                         encoding="utf-8")
