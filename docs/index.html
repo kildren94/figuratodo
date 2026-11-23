@@ -227,7 +227,7 @@ Promise.all([
   $('#upd').textContent = `${P.length.toLocaleString('es-CL')} figuras · ${meta.stores.filter(s=>s.status==='ok'||s.status==='stale').length} tiendas · actualizado ${d.toLocaleString('es-CL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
   const lines = {}; P.forEach(p => lines[p.line] = p.line_name);
   $('#fLine').innerHTML += Object.entries(lines).sort((a,b)=>a[1].localeCompare(b[1])).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('');
-  $('#fStore').innerHTML += meta.stores.filter(s=>s.count).map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  $('#fStore').innerHTML += meta.stores.filter(s=>s.count).sort((x, y) => x.name.localeCompare(y.name, 'es', {sensitivity: 'base'})).map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
   renderStores(); apply(); route();
 }).catch(e => {
   console.error(e);
@@ -434,7 +434,7 @@ function chart(p){
 function renderStores(){
   const col = {ok:'var(--mint)', stale:'var(--gold)', error:'var(--pink)', pending:'var(--mute)'};
   const lab = {ok:'Al día', stale:'Mostrando últimos precios', error:'No se pudo leer', pending:'Pendiente'};
-  $('#stores').innerHTML = META.stores.map(s => `<div class="sc"><b><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)} ↗</a></b>
+  $('#stores').innerHTML = [...META.stores].sort((x, y) => x.name.localeCompare(y.name, 'es', {sensitivity: 'base'})).map(s => `<div class="sc"><b><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)} ↗</a></b>
     <div>${esc(s.location)}</div><div style="margin-top:6px"><span class="dot" style="background:${col[s.status]||col.pending}"></span>${lab[s.status]||s.status} · ${s.count||0} figuras</div>${s.status==='error'&&s.diag?`<div style="margin-top:4px;font-size:12px">Motivo: ${esc(why(s.diag))}</div>`:''}</div>`).join('');
 }
 function why(d){
