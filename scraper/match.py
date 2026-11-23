@@ -300,6 +300,11 @@ def _product(offs):
     names = sorted((o["title"] for o in offs), key=lambda t: (len(re.sub(r"\[[^\]]*\]", "", t)), t))
     name = re.sub(r"^\s*\[[^\]]*\]\s*|\s*\[[^\]]*\]\s*$", "", names[len(names) // 2] if len(names) > 2 else names[0]).strip()
     stock = [o for o in offs if o["in_stock"]]
+    imgs = []
+    for o in sorted(offs, key=lambda o: not str(o.get("image") or "").startswith("https://")):
+        im = o.get("image")
+        if im and str(im).startswith(("http://", "https://")) and im not in imgs:
+            imgs.append(im)
     return {
         "id": pid,
         "name": name,
@@ -307,7 +312,8 @@ def _product(offs):
         "line_name": LINE_NAMES.get(line, line),
         "num": num,
         "barcode": barcode,
-        "image": next((o["image"] for o in offs if o.get("image")), None),
+        "image": imgs[0] if imgs else None,
+        "imgs": imgs[1:4],      # si la principal no carga, el sitio prueba con estas
         "min_price": min(o["price"] for o in (stock or offs)),
         "in_stock": bool(stock),
         "adult": any(o.get("adult") for o in offs),
@@ -316,7 +322,7 @@ def _product(offs):
         "stores": len({o["store"] for o in offs}),
         "offers": [{
             "store": o["store"], "title": o["title"], "price": o["price"],
-            "regular_price": o["regular_price"], "url": o["url"], "barcode": o.get("barcode"),
+            "regular_price": o["regular_price"], "url": o["url"], "barcode": o.get("barcode"), "image": o.get("image"),
             "in_stock": o["in_stock"], "preorder": o["preorder"], "adult": bool(o.get("adult")),
             "alternative": bool(o.get("alternative")), "alt_unknown": bool(o.get("alt_unknown")),
         } for o in offs],

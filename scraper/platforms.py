@@ -333,6 +333,7 @@ def parse_product_page(html_text, url):
         brand, barcode = None, None
     if not price or not title:
         return None
+    img = fix_image(img, url) or fix_image(meta("og:image"), url)
     a = avail.lower()
     return {
         "title": title,
@@ -426,6 +427,19 @@ def generic(client, cache=None):
 
 
 # ---------------------------------------------------------------- utilidades
+def fix_image(img, page_url):
+    """URL de imagen usable desde otro sitio: absoluta, sin data: ni las etiquetas tipo "Oferta" de Odoo."""
+    from urllib.parse import urljoin
+    if not img or not isinstance(img, str):
+        return None
+    img = img.strip()
+    if not img or img.startswith("data:") or "/product.label/" in img or "/product.ribbon/" in img:
+        return None
+    if img.startswith("//"):
+        img = "https:" + img
+    return urljoin(page_url or "", img)
+
+
 DEPOSIT_RE = re.compile(r"reserva|abono|anticipo|se[ñn]a\b|\bpie\b|pago parcial|\b50 ?%|primer pago|dep[oó]sito", re.I)
 PREORDER_RE = re.compile(r"pre[\s-]?venta|preorder|pre[\s-]?order|reserva|por encargo|encargo", re.I)
 

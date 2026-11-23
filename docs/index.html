@@ -60,7 +60,8 @@ input:focus,select:focus{border-color:var(--pink)}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:.15s;display:flex;flex-direction:column}
 .card:hover{border-color:var(--pink);transform:translateY(-2px)}
 .img{aspect-ratio:1;background:var(--panel2) center/contain no-repeat;position:relative}
-.img .noimg{position:absolute;inset:0;display:grid;place-items:center;color:var(--line);font:900 40px "Zen Kaku Gothic New"}
+.img img,.dimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.noimg{position:absolute;inset:0;display:grid;place-items:center;color:var(--mute);font:600 13px Inter;opacity:.6}
 .badges{position:absolute;top:8px;left:8px;display:flex;gap:4px;flex-wrap:wrap}
 .b{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:rgba(15,14,20,.85);color:var(--ink)}
 .b.pre{color:var(--gold)}.b.adult{background:var(--pink);color:#1a0b12}.b.off{color:var(--mute)}.b.drop{color:var(--mint)}
@@ -92,7 +93,7 @@ input:focus,select:focus{border-color:var(--pink)}
 .x{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--mute);font-size:24px;cursor:pointer}
 .dtop{display:grid;grid-template-columns:220px 1fr;gap:20px}
 @media(max-width:640px){.dtop{grid-template-columns:1fr}}
-.dimg{aspect-ratio:1;border-radius:12px;background:var(--panel2) center/contain no-repeat}
+.dimg{aspect-ratio:1;border-radius:12px;background:var(--panel2);position:relative;overflow:hidden}
 .det h2{font-family:"Zen Kaku Gothic New";margin:4px 0 8px;font-size:22px;line-height:1.25}
 .big{font:900 34px "Zen Kaku Gothic New";color:var(--mint)}
 .meta{color:var(--mute);font-size:13px}
@@ -329,9 +330,21 @@ function draw(){
   $('#grid').innerHTML = list.length ? list.slice(0, shown).map(p => card(p)).join('') : '<div class="empty">No encontré figuras con esos filtros.</div>';
   $('#more').hidden = list.length <= shown;
 }
+// imagen con respaldo: si la de una tienda no carga (link roto o la tienda bloquea mostrarla en otro sitio),
+// prueba con la de otra tienda; si ninguna carga, muestra "Sin imagen"
+function imgTag(p, lazy = true){
+  const srcs = [p.image, ...(p.imgs||[])].filter(Boolean).map(safeUrl).filter(u => u !== '#');
+  if (!srcs.length) return '<div class="noimg">Sin imagen</div>';
+  return `<img src="${esc(srcs[0])}" alt="" ${lazy?'loading="lazy"':''} decoding="async" referrerpolicy="no-referrer" data-alt="${esc(JSON.stringify(srcs.slice(1)))}" onerror="nextImg(this)">`;
+}
+function nextImg(el){
+  let alt = []; try { alt = JSON.parse(el.dataset.alt || '[]'); } catch (e) {}
+  if (alt.length) { el.dataset.alt = JSON.stringify(alt.slice(1)); el.src = alt[0]; }
+  else el.outerHTML = '<div class="noimg">Sin imagen</div>';
+}
 function card(p, extra = ''){
   return `<div class="card${p.alternative?' alt':''}" onclick="location.hash='f-${encodeURIComponent(p.id)}'">
-    <div class="img" style="${p.image?`background-image:url('${esc(safeUrl(p.image))}')`:''}">${p.image?'':'<div class="noimg">?</div>'}
+    <div class="img">${imgTag(p)}
       <button class="heart${wlHas(p)?' on':''}" aria-label="${wlHas(p)?'Quitar de':'Agregar a'} mi lista de deseos" onclick="event.stopPropagation();wlToggle('${esc(p.id)}',this)">${wlHas(p)?'♥':'♡'}</button>
       <div class="badges">${p.alternative?`<span class="b alt">${p.alt_unknown?'Posible alternativa':'Alternativa · no original'}</span>`:''}${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p.drop?`<span class="b drop2">↓ ${p.drop.pct}% reciente</span>`:p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}${p.back?'<span class="b back">Volvió al stock</span>':''}</div></div>
     <div class="body"><div class="ln">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><div class="nm">${esc(p.name)}</div>
@@ -356,7 +369,7 @@ async function openDetail(id){
   const offs = [...p.offers].sort((a,b)=>(!a.in_stock)-(!b.in_stock) || a.price-b.price);
   const best = offs.find(o=>o.in_stock) || offs[0];
   $('#det').innerHTML = `<button class="x" onclick="closeDetail()">×</button>
-    <div class="dtop"><div class="dimg" style="${p.image?`background-image:url('${esc(safeUrl(p.image))}')`:''}"></div>
+    <div class="dtop"><div class="dimg">${imgTag(p, false)}</div>
       <div><div class="ln" style="${p.alternative?'color:var(--gold)':''}">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}${p.adult?' · +18':''}</div><h2>${esc(p.name)}</h2>
       <div class="big" style="${p.alternative?'color:var(--mute)':''}">${fmt(p.min_price)}</div>
       <div class="meta">Mejor precio en <b style="color:var(--ink)">${esc(STORES[best.store]?.name||best.store)}</b> · ${p.stores} ${p.stores>1?'tiendas':'tienda'}${p.barcode?' · JAN '+esc(p.barcode):''}</div>

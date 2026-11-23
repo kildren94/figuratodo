@@ -37,7 +37,7 @@ def _norm(s):
 
 
 LIST_KEYS = ("id", "name", "line", "min_price", "image", "stores", "in_stock")
-OPTIONAL = ("adult", "alternative", "alt_unknown", "drop", "back", "first_seen", "num", "barcode",
+OPTIONAL = ("imgs", "adult", "alternative", "alt_unknown", "drop", "back", "first_seen", "num", "barcode",
             "original_id", "alternatives")
 
 

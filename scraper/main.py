@@ -9,7 +9,7 @@ from pathlib import Path
 
 from .publish import write_site_files
 from .http import Client
-from .platforms import detect_and_scrape
+from .platforms import detect_and_scrape, fix_image
 from .classify import is_figure, detect_line, is_adult, is_alternative, is_non_anime
 from .match import group, norm_url
 
@@ -57,6 +57,7 @@ def scrape_store(store):
                 dropped.append(f'{it["title"]} || {it.get("kind", "")}'[:160])
             continue
         it["store"] = store["id"]
+        it["image"] = fix_image(it.get("image"), it.get("url"))
         it["line"] = detect_line(it["title"], it.get("kind", ""))
         it["adult"] = is_adult(it["title"], it.get("kind", ""), it.get("brand") or "")
         alt = is_alternative(it["title"], it.get("desc", ""))
@@ -107,7 +108,7 @@ def main():
     prev_offers = {}
     for p in prev_products:
         for o in p["offers"]:
-            prev_offers.setdefault(o["store"], []).append({**o, "image": o.get("image") or p.get("image"),
+            prev_offers.setdefault(o["store"], []).append({**o, "image": fix_image(o.get("image") or p.get("image"), o.get("url")),
                                                             "barcode": o.get("barcode"), "line": p["line"],
                                                             "adult": o.get("adult", p.get("adult", False)),
                                                             "alternative": o.get("alternative", False),
