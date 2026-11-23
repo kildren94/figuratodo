@@ -125,9 +125,14 @@ tamashii nations vol volumen series serie set jap the of
 """.split())
 
 
+ROMAN = {"ii": "2", "iii": "3", "iv": "4", "vi": "6", "vii": "7", "viii": "8"}
+
+
 def tokens(title):
-    t = norm(re.sub(r"\[[^\]]*\]|\([^)]*(stock|preventa|encargo|pre ?order|original)[^)]*\)", " ", title or "", flags=re.I))
-    return [w for w in t.split() if w not in NOISE and not re.fullmatch(r"\d{1,2}(cm|cms)?", w)]
+    t = re.sub(r"\[[^\]]*\]|\([^)]*(stock|preventa|encargo|pre ?order|original)[^)]*\)", " ", title or "", flags=re.I)
+    t = norm(re.sub(r"\b\d+(?:[.,]\d+)?\s*(?:cm|cms|mm|cent[ií]metros)\b", " ", t, flags=re.I))   # tamaños: "14cm", "24,5 cm"
+    # volúmenes en romano ("Vibration Stars II") se igualan a números ("Vol. 2")
+    return [ROMAN.get(w, w) for w in t.split() if w not in NOISE]
 
 
 def line_number(title, line):

@@ -237,3 +237,33 @@ def test_generic_cache_slow_refresh_for_non_figures(monkeypatch):
             fetched.append(url); return None
     platforms.generic(C(), cache)
     assert fetched == ["https://t.cl/fig"]
+
+
+def _grp(titles):
+    from scraper.match import group
+    offers = [{"title": t, "price": 20000, "regular_price": 20000, "url": f"https://s{i}.cl/p{i}", "store": f"s{i}",
+               "image": None, "in_stock": True, "preorder": False, "barcode": None, "line": "banpresto"}
+              for i, t in enumerate(titles)]
+    # relleno para que las palabras de serie sean comunes y las de personaje no
+    for k in range(300):
+        offers.append({"title": f"Chainsaw Man Vibration Stars Ranma Dragon Ball Solid Edge Works relleno{k}", "price": 9990,
+                       "regular_price": 9990, "url": f"https://x.cl/{k}", "store": "x", "image": None,
+                       "in_stock": True, "preorder": False, "barcode": None, "line": "otra"})
+    prods = [p for p in group(offers) if p["line"] == "banpresto"]
+    return sorted(sorted(o["title"] for o in p["offers"]) for p in prods)
+
+
+def test_generic_title_not_merged_with_character():
+    g = _grp(["Chainsaw Man Vibration Stars", "Chainsaw Man - Power (Vibration Stars)", "CHAINSAW MAN VIBRATION STARS POWER"])
+    assert ["Chainsaw Man Vibration Stars"] in g
+
+
+def test_volume_numbers_roman_and_arabic():
+    g = _grp(["Power II Chainsaw Man Vibration Stars", "CHAINSAW MAN VIBRATION STARS POWER 2",
+              "Chainsaw Man - Power (Vibration Stars)"])
+    assert ["CHAINSAW MAN VIBRATION STARS POWER 2", "Power II Chainsaw Man Vibration Stars"] in g
+
+
+def test_character_named_like_series():
+    g = _grp(["Ranma 1/2 - Ranma (Glitter & Glamours)", "Ranma 1/2 Glitter & Glamours Shampoo"])
+    assert len(g) == 2

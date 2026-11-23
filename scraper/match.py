@@ -52,6 +52,7 @@ def _nums(toks):
 
 
 _DF = {}          # frecuencia de cada palabra en la corrida actual (la llena _group)
+_CO = {}          # en cuántos productos aparecen juntas dos palabras poco comunes (la llena _group)
 _DF_LIMIT = [40]  # palabras más frecuentes que esto son de serie/línea ("dragon", "ball", "saiyan")
 
 
@@ -72,6 +73,61 @@ def _distinct(ta, tb):
     return bool((rare_a and med_b and conflict(rare_a, med_b)) or (rare_b and med_a and conflict(rare_b, med_a)))
 
 
+def _generic_vs_specific(ta, tb):
+    """True si un nombre solo tiene palabras de serie/línea ("chainsaw man vibration stars") y el otro además
+    nombra al personaje o versión ("... power"). El genérico no dice cuál figura es, así que no se une."""
+    n = _DF_LIMIT[0]
+    own = lambda t: len(t) > 2 and not t.isdigit() and _DF.get(t, 0) <= n
+    ga, gb = not any(own(t) for t in ta), not any(own(t) for t in tb)
+    return (ga and any(own(t) for t in tb - ta)) or (gb and any(own(t) for t in ta - tb))
+
+
+_IDENT_DF = 10   # una palabra que aparece en tan pocos productos identifica a la figura ("minami", "meruem")
+DB_SERIES = {"z", "gt", "super", "daima", "kai"}
+
+
+def _subset_specific(ta, tb):
+    """Un nombre contenido en otro ("ranma 1/2 ranma glitter glamours" ⊂ "... shampoo", "cooler" ⊂ "metal cooler")
+    solo es la misma figura si lo que le sobra al largo son palabras comunes (serie, marca), o si el corto ya
+    tiene una palabra que identifica a la figura por sí sola."""
+    small, big = (ta, tb) if len(ta) <= len(tb) else (tb, ta)
+    if not small < big:
+        return False
+    n = _DF_LIMIT[0]
+    ok = lambda t: len(t) > 2 and not t.isdigit()
+    rarest = min((_DF.get(t, 0) for t in small if ok(t)), default=10 ** 9)
+    if rarest <= _IDENT_DF:
+        return False
+
+    def attached(t):
+        # palabras que casi siempre van con otra del nombre corto: "nico" con "robin", "law" con "trafalgar"
+        # o al revés: la palabra del nombre corto casi siempre viene con la extra ("guts" con "berserk")
+        return any(_CO.get((min(t, u), max(t, u)), 0) >= 0.6 * _DF.get(t, 1) or
+                   _CO.get((min(t, u), max(t, u)), 0) >= 0.7 * _DF.get(u, 1) for u in small if ok(u))
+    return any(ok(t) and _DF.get(t, 0) <= n and not attached(t) for t in big - small)
+
+
+def _repeated_name(la, lb):
+    """"Ranma 1/2 - Ranma" o "Chainsaw Man - Chainsaw Man": el personaje se llama como la serie. Si el otro nombre
+    menciona la serie una sola vez y agrega otro personaje ("Ranma 1/2 - Shampoo"), son figuras distintas."""
+    for x, y in ((la, lb), (lb, la)):
+        dup = {t for t in set(x) if len(t) > 2 and x.count(t) >= 2}
+        for t in dup:
+            if y.count(t) == 1 and any(len(u) > 2 and not u.isdigit() and u not in x for u in y):
+                return True
+    return False
+
+
+def _series_variant(ta, tb):
+    """Dragon Ball Z / GT / Super / Daima: si ambos nombres dicen la serie y no coinciden, son figuras distintas."""
+    sa, sb = ta & DB_SERIES, tb & DB_SERIES
+    return bool(sa and sb and sa != sb and {"dragon", "ball"} <= ta and {"dragon", "ball"} <= tb)
+
+
+def _conflict(ta, tb):
+    return _distinct(ta, tb) or _generic_vs_specific(ta, tb) or _subset_specific(ta, tb) or _series_variant(ta, tb)
+
+
 def _fits(dsu, offers, i, j):
     """Para unir dos grupos por parecido de nombre, ninguna pareja entre ellos puede tener
     palabras propias en conflicto (evita cadenas: A≈B, B≈C pero A≠C)."""
@@ -81,7 +137,7 @@ def _fits(dsu, offers, i, j):
     for x in gi:
         tx = set(offers[x]["toks"])
         for y in gj:
-            if _distinct(tx, set(offers[y]["toks"])):
+            if _conflict(tx, set(offers[y]["toks"])) or _repeated_name(offers[x]["toks"], offers[y]["toks"]):
                 return False
     return True
 
@@ -115,7 +171,7 @@ def _same(a, b):
     sa, sb = " ".join(a["toks"]), " ".join(b["toks"])
     if not sa or not sb:
         return False
-    if _distinct(set(a["toks"]), set(b["toks"])):
+    if _conflict(set(a["toks"]), set(b["toks"])) or _repeated_name(a["toks"], b["toks"]):
         return False
     if a["store"] == b["store"]:
         return False      # dos publicaciones distintas de una misma tienda son productos distintos
@@ -172,6 +228,15 @@ def _group(offers, rules=None):
     _DF.clear()
     _DF.update(df)
     _DF_LIMIT[0] = max(40, int(0.01 * len(offers)))
+    co = defaultdict(int)
+    lim = 4 * _DF_LIMIT[0]
+    for o in offers:
+        rare = sorted({t for t in o["toks"] if df[t] <= lim})
+        for x in range(len(rare)):
+            for y in range(x + 1, len(rare)):
+                co[(rare[x], rare[y])] += 1
+    _CO.clear()
+    _CO.update(co)
     strong = defaultdict(list)
     for i, o in enumerate(offers):
         keys = []
