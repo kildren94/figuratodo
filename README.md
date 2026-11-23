@@ -4,7 +4,7 @@ Comparador de precios de figuras de anime en tiendas chilenas, al estilo SoloTod
 
 - **Sitio:** `docs/index.html`, publicado con GitHub Pages.
 - **Datos:** `docs/data/` (`products.json`, `meta.json`, `history.json`), generados automáticamente.
-- **Actualización:** GitHub Actions corre `.github/workflows/actualizar-precios.yml` dos veces al día (06:17 y 18:17, hora de Chile) y guarda los precios nuevos en el repositorio.
+- **Actualización:** GitHub Actions corre `.github/workflows/actualizar-precios.yml` tres veces al día (05:17, 13:17 y 21:17, hora de Chile; GitHub puede atrasarlas unas horas) y guarda los precios nuevos en el repositorio.
 
 ## Cómo funciona
 

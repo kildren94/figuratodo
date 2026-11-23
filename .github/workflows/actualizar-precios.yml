@@ -2,8 +2,9 @@ name: Actualizar precios
 
 on:
   schedule:
-    # 06:17 y 18:17 hora de Chile (UTC-3)
-    - cron: "17 9,21 * * *"
+    # 3 lecturas al día: 05:17, 13:17 y 21:17 hora de Chile (UTC-3).
+    # GitHub suele lanzarlas con algunas horas de atraso; si se juntan dos, la segunda espera a la primera.
+    - cron: "17 0,8,16 * * *"
   push:
     branches: [main]
     paths: ["ajustes.json"]
