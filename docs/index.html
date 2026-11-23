@@ -380,6 +380,12 @@ function wlToggle(id, btn){
   if (btn) { const on = !it; btn.classList.toggle('on', on); btn.textContent = on ? '♥' : '♡'; btn.setAttribute('aria-label', (on?'Quitar de':'Agregar a') + ' mi lista de deseos'); }
   if (!$('#vWl').hidden) drawWl();
 }
+// nombre de la tienda a partir de un link guardado (sin https://)
+function wlStoreName(k){
+  const host = String(k).split('/')[0];
+  const s = (META?.stores||[]).find(s => urlKey(s.url).split('/')[0] === host);
+  return s ? s.name : host;
+}
 function localDate(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function wlBadge(){ $('#wlCount').textContent = WL.length; $('#wlCount').hidden = !WL.length; }
 function drawWl(){
@@ -396,6 +402,7 @@ function drawWl(){
     return card(p, note);
   }).join('') + rows.filter(r => !r.p).map(({w}) => `<div class="card" style="cursor:default"><div class="body"><div class="nm">${esc(w.name)}</div>
       <div class="meta" style="margin:6px 0">Ya no aparece en ninguna tienda. Guardada a ${fmt(w.price)}.</div>
+      ${(w.urls||[]).length ? `<div class="meta" style="margin:0 0 8px">Estaba en: ${w.urls.map(k => `<a href="${esc(safeUrl('https://'+k))}" target="_blank" rel="noopener" style="color:var(--mint)">${esc(wlStoreName(k))} ↗</a>`).join(' · ')}</div>` : ''}
       <button class="freset" onclick="WL=WL.filter(x=>x.id!=='${esc(w.id)}');wlSave();drawWl()">Quitar</button></div></div>`).join('');
   $('#gWl').innerHTML = html || '<div class="empty">Tu lista está vacía. Toca el ♡ de cualquier figura para guardarla aquí y seguir su precio.</div>';
 }
