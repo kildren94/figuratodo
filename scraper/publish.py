@@ -26,6 +26,22 @@ def url_key(u):
     return u.lower()
 
 
+def slim_image(u):
+    """Quita el parámetro anti-caché de Shopify (?v=) y Jumpseller (?123): la foto es la misma y la lista pesa menos."""
+    if not u:
+        return u
+    if u.startswith("https://cdn.shopify.com/") or "/cdn/shop/" in u:
+        return re.sub(r"\?v=\d+$", "", u)
+    if u.startswith("https://cdnx.jumpseller.com/"):
+        return re.sub(r"\?\d+$", "", u)
+    return u
+
+
+def default_view(d):
+    """Lo que se ve al abrir el sitio sin buscar: originales, sin +18 y con stock (los filtros por defecto)."""
+    return not d.get("alternative") and not d.get("adult") and d.get("in_stock")
+
+
 def shard_of(pid):
     return int(fnv(pid), 16) % SHARDS
 
@@ -45,10 +61,13 @@ def write_site_files(data_dir, updated, products, hist=None):
     """hist: {"tienda|url": [[fecha, precio, stock], ...]}; va junto a las ofertas de cada figura."""
     hist = hist or {}
     data_dir.mkdir(parents=True, exist_ok=True)
-    lst, shards = [], [dict() for _ in range(SHARDS)]
+    lst, shards, umap = [], [dict() for _ in range(SHARDS)], {}
     for p in products:
         d = {k: p[k] for k in LIST_KEYS}
         d.update({k: p[k] for k in OPTIONAL if p.get(k)})
+        d["image"] = slim_image(d.get("image"))
+        if d.get("imgs"):
+            d["imgs"] = [slim_image(x) for x in d["imgs"]]
         name = set(_norm(p["name"]).split())
         extra = []
         for o in p["offers"]:     # palabras de los títulos de cada tienda, para que la búsqueda las encuentre
@@ -57,7 +76,8 @@ def write_site_files(data_dir, updated, products, hist=None):
                     extra.append(w)
         d["q"] = " ".join(extra)
         d["st"] = sorted({o["store"] for o in p["offers"]})
-        d["u"] = [fnv(url_key(o["url"])) for o in p["offers"]]   # para reconocer la lista de deseos
+        for o in p["offers"]:   # código de cada link → figura, para reubicar listas de deseos si una figura cambia de id
+            umap[fnv(url_key(o["url"]))] = p["id"]
         regs = [o.get("regular_price") or o["price"] for o in p["offers"] if o["in_stock"]]
         if regs:
             d["reg"] = max(regs)
@@ -69,6 +89,11 @@ def write_site_files(data_dir, updated, products, hist=None):
         shards[shard_of(p["id"])][p["id"]] = {"o": p["offers"], "h": h}
     dump = lambda obj: json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
     (data_dir / "list.json").write_text(dump({"updated": updated, "lines": LINE_NAMES, "products": lst}), encoding="utf-8")
+    # primeras figuras de la portada, para mostrarlas mientras baja la lista completa
+    first = [d for d in lst if default_view(d)]
+    (data_dir / "inicio.json").write_text(dump({"updated": updated, "lines": LINE_NAMES, "total": len(first),
+                                                "count": len(lst), "products": first[:60]}), encoding="utf-8")
+    (data_dir / "u.json").write_text(dump(umap), encoding="utf-8")
     odir = data_dir / "o"
     odir.mkdir(exist_ok=True)
     for i, sh in enumerate(shards):

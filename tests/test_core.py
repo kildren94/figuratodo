@@ -280,6 +280,8 @@ def test_site_files(tmp_path):
     lst = json.loads((tmp_path / "list.json").read_text())
     p = lst["products"][0]
     assert "offers" not in p and "jujutsu" in p["q"] and p["st"] == ["a"] and p["reg"] == 25000
-    assert p["u"] == [fnv("a.cl/p/gojo")] and url_key("https://www.A.cl/p/gojo/?x=1") == "a.cl/p/gojo"
+    assert url_key("https://www.A.cl/p/gojo/?x=1") == "a.cl/p/gojo"
+    assert json.loads((tmp_path / "u.json").read_text()) == {fnv("a.cl/p/gojo"): "f-1"}
+    assert json.loads((tmp_path / "inicio.json").read_text())["products"][0]["id"] == "f-1"
     shard = json.loads((tmp_path / "o" / f"{shard_of('f-1'):02d}.json").read_text())
     assert shard["f-1"]["o"][0]["price"] == 20000 and shard["f-1"]["h"] == {}

@@ -19,7 +19,10 @@
 <meta property="og:locale" content="es_CL">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- fuentes sin bloquear el primer dibujo de la página -->
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{--bg:#0f0e14;--panel:#18161f;--panel2:#211e2b;--line:#2e2a3b;--ink:#f1eef7;--mute:#9a93ab;--pink:#ff5d8f;--mint:#5de0b4;--gold:#ffc65d}
 *{box-sizing:border-box}
@@ -237,19 +240,32 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9/ ]+/g,' ').replace(/\s+/g,' ').trim();
 let P = [], STORES = {}, HIST = {}, META = null, shown = 60, list = [];
 
+const prep = (prod) => prod.products.map(p => {
+  p.line_name = prod.lines[p.line] || p.line;
+  const drop = p.reg ? Math.max(0, 1 - p.min_price / p.reg) : 0;
+  return {...p, _q: norm((p.adult ? '18 ecchi adulto ' : '') + (p.alternative ? 'alternativa replica ' : '') + p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + (p.q||'')),
+          _pre: !!p.pre, _drop: drop};
+});
+// portada rápida: las primeras figuras (≈30 KB) se muestran mientras baja la lista completa (≈800 KB)
+let fullLoaded = false;
+const isDefaultView = () => !location.hash.replace('#', '') && !$('#q').value &&
+  Object.entries(DEFAULTS).every(([k, v]) => { const el = $('#' + k); return el.type === 'checkbox' ? el.checked === v : el.value === v; });
+fetch('data/inicio.json').then(r => r.json()).then(ini => {
+  if (fullLoaded || !isDefaultView()) return;
+  P = prep(ini); list = P.slice(); shown = 60; draw();
+  $('#count').textContent = `${ini.total.toLocaleString('es-CL')} resultados · cargando el resto…`;
+}).catch(() => {});
+
 Promise.all([
   fetch('data/list.json').then(r => r.json()),
   fetch('data/meta.json').then(r => r.json()),
 ]).then(([prod, meta]) => {
+  fullLoaded = true;
   META = meta;
   meta.stores.forEach(s => STORES[s.id] = s);
   // lista liviana: las ofertas de cada figura se bajan al abrirla (data/o/NN.json)
-  P = prod.products.map(p => {
-    p.line_name = prod.lines[p.line] || p.line;
-    const drop = p.reg ? Math.max(0, 1 - p.min_price / p.reg) : 0;
-    return {...p, _q: norm((p.adult ? '18 ecchi adulto ' : '') + (p.alternative ? 'alternativa replica ' : '') + p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + (p.q||'')),
-            _pre: !!p.pre, _drop: drop};
-  });
+  P = prep(prod);
+  wlRemap();
   const d = new Date(prod.updated);
   $('#upd').textContent = `${P.length.toLocaleString('es-CL')} figuras · ${meta.stores.filter(s=>s.status==='ok'||s.status==='stale').length} tiendas · actualizado ${d.toLocaleString('es-CL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
   const lines = {}; P.forEach(p => lines[p.line] = p.line_name);
@@ -539,13 +555,19 @@ function wlMerge(a, b){
 }
 const urlKey = u => String(u||'').replace(/^https?:\/\/(www\.)?/,'').replace(/[?#].*$/,'').replace(/\/$/,'').toLowerCase();
 // los ids de figuras agrupadas por nombre pueden cambiar entre lecturas: también se busca por los links de las tiendas
-const WLH = new WeakMap();   // links guardados → mismos códigos que p.u (fuera del objeto para no guardarlos)
-const wlH = w => { let h = WLH.get(w); if (!h) { h = new Set((w.urls||[]).map(fnv)); WLH.set(w, h); } return h; };
-function wlFind(item){
-  const h = wlH(item);
-  return P.find(p => p.id === item.id) || P.find(p => (p.u||[]).some(x => h.has(x)));
+function wlFind(item){ return P.find(p => p.id === item.id); }
+function wlItem(p){ return WL.find(w => w.id === p.id); }
+// si una figura guardada cambió de id (se reagrupó), se busca por sus links en data/u.json y se actualiza
+async function wlRemap(){
+  if (!fullLoaded) return;   // se llama de nuevo al terminar de bajar la lista completa
+  const ids = new Set(P.map(p => p.id));
+  const lost = WL.filter(w => !ids.has(w.id) && (w.urls||[]).length);
+  if (!lost.length) return;
+  let map; try { map = await fetch('data/u.json').then(r => r.json()); } catch (e) { return; }
+  let changed = false;
+  lost.forEach(w => { const id = w.urls.map(u => map[fnv(u)]).find(Boolean); if (id && !WL.some(x => x.id === id)) { w.id = id; changed = true; } });
+  if (changed) { wlSave(); if (!$('#vWl').hidden) drawWl(); apply(); }
 }
-function wlItem(p){ return WL.find(w => w.id === p.id || (p.u||[]).some(x => wlH(w).has(x))); }
 function wlHas(p){ return !!wlItem(p); }
 async function wlToggle(id, btn){
   const p = P.find(x => x.id === id); if (!p) return;

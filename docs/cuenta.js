@@ -84,6 +84,7 @@ function useList(items){
   applying = true; WL = wlClean(items); wlSave(); applying = false;
   try { localStorage.setItem('ft_wl_sync', user.uid); } catch (e) {}
   if (!$('#vWl').hidden) drawWl();
+  wlRemap();
 }
 
 onAuthStateChanged(auth, u => {
