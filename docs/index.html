@@ -82,7 +82,16 @@ input:focus,select:focus{border-color:var(--pink)}
 .wlc{background:var(--pink);color:#1a0b12;font-size:11px;font-weight:700;border-radius:99px;padding:0 6px;margin-left:2px}
 .wlhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:4px 0 12px}
 .wlh{font-family:"Zen Kaku Gothic New";font-size:22px;margin:0}.wlact{display:flex;gap:8px;flex-wrap:wrap}
-.wlnote{font-size:12px;padding:6px 12px 10px;color:var(--mute)}.wlnote b.dn{color:var(--mint)}.wlnote b.up{color:var(--pink)}
+.wlnote{font-size:12px;padding:6px 12px 10px;color:var(--mute)}
+.wltarget{font-size:12px;padding:0 12px 12px;color:var(--mute);display:flex;flex-direction:column;gap:6px}
+.wltarget input{width:100px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:5px 8px;font:13px Inter;margin-left:2px}
+.wltarget.hit b{color:var(--mint);font-size:13px}
+.wltarget.det{padding:10px 0 0}
+.card:has(.wltarget.hit){border-color:var(--mint);box-shadow:0 0 0 1px var(--mint) inset}
+.wlc.hot{background:var(--mint);color:#0b1712}
+#hitBar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:60;background:var(--panel);border:1px solid var(--mint);border-radius:14px;padding:10px 12px 10px 16px;display:flex;align-items:center;gap:14px;font-size:14px;box-shadow:0 8px 30px #0008;max-width:calc(100% - 24px)}
+#hitBar a{color:var(--mint);font-weight:700;text-decoration:none;white-space:nowrap}
+#hitBar button{background:none;border:0;color:var(--mute);font-size:20px;cursor:pointer;line-height:1}.wlnote b.dn{color:var(--mint)}.wlnote b.up{color:var(--pink)}
 .go.ghost{background:none;border:1px solid var(--line);color:var(--ink)}.go.ghost.on{border-color:var(--pink);color:var(--pink)}
 .osec{margin:18px 0 30px}.osec h2{font-family:"Zen Kaku Gothic New";font-size:20px;margin:0 0 12px;display:flex;gap:10px;align-items:baseline}
 .osec .more2{background:none;border:1px solid var(--line);color:var(--mute);font:600 13px Inter;padding:8px 14px;border-radius:10px;cursor:pointer;margin-top:12px}
@@ -212,6 +221,7 @@ nav{align-items:center;flex-wrap:wrap}
   <footer>Los precios se leen de los sitios públicos de cada tienda y pueden cambiar. Confirma siempre el precio final en la tienda.</footer>
 </div>
 
+<div id="hitBar" role="status" hidden></div>
 <div class="ov" id="ov"><div class="det" id="det"></div></div>
 
 <div class="ov" id="accOv"><form class="det accbox" id="accForm" novalidate>
@@ -265,7 +275,7 @@ Promise.all([
   meta.stores.forEach(s => STORES[s.id] = s);
   // lista liviana: las ofertas de cada figura se bajan al abrirla (data/o/NN.json)
   P = prep(prod);
-  wlRemap();
+  wlRemap(); wlNotify();
   const d = new Date(prod.updated);
   $('#upd').textContent = `${P.length.toLocaleString('es-CL')} figuras · ${meta.stores.filter(s=>s.status==='ok'||s.status==='stale').length} tiendas · actualizado ${d.toLocaleString('es-CL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
   const lines = {}; P.forEach(p => lines[p.line] = p.line_name);
@@ -409,7 +419,8 @@ async function openDetail(id){
       <div class="big" style="${p.alternative?'color:var(--mute)':''}">${fmt(p.min_price)}</div>
       <div class="meta">Mejor precio en <b style="color:var(--ink)">${esc(STORES[best.store]?.name||best.store)}</b> · ${p.stores} ${p.stores>1?'tiendas':'tienda'}${p.barcode?' · JAN '+esc(p.barcode):''}</div>
       <div style="margin-top:12px"><a class="go" href="${esc(safeUrl(best.url))}" target="_blank" rel="noopener">Ir a la tienda ↗</a>
-      <button class="go ghost${wlHas(p)?' on':''}" style="cursor:pointer;margin-left:6px" onclick="wlToggle('${esc(p.id)}').then(()=>openDetail('${esc(p.id)}'))">${wlHas(p)?'♥ En mi lista':'♡ Agregar a mi lista'}</button></div></div></div>
+      <button class="go ghost${wlHas(p)?' on':''}" style="cursor:pointer;margin-left:6px" onclick="wlToggle('${esc(p.id)}').then(()=>openDetail('${esc(p.id)}'))">${wlHas(p)?'♥ En mi lista':'♡ Agregar a mi lista'}</button>
+      ${wlHas(p) ? targetBox(wlItem(p), p).replace('class="wltarget', 'class="wltarget det') : ''}</div></div></div>
     <table><thead><tr><th>Tienda</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>
     ${offs.map(o=>`<tr class="${o===best?'best':''}"><td><b>${esc(STORES[o.store]?.name||o.store)}</b><div class="meta">${esc(o.title)}</div></td>
       <td><b>${fmt(o.price)}</b>${o.regular_price>o.price?`<div class="meta" style="text-decoration:line-through">${fmt(o.regular_price)}</div>`:''}</td>
@@ -535,7 +546,7 @@ function why(d){
 let WL = [];
 try { WL = JSON.parse(localStorage.getItem('ft_wishlist') || '[]'); } catch (e) { WL = []; }
 // wlSync lo define el módulo de cuenta (Firebase); sin sesión solo se guarda en este navegador
-const wlSave = () => { try { localStorage.setItem('ft_wishlist', JSON.stringify(WL)); } catch (e) {} wlBadge(); if (window.wlSync) window.wlSync(); else { try { localStorage.removeItem('ft_wl_sync'); } catch (e) {} } };
+const wlSave = () => { try { localStorage.setItem('ft_wishlist', JSON.stringify(WL)); } catch (e) {} wlNotify(); if (window.wlSync) window.wlSync(); else { try { localStorage.removeItem('ft_wl_sync'); } catch (e) {} } };
 // valida elementos que vienen de afuera (lista pegada o cuenta)
 function wlClean(items){
   const out = [];
@@ -543,14 +554,19 @@ function wlClean(items){
     if (!it || typeof it.id !== 'string' || !/^[a-z0-9-]{1,80}$/i.test(it.id) || out.some(w => w.id === it.id)) return;
     out.push({id: it.id, urls: Array.isArray(it.urls) ? it.urls.filter(u => typeof u === 'string').slice(0, 50) : [],
               name: String(it.name || 'Figura').slice(0, 200), price: Math.max(0, +it.price || 0),
-              date: /^\d{4}-\d{2}-\d{2}$/.test(it.date) ? it.date : localDate()});
+              date: /^\d{4}-\d{2}-\d{2}$/.test(it.date) ? it.date : localDate(),
+              ...(+it.target > 0 && +it.target < 1e8 ? {target: Math.round(+it.target)} : {})});
   });
   return out.slice(0, 2000);
 }
 // une dos listas sin duplicar (mismo id o algún link de tienda en común)
 function wlMerge(a, b){
   const out = wlClean(a);
-  wlClean(b).forEach(it => { if (!out.some(w => w.id === it.id || w.urls.some(u => it.urls.includes(u)))) out.push(it); });
+  wlClean(b).forEach(it => {
+    const same = out.find(w => w.id === it.id || w.urls.some(u => it.urls.includes(u)));
+    if (!same) out.push(it);
+    else if (!same.target && it.target) same.target = it.target;   // no perder un precio objetivo puesto en otro dispositivo
+  });
   return out.slice(0, 2000);
 }
 const urlKey = u => String(u||'').replace(/^https?:\/\/(www\.)?/,'').replace(/[?#].*$/,'').replace(/\/$/,'').toLowerCase();
@@ -588,19 +604,54 @@ function wlStoreName(k){
   return s ? s.name : host;
 }
 function localDate(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function wlBadge(){ $('#wlCount').textContent = WL.length; $('#wlCount').hidden = !WL.length; }
+// precio objetivo: la figura llegó (o bajó) al precio que pusiste y está disponible
+const wlHit = (w, p) => !!(w.target && p && p.in_stock && p.min_price <= w.target);
+function wlHits(){ return fullLoaded ? WL.filter(w => wlHit(w, wlFind(w))) : []; }
+function wlBadge(){
+  const hits = wlHits().length;
+  $('#wlCount').textContent = hits ? `🎯 ${hits}` : WL.length;
+  $('#wlCount').hidden = !WL.length;
+  $('#wlCount').classList.toggle('hot', !!hits);
+  $('#wlCount').title = hits ? `${hits} ${hits>1?'figuras llegaron':'figura llegó'} a tu precio objetivo` : '';
+  document.title = (hits ? `(${hits}) ` : '') + 'FiguraTodo — compara precios de figuras de anime en Chile';
+}
+function wlNotify(){
+  wlBadge();
+  const hits = wlHits(); if (!hits.length) return;
+  const key = hits.map(w => w.id + ':' + wlFind(w).min_price).sort().join('|');
+  try { if (sessionStorage.getItem('ft_hit_seen') === key) return; } catch (e) {}
+  const el = $('#hitBar');
+  el.innerHTML = `<span>🎯 ${hits.length > 1 ? `${hits.length} figuras de tu lista llegaron` : `<b>${esc(wlFind(hits[0]).name)}</b> llegó`} a tu precio objetivo</span>
+    <a href="#deseos" onclick="hideHit()">Ver</a><button type="button" aria-label="Cerrar" onclick="hideHit()">×</button>`;
+  el.dataset.key = key; el.hidden = false;
+}
+function hideHit(){ const el = $('#hitBar'); el.hidden = true; try { sessionStorage.setItem('ft_hit_seen', el.dataset.key || ''); } catch (e) {} }
+function wlSetTarget(id, v){
+  const w = WL.find(x => x.id === id); if (!w) return;
+  const n = Math.round(+String(v).replace(/[^\d]/g, ''));
+  if (n > 0) w.target = n; else delete w.target;
+  wlSave(); if (!$('#vWl').hidden) drawWl();
+}
+function targetBox(w, p){
+  const hit = wlHit(w, p);
+  return `<div class="wltarget${hit?' hit':''}" onclick="event.stopPropagation()">
+    ${hit ? `<b>🎯 ¡Llegó a tu precio!</b>` : ''}
+    <label>Precio objetivo $<input type="text" inputmode="numeric" placeholder="precio" value="${w.target ? w.target.toLocaleString('es-CL') : ''}"
+      onchange="wlSetTarget('${esc(w.id)}', this.value)" onkeydown="if(event.key==='Enter')this.blur()"></label></div>`;
+}
 function drawWl(){
   const rows = WL.map(w => ({w, p: wlFind(w)}));
   const found = rows.filter(r => r.p);
   const s = $('#wlSort').value;
   if (s === 'change') found.sort((a,b) => (a.p.min_price - a.w.price) - (b.p.min_price - b.w.price));
   else if (s === 'price') found.sort((a,b) => a.p.min_price - b.p.min_price);
+  found.sort((a,b) => wlHit(b.w, b.p) - wlHit(a.w, a.p));   // las que llegaron a tu precio, primero
   const total = found.filter(r => r.p.in_stock).reduce((t, r) => t + r.p.min_price, 0);
   $('#wlSum').textContent = WL.length ? `${WL.length} ${WL.length>1?'figuras':'figura'} · ${fmt(total)} en total al mejor precio disponible` : '';
   const html = found.map(({w, p}) => {
     const d = p.min_price - w.price;
     const note = `<div class="wlnote">Guardada el ${w.date.split('-').reverse().join('/')} a ${fmt(w.price)}${d ? ` · ahora <b class="${d<0?'dn':'up'}">${d<0?'↓':'↑'} ${fmt(Math.abs(d))}</b>` : ' · mismo precio'}</div>`;
-    return card(p, note);
+    return card(p, note + targetBox(w, p));
   }).join('') + rows.filter(r => !r.p).map(({w}) => `<div class="card" style="cursor:default"><div class="body"><div class="nm">${esc(w.name)}</div>
       <div class="meta" style="margin:6px 0">Ya no aparece en ninguna tienda. Guardada a ${fmt(w.price)}.</div>
       ${(w.urls||[]).length ? `<div class="meta" style="margin:0 0 8px">Estaba en: ${w.urls.map(k => `<a href="${esc(safeUrl('https://'+k))}" target="_blank" rel="noopener" style="color:var(--mint)">${esc(wlStoreName(k))} ↗</a>`).join(' · ')}</div>` : ''}
