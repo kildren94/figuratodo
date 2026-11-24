@@ -48,8 +48,8 @@
   {"id": "blaster", "name": "Blaster Chile", "url": "https://www.blasterchile.cl", "platform": "shopify", "location": "Online", "strict": true},
   {"id": "mirax", "name": "Mirax Hobbies", "url": "https://www.mirax.cl", "platform": "auto", "location": "Mall Apumanque y otros", "strict": true, "enabled": false, "nota": "Su robots.txt prohíbe lectores automáticos: se respeta (nov 2026)"},
   {"id": "animetoyz", "name": "Animetoyz Chile", "url": "https://animetoyzchile.com", "platform": "auto", "location": "Online", "alt_default": true, "nota": "No indica marca ni si son originales; lo que no diga 'original' se muestra como posible alternativa"},
-  {"id": "yukiandryu", "name": "Yuki and Ryu Store", "url": "https://yukiandryu-store.cl", "platform": "auto", "location": "Santiago Centro (Alameda 333)"},
+  {"id": "yukiandryu", "name": "Yuki and Ryu Store", "url": "https://yukiandryu-store.cl", "platform": "auto", "location": "Santiago Centro (Alameda 333)", "enabled": false, "nota": "No se encontró tienda online con precios (el dominio probado no existe); parece vender solo en local/redes (nov 2026)"},
   {"id": "allisontoys", "name": "Allison Toys", "url": "https://allisontoys.com", "platform": "auto", "location": "Santiago", "strict": true},
   {"id": "cositaskawaii", "name": "Cositas Kawaii", "url": "https://cositaskawaii.cl", "platform": "auto", "location": "Quilicura (retiro)", "strict": true},
-  {"id": "entergames", "name": "Enter Games", "url": "https://www.entergames.cl", "platform": "auto", "location": "Providencia (Galería Las Palmas)", "strict": true}
+  {"id": "entergames", "name": "Enter Games", "url": "https://www.entergames.cl", "platform": "auto", "location": "Providencia (Galería Las Palmas)", "strict": true, "enabled": false, "nota": "Su tienda online solo publica repuestos y accesorios de consolas; no figuras de anime (nov 2026)"}
 ]
