@@ -42,6 +42,19 @@ def default_view(d):
     return not d.get("alternative") and not d.get("adult") and d.get("in_stock")
 
 
+def is_historic_low(p, hist):
+    """El mejor precio actual (con stock) es el más bajo que se ha registrado para la figura en cualquier tienda,
+    y antes estuvo más cara: si nunca cambió de precio no tiene gracia marcarla."""
+    if not p.get("in_stock"):
+        return False
+    seen = []
+    for o in p["offers"]:
+        for pt in hist.get(f'{o["store"]}|{o["url"]}', []):
+            if pt[1] is not None and (pt[2] if len(pt) > 2 else 1):
+                seen.append(pt[1])
+    return bool(seen) and p["min_price"] <= min(seen) and any(v > p["min_price"] for v in seen)
+
+
 def shard_of(pid):
     return int(fnv(pid), 16) % SHARDS
 
@@ -83,6 +96,8 @@ def write_site_files(data_dir, updated, products, hist=None):
             d["reg"] = max(regs)
         if all(o.get("preorder") for o in p["offers"]):
             d["pre"] = 1
+        if is_historic_low(p, hist):
+            d["low"] = 1
         lst.append(d)
         h = {f'{o["store"]}|{o["url"]}': hist[f'{o["store"]}|{o["url"]}'] for o in p["offers"]
              if f'{o["store"]}|{o["url"]}' in hist}

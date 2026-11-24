@@ -285,3 +285,12 @@ def test_site_files(tmp_path):
     assert json.loads((tmp_path / "inicio.json").read_text())["products"][0]["id"] == "f-1"
     shard = json.loads((tmp_path / "o" / f"{shard_of('f-1'):02d}.json").read_text())
     assert shard["f-1"]["o"][0]["price"] == 20000 and shard["f-1"]["h"] == {}
+
+
+def test_historic_low():
+    from scraper.publish import is_historic_low
+    p = {"in_stock": True, "min_price": 18000, "offers": [{"store": "a", "url": "u1"}, {"store": "b", "url": "u2"}]}
+    assert is_historic_low(p, {"a|u1": [["2026-11-18", 22000], ["2026-11-24", 18000, 1]], "b|u2": [["2026-11-18", 25000]]})
+    assert not is_historic_low(p, {"a|u1": [["2026-11-18", 18000]]})                     # nunca estuvo más cara
+    assert not is_historic_low(p, {"a|u1": [["2026-11-18", 17000, 1], ["2026-11-24", 18000, 1]]})  # antes estuvo más barata
+    assert is_historic_low(p, {"a|u1": [["2026-11-18", 15000, 0], ["2026-11-20", 20000, 1], ["2026-11-24", 18000, 1]]})  # agotada no cuenta
