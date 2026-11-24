@@ -291,9 +291,58 @@ Promise.all([
     : 'Hubo un error al mostrar las figuras. Recarga la página; si sigue, repórtalo.';
 });
 
+/* ---------- búsqueda tolerante: si no hay resultados exactos, prueba con palabras parecidas ---------- */
+// distancia de edición con trasposiciones ("freiren" → "frieren"), cortando apenas supera el máximo
+function editDist(a, b, max){
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let p2 = null, p1 = Array.from({length: b.length + 1}, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const c = [i]; let best = i;
+    for (let j = 1; j <= b.length; j++) {
+      let v = Math.min(p1[j] + 1, c[j - 1] + 1, p1[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (p2 && i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, p2[j - 2] + 1);
+      c.push(v); if (v < best) best = v;
+    }
+    if (best > max) return max + 1;
+    p2 = p1; p1 = c;
+  }
+  return p1[b.length];
+}
+let VOCAB = null, VOCAB_N = 0;
+function vocab(){
+  if (VOCAB && VOCAB_N === P.length) return VOCAB;
+  const cnt = new Map();
+  P.forEach(p => new Set(p._q.split(' ')).forEach(t => t.length > 2 && cnt.set(t, (cnt.get(t) || 0) + 1)));
+  VOCAB = cnt; VOCAB_N = P.length; return cnt;
+}
+// palabras del catálogo parecidas a w (1 error hasta 6 letras, 2 desde 7), las más comunes primero
+function similar(w){
+  if (w.length < 4 || /^\d+$/.test(w)) return [];
+  const max = w.length >= 7 ? 2 : 1, out = [];
+  vocab().forEach((n, t) => { if (t !== w && editDist(w, t, max) <= max) out.push([t, n]); });
+  return out.sort((a, b) => b[1] - a[1]).slice(0, 6).map(x => x[0]);
+}
+const tokSet = p => (p._t ||= new Set(p._q.split(' ')));
+let fuzzyNote = '';
 function apply(){
   const q = norm($('#q').value), words = q ? q.split(' ') : [];
-  list = P.filter(p => passes(p) && words.every(w => p._q.includes(w)));
+  const base = P.filter(p => passes(p));
+  // exacto: cada palabra aparece en el nombre, o escrita junta desde el inicio de una palabra ("shfiguarts", "popupparade")
+  const joined = Object.fromEntries(words.filter(w => w.length >= 6).map(w =>
+    [w, new RegExp('(^| )' + w.split('').map(c => c.replace(/[/]/g, '\\/')).join(' ?'))]));
+  const exact = w => p => p._q.includes(w) || (joined[w] ? joined[w].test(p._q) : false);
+  list = base.filter(p => words.every(w => exact(w)(p)));
+  fuzzyNote = '';
+  if (!list.length && words.length) {
+    const alt = {};
+    words.forEach(w => { alt[w] = similar(w); });
+    if (Object.values(alt).some(a => a.length)) {
+      list = base.filter(p => words.every(w => exact(w)(p) || (alt[w] || []).some(v => tokSet(p).has(v))));
+      // en el aviso, solo las correcciones de palabras que no existían tal cual
+      const fixed = Object.entries(alt).filter(([w, a]) => a.length && !base.some(exact(w))).map(([w, a]) => `«${w}» → ${a[0]}`);
+      if (list.length) fuzzyNote = `No había resultados exactos; mostrando parecidos: ${fixed.join(', ')}`;
+    }
+  }
   sortList();
   shown = 60; draw(); markActive(); if (!$('#vOf').hidden) drawOffers();
 }
@@ -355,7 +404,7 @@ $('#fBtn').onclick = () => { const open = $('#fPanel').hidden; $('#fPanel').hidd
 $('#fReset').onclick = () => { Object.entries(DEFAULTS).forEach(([id, v]) => { const el = $('#'+id); if (el.type === 'checkbox') el.checked = v; else el.value = v; }); apply(); };
 
 function draw(){
-  $('#count').textContent = `${list.length.toLocaleString('es-CL')} resultados`;
+  $('#count').textContent = `${list.length.toLocaleString('es-CL')} resultados` + (fuzzyNote ? ` · ${fuzzyNote}` : '');
   $('#grid').innerHTML = list.length ? list.slice(0, shown).map(p => card(p)).join('') : '<div class="empty">No encontré figuras con esos filtros.</div>';
   $('#more').hidden = list.length <= shown;
 }
