@@ -36,8 +36,19 @@ h1 span{color:var(--pink)}
 nav{display:flex;gap:6px}
 nav a{color:var(--mute);text-decoration:none;font-weight:600;font-size:14px;padding:7px 12px;border-radius:8px}
 nav a.on{background:var(--panel2);color:var(--ink)}
-.bar{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-bottom:10px}
-@media(max-width:640px){.bar{grid-template-columns:1fr 1fr}.bar #q{grid-column:1/-1}}
+.bar{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;margin-bottom:10px}
+@media(max-width:640px){.bar{grid-template-columns:1fr auto auto}.bar #q{grid-column:1/-1}}
+.xpanel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.xpanel h4{margin:0 0 8px;font:700 13px Inter;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.xpanel h4 input{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:5px 9px;font:13px Inter;text-transform:none;letter-spacing:0;width:180px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:5px 11px;font:500 13px Inter;cursor:pointer;text-decoration:none}
+.chip span{color:var(--mute);margin-left:4px;font-size:12px}
+.chip:hover{border-color:var(--pink)}.chip.on{background:var(--pink);border-color:var(--pink);color:#1a0b12}.chip.on span{color:#1a0b12}
+.xmore{background:none;border:0;color:var(--mint);font:600 13px Inter;cursor:pointer;padding:4px 0}
+.sel{display:inline-flex;gap:6px;margin-left:8px;flex-wrap:wrap}
+.sel .chip{padding:2px 9px;font-size:12px}
+.dtags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.dtags .chip{font-size:12px;padding:3px 10px}
 .fbtn{background:var(--panel2);border:1px solid var(--line);color:var(--ink);font:600 14px Inter;padding:0 16px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px}
 .fbtn[aria-expanded=true],.fbtn:hover{border-color:var(--pink)}
 .fcount{background:var(--pink);color:#1a0b12;font-size:12px;font-weight:700;border-radius:99px;padding:1px 7px}
@@ -88,7 +99,6 @@ input:focus,select:focus{border-color:var(--pink)}
 .wltarget.hit b{color:var(--mint);font-size:13px}
 .wltarget.det{padding:10px 0 0}
 .card:has(.wltarget.hit){border-color:var(--mint);box-shadow:0 0 0 1px var(--mint) inset}
-.b.low{background:#ffc65d;color:#2a1d00}
 .wlc.hot{background:var(--mint);color:#0b1712}
 #hitBar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:60;background:var(--panel);border:1px solid var(--mint);border-radius:14px;padding:10px 12px 10px 16px;display:flex;align-items:center;gap:14px;font-size:14px;box-shadow:0 8px 30px #0008;max-width:calc(100% - 24px)}
 #hitBar a{color:var(--mint);font-weight:700;text-decoration:none;white-space:nowrap}
@@ -170,7 +180,14 @@ nav{align-items:center;flex-wrap:wrap}
         <option value="drop">Mayor descuento</option>
         <option value="recent">Mayor baja reciente</option>
       </select>
+      <button class="fbtn" id="xBtn" aria-expanded="false" aria-controls="xPanel">Explorar <span class="fcount" id="xCount" hidden></span></button>
       <button class="fbtn" id="fBtn" aria-expanded="false" aria-controls="fPanel">Filtros <span class="fcount" id="fCount" hidden></span></button>
+    </div>
+    <div class="xpanel" id="xPanel" hidden>
+      <h4>Series <input id="xFind" type="search" placeholder="Buscar serie…" aria-label="Buscar serie"></h4>
+      <div class="chips" id="xSeries"></div>
+      <h4>Estilo</h4>
+      <div class="chips" id="xStyles"></div>
     </div>
     <div class="fpanel" id="fPanel" hidden>
       <label class="fl">Línea<select id="fLine"><option value="">Todas</option></select></label>
@@ -182,7 +199,6 @@ nav{align-items:center;flex-wrap:wrap}
         <label><input type="checkbox" id="fStock" checked> Solo disponibles</label>
         <label><input type="checkbox" id="fPre"> Ocultar preventas</label>
         <label><input type="checkbox" id="fMulti"> En 2+ tiendas</label>
-        <label><input type="checkbox" id="fLow"> Solo en mínimo histórico</label>
       </div>
       <button class="freset" id="fReset" type="button">Restablecer filtros</button>
     </div>
@@ -252,15 +268,15 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9/ ]+/g,' ').replace(/\s+/g,' ').trim();
 let P = [], STORES = {}, HIST = {}, META = null, shown = 60, list = [];
 
-const prep = (prod) => prod.products.map(p => {
+const prep = (prod) => { if (prod.series) TAGN = {se: prod.series, es: prod.styles || {}}; return prod.products.map(p => {
   p.line_name = prod.lines[p.line] || p.line;
   const drop = p.reg ? Math.max(0, 1 - p.min_price / p.reg) : 0;
   return {...p, _q: norm((p.adult ? '18 ecchi adulto ' : '') + (p.alternative ? 'alternativa replica ' : '') + p.name + ' ' + p.line_name + ' ' + (p.num||'') + ' ' + (p.q||'')),
           _pre: !!p.pre, _drop: drop};
-});
+}); };
 // portada rápida: las primeras figuras (≈30 KB) se muestran mientras baja la lista completa (≈800 KB)
 let fullLoaded = false;
-const isDefaultView = () => !location.hash.replace('#', '') && !$('#q').value &&
+const isDefaultView = () => !location.hash.replace('#', '') && !$('#q').value && !SEL.se && !SEL.es &&
   Object.entries(DEFAULTS).every(([k, v]) => { const el = $('#' + k); return el.type === 'checkbox' ? el.checked === v : el.value === v; });
 fetch('data/inicio.json').then(r => r.json()).then(ini => {
   if (fullLoaded || !isDefaultView()) return;
@@ -346,10 +362,40 @@ function apply(){
   sortList();
   shown = 60; draw(); markActive(); if (!$('#vOf').hidden) drawOffers();
 }
-function passes(p, {ignoreStock = false} = {}){
+/* ---------- explorar por tags (serie y estilo) ---------- */
+let SEL = {se: '', es: ''}, TAGN = {se: {}, es: {}}, xAll = false;
+function tagName(k, slug){ return (TAGN[k] && TAGN[k][slug]) || slug; }
+function selectTag(k, slug){
+  SEL[k] = SEL[k] === slug ? '' : slug;
+  if (location.hash && location.hash !== '#') history.replaceState(null, '', location.pathname);
+  apply(); drawExplore();
+}
+function drawExplore(){
+  if ($('#xPanel').hidden) return;
+  // cantidades con los filtros y la búsqueda actuales, sin contar la selección del mismo tipo
+  const q = norm($('#q').value), words = q ? q.split(' ') : [];
+  const base = P.filter(p => passes(p, {skipTags: true}) && words.every(w => p._q.includes(w)));
+  const count = k => { const c = {}; base.forEach(p => {
+      if (k === 'se' ? SEL.es && !(p.es||[]).includes(SEL.es) : SEL.se && !(p.se||[]).includes(SEL.se)) return;
+      (p[k]||[]).forEach(t => c[t] = (c[t]||0) + 1); }); return c; };
+  const cs = count('se'), ce = count('es'), find = norm($('#xFind').value);
+  let series = Object.entries(cs).filter(([t]) => !find || norm(tagName('se', t)).includes(find));
+  const all = find || xAll;
+  series.sort(all ? (a, b) => tagName('se', a[0]).localeCompare(tagName('se', b[0])) : (a, b) => b[1] - a[1]);
+  const shownS = all ? series : series.slice(0, 20);
+  if (SEL.se && !shownS.some(([t]) => t === SEL.se)) shownS.unshift([SEL.se, cs[SEL.se] || 0]);
+  const chip = (k, t, n) => `<button type="button" class="chip${SEL[k]===t?' on':''}" onclick="selectTag('${k}','${esc(t)}')">${esc(tagName(k, t))}<span>${n.toLocaleString('es-CL')}</span></button>`;
+  $('#xSeries').innerHTML = (shownS.map(([t, n]) => chip('se', t, n)).join('') || '<span class="meta">No hay series con esa búsqueda.</span>') +
+    (!find && series.length > 20 ? `<button type="button" class="xmore" onclick="xAll=!xAll;drawExplore()">${xAll ? 'Ver solo las populares' : `Ver todas las series (${series.length})`}</button>` : '');
+  $('#xStyles').innerHTML = Object.entries(ce).sort((a, b) => b[1] - a[1]).map(([t, n]) => chip('es', t, n)).join('');
+}
+$('#xBtn').onclick = () => { const open = $('#xPanel').hidden; $('#xPanel').hidden = !open; $('#xBtn').setAttribute('aria-expanded', open); drawExplore(); };
+$('#xFind').addEventListener('input', drawExplore);
+
+function passes(p, {ignoreStock = false, skipTags = false} = {}){
   const line = $('#fLine').value, store = $('#fStore').value, max = +$('#fMax').value || Infinity;
   const adult = $('#fAdult').value, orig = $('#fOrig').value;
-  const stock = $('#fStock').checked, nopre = $('#fPre').checked, multi = $('#fMulti').checked, low = $('#fLow').checked;
+  const stock = $('#fStock').checked, nopre = $('#fPre').checked, multi = $('#fMulti').checked;
   {
     if (line && p.line !== line) return false;
     if (store && !p.st.includes(store)) return false;
@@ -360,7 +406,8 @@ function passes(p, {ignoreStock = false} = {}){
     if (stock && !ignoreStock && !p.in_stock) return false;
     if (nopre && p._pre) return false;
     if (multi && p.stores < 2) return false;
-    if (low && !p.low) return false;
+    if (!skipTags && SEL.se && !(p.se||[]).includes(SEL.se)) return false;
+    if (!skipTags && SEL.es && !(p.es||[]).includes(SEL.es)) return false;
     if (p.min_price > max) return false;
     return true;
   }
@@ -395,16 +442,20 @@ function drawOffers(){
     }
   });
 }
-const DEFAULTS = {fLine:'', fStore:'', fMax:'', fOrig:'orig', fAdult:'hide', fStock:true, fPre:false, fMulti:false, fLow:false};
+const DEFAULTS = {fLine:'', fStore:'', fMax:'', fOrig:'orig', fAdult:'hide', fStock:true, fPre:false, fMulti:false};
 function markActive(){
   const n = Object.entries(DEFAULTS).filter(([id, v]) => { const el = $('#'+id); return (el.type === 'checkbox' ? el.checked : el.value) !== v; }).length;
   $('#fCount').textContent = n; $('#fCount').hidden = !n;
+  const nx = (SEL.se ? 1 : 0) + (SEL.es ? 1 : 0);
+  $('#xCount').textContent = nx; $('#xCount').hidden = !nx;
 }
 $('#fBtn').onclick = () => { const open = $('#fPanel').hidden; $('#fPanel').hidden = !open; $('#fBtn').setAttribute('aria-expanded', open); };
 $('#fReset').onclick = () => { Object.entries(DEFAULTS).forEach(([id, v]) => { const el = $('#'+id); if (el.type === 'checkbox') el.checked = v; else el.value = v; }); apply(); };
 
 function draw(){
-  $('#count').textContent = `${list.length.toLocaleString('es-CL')} resultados` + (fuzzyNote ? ` · ${fuzzyNote}` : '');
+  $('#count').innerHTML = esc(`${list.length.toLocaleString('es-CL')} resultados` + (fuzzyNote ? ` · ${fuzzyNote}` : '')) +
+    ((SEL.se || SEL.es) ? `<span class="sel">${['se','es'].filter(k => SEL[k]).map(k =>
+      `<button type="button" class="chip on" title="Quitar" onclick="selectTag('${k}','${esc(SEL[k])}')">${esc(tagName(k, SEL[k]))} ×</button>`).join('')}</span>` : '');
   $('#grid').innerHTML = list.length ? list.slice(0, shown).map(p => card(p)).join('') : '<div class="empty">No encontré figuras con esos filtros.</div>';
   $('#more').hidden = list.length <= shown;
 }
@@ -441,7 +492,7 @@ function card(p, extra = ''){
   return `<div class="card${p.alternative?' alt':''}" onclick="location.hash='f-${encodeURIComponent(p.id)}'">
     <div class="img">${imgTag(p)}
       <button class="heart${wlHas(p)?' on':''}" aria-label="${wlHas(p)?'Quitar de':'Agregar a'} mi lista de deseos" onclick="event.stopPropagation();wlToggle('${esc(p.id)}',this)">${wlHas(p)?'♥':'♡'}</button>
-      <div class="badges">${p.alternative?`<span class="b alt">${p.alt_unknown?'Posible alternativa':'Alternativa · no original'}</span>`:''}${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p.drop?`<span class="b drop2">↓ ${p.drop.pct}% reciente</span>`:p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}${p.back?'<span class="b back">Volvió al stock</span>':''}${p.low?'<span class="b low" title="El mejor precio de hoy es el más bajo que FiguraTodo ha registrado para esta figura">★ Mínimo histórico</span>':''}</div></div>
+      <div class="badges">${p.alternative?`<span class="b alt">${p.alt_unknown?'Posible alternativa':'Alternativa · no original'}</span>`:''}${p.adult?'<span class="b adult">+18</span>':''}${p._pre?'<span class="b pre">Preventa</span>':''}${!p.in_stock?'<span class="b off">Agotada</span>':''}${p.drop?`<span class="b drop2">↓ ${p.drop.pct}% reciente</span>`:p._drop>=.1?`<span class="b drop">-${Math.round(p._drop*100)}%</span>`:''}${p.back?'<span class="b back">Volvió al stock</span>':''}</div></div>
     <div class="body"><div class="ln">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}</div><div class="nm">${esc(p.name)}</div>
       <div class="pr"><b>${fmt(p.min_price)}${p.drop?`<span class="was">${fmt(p.drop.from)}</span>`:''}</b><span>${p.stores} ${p.stores>1?'tiendas':'tienda'}</span></div></div>${extra}</div>`;
 }
@@ -470,6 +521,7 @@ async function openDetail(id){
       <div><div class="ln" style="${p.alternative?'color:var(--gold)':''}">${p.alternative?'Alternativa · ':''}${esc(p.line_name)}${p.num?' '+esc(p.num):''}${p.adult?' · +18':''}</div><h2>${esc(p.name)}</h2>
       <div class="big" style="${p.alternative?'color:var(--mute)':''}">${fmt(p.min_price)}</div>
       <div class="meta">Mejor precio en <b style="color:var(--ink)">${esc(STORES[best.store]?.name||best.store)}</b> · ${p.stores} ${p.stores>1?'tiendas':'tienda'}${p.barcode?' · JAN '+esc(p.barcode):''}</div>
+      ${(p.se||[]).length || (p.es||[]).length ? `<div class="dtags">${(p.se||[]).map(t => `<a class="chip" href="#serie-${esc(t)}">${esc(tagName('se', t))}</a>`).join('')}${(p.es||[]).map(t => `<a class="chip" href="#estilo-${esc(t)}">${esc(tagName('es', t))}</a>`).join('')}</div>` : ''}
       <div style="margin-top:12px"><a class="go" href="${esc(safeUrl(best.url))}" target="_blank" rel="noopener">Ir a la tienda ↗</a>
       <button class="go ghost${wlHas(p)?' on':''}" style="cursor:pointer;margin-left:6px" onclick="wlToggle('${esc(p.id)}').then(()=>openDetail('${esc(p.id)}'))">${wlHas(p)?'♥ En mi lista':'♡ Agregar a mi lista'}</button>
       ${wlHas(p) ? targetBox(wlItem(p), p).replace('class="wltarget', 'class="wltarget det') : ''}</div></div></div>
@@ -570,7 +622,7 @@ function chart(p){
   const stat = (k, v, sub) => `<div><div class="meta" style="font-size:12px">${k}</div><b>${v}</b>${sub ? `<div class="meta" style="font-size:12px">${sub}</div>` : ''}</div>`;
   const legend = ser.length > 1 ? `<div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:12px">${ser.map(s =>
       `<span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${s.c};margin-right:5px"></span>${esc(s.name)} <span class="meta">${fmt(s.o.price)}</span></span>`).join('')}</div>` : '';
-  return `<div class="chart"><h3>Historial de precio${ser.length > 1 ? ' por tienda' : ''}${p.low ? ' <span class="b low" style="position:static;vertical-align:middle;margin-left:6px">★ Hoy está en su mínimo histórico</span>' : ''}</h3>
+  return `<div class="chart"><h3>Historial de precio${ser.length > 1 ? ' por tienda' : ''}</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 0 10px">
       ${stat('Precio más bajo registrado', fmt(mn.p), `${esc(mn.name)} · ${fdate(mn.d)}`)}
       ${stat('Precio más alto registrado', fmt(mx.p), `${esc(mx.name)} · ${fdate(mx.d)}`)}
@@ -736,6 +788,8 @@ let lastView = '';
 function route(){
   const h = decodeURIComponent(location.hash.slice(1));
   if (h.startsWith('f-')) { openDetail(h.slice(2)); return; }
+  const tm = h.match(/^(serie|estilo)-(.+)$/);
+  if (tm) { SEL = {se: '', es: ''}; SEL[tm[1] === 'serie' ? 'se' : 'es'] = tm[2]; if (P.length) { apply(); drawExplore(); } }
   $('#ov').classList.remove('on');
   const v = ['tiendas', 'ofertas', 'deseos'].includes(h) ? h : '';
   lastView = v;
@@ -750,7 +804,7 @@ window.addEventListener('hashchange', route);
 $('#ov').addEventListener('click', e => { if (e.target.id === 'ov') closeDetail(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#ov').classList.contains('on')) closeDetail(); });
 let t; $('#q').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 150); });
-['sort','fLine','fStore','fMax','fOrig','fAdult','fStock','fPre','fMulti','fLow'].forEach(id => $('#'+id).addEventListener('change', apply));
+['sort','fLine','fStore','fMax','fOrig','fAdult','fStock','fPre','fMulti'].forEach(id => $('#'+id).addEventListener('change', apply));
 $('#fMax').addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 250); });
 $('#more').onclick = () => { shown += 60; draw(); };
 </script>

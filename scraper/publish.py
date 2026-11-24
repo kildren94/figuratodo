@@ -5,6 +5,7 @@ import re
 import unicodedata
 
 from .classify import LINE_NAMES
+from .tags import SERIES_NAMES, STYLE_NAMES
 
 SHARDS = 64
 
@@ -96,6 +97,10 @@ def write_site_files(data_dir, updated, products, hist=None):
             d["reg"] = max(regs)
         if all(o.get("preorder") for o in p["offers"]):
             d["pre"] = 1
+        if p.get("series"):
+            d["se"] = p["series"]
+        if p.get("styles"):
+            d["es"] = p["styles"]
         if is_historic_low(p, hist):
             d["low"] = 1
         lst.append(d)
@@ -103,10 +108,10 @@ def write_site_files(data_dir, updated, products, hist=None):
              if f'{o["store"]}|{o["url"]}' in hist}
         shards[shard_of(p["id"])][p["id"]] = {"o": p["offers"], "h": h}
     dump = lambda obj: json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
-    (data_dir / "list.json").write_text(dump({"updated": updated, "lines": LINE_NAMES, "products": lst}), encoding="utf-8")
+    (data_dir / "list.json").write_text(dump({"updated": updated, "lines": LINE_NAMES, "series": SERIES_NAMES, "styles": STYLE_NAMES, "products": lst}), encoding="utf-8")
     # primeras figuras de la portada, para mostrarlas mientras baja la lista completa
     first = [d for d in lst if default_view(d)]
-    (data_dir / "inicio.json").write_text(dump({"updated": updated, "lines": LINE_NAMES, "total": len(first),
+    (data_dir / "inicio.json").write_text(dump({"updated": updated, "lines": LINE_NAMES, "series": SERIES_NAMES, "styles": STYLE_NAMES, "total": len(first),
                                                 "count": len(lst), "products": first[:60]}), encoding="utf-8")
     (data_dir / "u.json").write_text(dump(umap), encoding="utf-8")
     odir = data_dir / "o"

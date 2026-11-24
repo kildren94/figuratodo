@@ -6,6 +6,7 @@
     "separar: grupos de links que son figuras DISTINTAS y el agrupador juntó por error.",
     "nombres: nombre a mostrar para la figura que contiene ese link.",
     "alternativa / original / adulto / no_adulto: corrigen esas marcas para un link.",
+    "tags: corrige serie y estilo de la figura que contiene ese link. Ej: {\"https://tienda.cl/p/x\": {\"series\": [\"one-piece\"], \"estilos\": [\"traje-de-bano\"]}} (los nombres válidos están en scraper/tags.py).",
     "Los cambios se aplican en la siguiente lectura (o corriendo el workflow a mano)."
   ],
   "excluir": [],
@@ -15,5 +16,6 @@
   "alternativa": [],
   "original": [],
   "adulto": [],
-  "no_adulto": []
+  "no_adulto": [],
+  "tags": {}
 }

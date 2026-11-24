@@ -294,3 +294,13 @@ def test_historic_low():
     assert not is_historic_low(p, {"a|u1": [["2026-11-18", 18000]]})                     # nunca estuvo más cara
     assert not is_historic_low(p, {"a|u1": [["2026-11-18", 17000, 1], ["2026-11-24", 18000, 1]]})  # antes estuvo más barata
     assert is_historic_low(p, {"a|u1": [["2026-11-18", 15000, 0], ["2026-11-20", 20000, 1], ["2026-11-24", 18000, 1]]})  # agotada no cuenta
+
+
+def test_tags():
+    from scraper.tags import series_of, styles_of
+    assert series_of(["Banpresto Chainsaw Man Vibration Stars Power"]) == ["chainsaw-man"]
+    assert series_of(["Gojo Satoru Luminasta"]) == ["jujutsu-kaisen"]          # por personaje
+    assert series_of(["Takarada Rikka 1/7 swimsuit Alphamax"]) == ["gridman"]
+    assert styles_of(["Takarada Rikka 1/7 swimsuit Alphamax"]) == ["traje-de-bano"]
+    assert series_of(["Minato Aqua hololive"]) == ["hololive"]
+    assert series_of(["Funko Pop Batman"]) == []

@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+from .tags import series_of, styles_of
 from .publish import write_site_files
 from .http import Client
 from .platforms import detect_and_scrape, fix_image
@@ -190,6 +191,16 @@ def main():
         kept.append(o)
     offers = kept
     products = group(offers, rules)
+    # tags: serie y estilo, desde los títulos de todas las tiendas; "tags" en ajustes.json los corrige por link
+    fix = {norm_url(u): v for u, v in rules.get("tags", {}).items()}
+    for p in products:
+        texts = [p["name"]] + [o["title"] for o in p["offers"]]
+        p["series"], p["styles"] = series_of(texts), styles_of(texts)
+        for o in p["offers"]:
+            f = fix.get(norm_url(o["url"]))
+            if f:
+                p["series"] = f.get("series", p["series"])
+                p["styles"] = f.get("estilos", p["styles"])
     products.sort(key=lambda p: (-p["stores"], p["name"].lower()))
 
     # historial por oferta (tienda + url): [fecha, precio, stock] cada vez que cambia el precio o el stock
