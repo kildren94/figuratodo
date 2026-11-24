@@ -14,5 +14,4 @@ jobs:
       - run: pip install -r requirements.txt
       - run: git fetch --depth 1 origin datos && git show origin/datos:data/meta.json > /tmp/meta.json
       - run: python -m tools.envios_texto --meta /tmp/meta.json
-      - uses: actions/upload-artifact@v4
-        with: {name: envios, path: envios/}
+      - run: for f in envios/*.txt; do echo "######## $f"; cat "$f"; echo; done
