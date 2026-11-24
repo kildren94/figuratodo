@@ -1,0 +1,167 @@
+{
+ "_ayuda": "Despacho de cada tienda, revisado a mano desde sus páginas de envío. rm: costo fijo a Santiago (si lo publican). gratis: monto desde el que el envío es gratis; gratis_zona: 'rm', 'chile' o vacío si no lo aclaran. por_pagar: el envío se paga al recibir. retiro: dónde retirar sin costo. nota: lo demás. Revisar cada tanto: las promociones cambian.",
+ "revisado": "2026-11-24",
+ "tiendas": {
+  "allisontoys": {
+   "via": "Chilexpress",
+   "retiro": "en su local",
+   "nota": "Costo se ve al pagar.",
+   "fuente": "https://allisontoys.com/terminos-y-condiciones"
+  },
+  "anezaki": {
+   "gratis": 60000,
+   "nota": "Costo se ve al pagar.",
+   "fuente": "https://anezakistore.cl"
+  },
+  "animestore": {
+   "gratis": 70000,
+   "gratis_zona": "chile",
+   "via": "Bluexpress, Chilexpress",
+   "fuente": "https://animestore.cl/pages/despachos-y-reembolsos"
+  },
+  "animetoyz": {
+   "por_pagar": true,
+   "fuente": "https://animetoyzchile.com/forma-de-envios/"
+  },
+  "avsotoyz": {
+   "gratis": 100000,
+   "gratis_zona": "chile",
+   "gratis_hasta": "2026-12-31",
+   "via": "Chilexpress, Starken",
+   "nota": "Tienda en Talca. El envío gratis no aplica a preventas ni encargos.",
+   "fuente": "https://www.avsotoyz.cl/envios-y-entregas-1"
+  },
+  "blaster": {
+   "via": "Chilexpress, Correos de Chile",
+   "nota": "Tienda en Concepción. Costo se ve al pagar.",
+   "fuente": "https://www.blasterchile.cl/policies/shipping-policy"
+  },
+  "burubox": {
+   "via": "Chilexpress",
+   "retiro": "sin costo, coordinado en La Florida",
+   "nota": "Envío gratis en la primera compra al registrarse.",
+   "fuente": "https://burubox.cl/politicas/entrega"
+  },
+  "chilemanga": {
+   "gratis": 100000,
+   "via": "Blue Express",
+   "fuente": "https://www.chilemanga.cl"
+  },
+  "chilerobots": {
+   "nota": "Tienda en Villa Alemana. Despacho a todo Chile, costo se ve al pagar.",
+   "fuente": "https://www.chilerobots.cl"
+  },
+  "cositaskawaii": {
+   "rm": 2990,
+   "gratis": 29990,
+   "gratis_zona": "rm",
+   "via": "Blue Express",
+   "retiro": "sin costo en Quilicura",
+   "nota": "El costo de $2.990 y el envío gratis desde $29.990 son para 34 comunas de Santiago. Resto del país: gratis desde $50.000; si no, por pagar (unos $3.100 a $5.600).",
+   "fuente": "https://cositaskawaii.cl/pages/preguntas-frecuentes"
+  },
+  "figuartschile": {
+   "gratis": 60000,
+   "gratis_zona": "chile",
+   "via": "Chilexpress, Bluexpress, Starken (por pagar)",
+   "retiro": "sin costo, coordinado",
+   "fuente": "https://www.figuartschile.com/retiro-y-despachos"
+  },
+  "figurasdbz": {
+   "por_pagar": true,
+   "via": "Starken",
+   "fuente": "https://www.figurasdbzchile.cl/envios-y-entregas/"
+  },
+  "friitoys": {
+   "gratis": 85000,
+   "fuente": "https://friitoys.cl"
+  },
+  "geekz": {
+   "retiro": "en sus tiendas (Costanera, Plaza Oeste, Los Dominicos y otras)",
+   "nota": "Despacho a domicilio en 24 h hábiles; costo se ve al pagar.",
+   "fuente": "https://www.geekz.cl/preguntas-frecuentes"
+  },
+  "hobbytoys": {
+   "rm": 6000,
+   "por_pagar_regiones": true,
+   "nota": "Regiones: por pagar.",
+   "fuente": "https://www.hobbytoys.cl/terminos-y-condiciones"
+  },
+  "holygeek": {
+   "rm": 4000,
+   "por_pagar_regiones": true,
+   "via": "Reparto propio en Santiago; Starken o Chilexpress a regiones (por pagar)",
+   "retiro": "en Eurocentro, Santiago Centro",
+   "nota": "Santiago: 5 a 7 días hábiles.",
+   "fuente": "https://holygeek.cl/content/1-entregas-y-envios"
+  },
+  "irion": {
+   "via": "Starken, Chilexpress",
+   "retiro": "sin costo en tienda (Santiago Centro y Dos Caracoles)",
+   "nota": "Costo se ve al pagar.",
+   "fuente": "https://irion.cl/pages/shipping-return"
+  },
+  "jftoys": {
+   "via": "Chilexpress, Bluexpress",
+   "retiro": "gratis en Metro Universidad de Chile, un sábado al mes",
+   "fuente": "https://www.jftoys.cl/despacho"
+  },
+  "jugueterialeon": {
+   "gratis": 29990,
+   "via": "Chilexpress, Starken",
+   "fuente": "https://www.jugueterialeon.cl"
+  },
+  "kanjikana": {
+   "nota": "Costo se ve al pagar.",
+   "fuente": "https://kanjikana.cl/policies/shipping-policy"
+  },
+  "kinue": {
+   "gratis": 70000,
+   "gratis_zona": "rm",
+   "via": "Bluexpress, Starken",
+   "nota": "Regiones: unos $10.000 a $13.000 según tamaño. En preventas el envío se cobra cuando la figura llega a Chile.",
+   "fuente": "https://kinuestore.cl/policies/shipping-policy"
+  },
+  "luffytoys": {
+   "via": "Courier en Santiago; Chilexpress, Blue Express o Starken a regiones",
+   "nota": "No tiene envío gratis fijo. Santiago: dentro del día o al siguiente.",
+   "fuente": "https://luffytoys.cl/pages/despachos"
+  },
+  "metalstore": {
+   "via": "Blue Express",
+   "nota": "Solo despacho a domicilio; sin retiro ni envío gratis. Costo se ve al pagar.",
+   "fuente": "https://metalstorechile.cl/politicas-de-envios/"
+  },
+  "otakuverso": {
+   "retiro": "en Copec",
+   "nota": "También a domicilio.",
+   "fuente": "https://otakuverso.cl"
+  },
+  "otakuworld": {
+   "rm": 3500,
+   "gratis": 49990,
+   "gratis_zona": "rm",
+   "via": "Bluexpress, Starken",
+   "nota": "$3.500 en las comunas de su lista; resto de Santiago y regiones según courier.",
+   "fuente": "https://www.otakuworld.cl/despachos"
+  },
+  "svader": {
+   "via": "Tarifa plana según destino, o Starken por pagar",
+   "retiro": "en Providencia (Av. Providencia 2594)",
+   "fuente": "https://www.svadercoleccionables.cl/politicas-de-envio"
+  },
+  "takanodan": {
+   "via": "Starken, Blue Express",
+   "nota": "El envío no se cobra al comprar: lo cotizan y cobran después.",
+   "fuente": "https://takanodan.cl/policies/shipping-policy"
+  },
+  "yumeshoku": {
+   "rm": 3000,
+   "gratis": 60000,
+   "por_pagar_regiones": true,
+   "via": "Starken, Blue Express",
+   "nota": "Regiones: por pagar.",
+   "fuente": "https://www.yumeshokustore.cl/envios"
+  }
+ }
+}

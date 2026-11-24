@@ -48,6 +48,10 @@ nav a.on{background:var(--panel2);color:var(--ink)}
 .xmore{background:none;border:0;color:var(--mint);font:600 13px Inter;cursor:pointer;padding:4px 0}
 .sel{display:inline-flex;gap:6px;margin-left:8px;flex-wrap:wrap}
 .sel .chip{padding:2px 9px;font-size:12px}
+.ship{font-size:12px;color:var(--mute);margin-top:2px}.ship.ok{color:var(--mint);font-weight:600}
+details.shipd{margin-top:4px;font-size:12px;color:var(--mute)}details.shipd summary{cursor:pointer;color:var(--mint);list-style:none;display:inline}
+details.shipd summary::-webkit-details-marker{display:none}details.shipd div{margin-top:4px;line-height:1.45}
+.sc .shipi{margin-top:6px;font-size:12px;line-height:1.45}
 .dtags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.dtags .chip{font-size:12px;padding:3px 10px}
 .fbtn{background:var(--panel2);border:1px solid var(--line);color:var(--ink);font:600 14px Inter;padding:0 16px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px}
 .fbtn[aria-expanded=true],.fbtn:hover{border-color:var(--pink)}
@@ -513,6 +517,7 @@ async function loadOffers(p){
 async function openDetail(id){
   const p = P.find(x => x.id === id); if (!p) return;
   try { await loadOffers(p); } catch (e) { alert('No se pudo cargar el detalle. Revisa tu conexión y vuelve a intentar.'); return; }
+  await loadEnv();
   if (!p.hist && !HIST._loaded) { try { HIST = await fetch('data/history.json').then(r=>r.json()); } catch(e){ HIST = {}; } HIST._loaded = true; }
   const offs = [...p.offers].sort((a,b)=>(!a.in_stock)-(!b.in_stock) || a.price-b.price);
   const best = offs.find(o=>o.in_stock) || offs[0];
@@ -526,13 +531,44 @@ async function openDetail(id){
       <button class="go ghost${wlHas(p)?' on':''}" style="cursor:pointer;margin-left:6px" onclick="wlToggle('${esc(p.id)}').then(()=>openDetail('${esc(p.id)}'))">${wlHas(p)?'♥ En mi lista':'♡ Agregar a mi lista'}</button>
       ${wlHas(p) ? targetBox(wlItem(p), p).replace('class="wltarget', 'class="wltarget det') : ''}</div></div></div>
     <table><thead><tr><th>Tienda</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>
-    ${offs.map(o=>`<tr class="${o===best?'best':''}"><td><b>${esc(STORES[o.store]?.name||o.store)}</b><div class="meta">${esc(o.title)}</div></td>
-      <td><b>${fmt(o.price)}</b>${o.regular_price>o.price?`<div class="meta" style="text-decoration:line-through">${fmt(o.regular_price)}</div>`:''}</td>
+    ${offs.map(o=>`<tr class="${o===best?'best':''}"><td><b>${esc(STORES[o.store]?.name||o.store)}</b><div class="meta">${esc(o.title)}</div>${shipDetails(o.store)}</td>
+      <td><b>${fmt(o.price)}</b>${o.regular_price>o.price?`<div class="meta" style="text-decoration:line-through">${fmt(o.regular_price)}</div>`:''}${shipPrice(o.store, o.price)}</td>
       <td class="st ${!o.in_stock?'no':o.preorder?'pre':'ok'}">${!o.in_stock?'Agotada':o.preorder?'Preventa / encargo':'Disponible'}</td>
       <td style="text-align:right"><a class="go" href="${esc(safeUrl(o.url))}" target="_blank" rel="noopener">Ver ↗</a></td></tr>`).join('')}
-    </tbody></table>${altNote(p)}${chart(p)}
+    </tbody></table><div class="meta" style="font-size:12px;margin-top:6px">Envíos según la página de cada tienda (revisado el ${ENV?.revisado ? fdate(ENV.revisado) : '—'}); pueden cambiar, confírmalo al pagar.</div>${altNote(p)}${chart(p)}
     <div class="meta" style="margin-top:14px">¿Algo está mal en esta figura (no es la misma figura, no es anime, precio raro)? <a href="${reportUrl(p)}" target="_blank" rel="noopener" style="color:var(--pink)">Reportar error ↗</a></div>`;
   $('#ov').classList.add('on');
+}
+
+/* ---------- envíos por tienda (docs/envios.json, revisado a mano) ---------- */
+let ENV = null;
+const loadEnv = () => ENV ? Promise.resolve(ENV) : fetch('envios.json').then(r => r.json()).then(j => ENV = j).catch(() => ENV = {tiendas: {}});
+const envOf = id => { const e = ENV?.tiendas?.[id]; if (!e) return null;
+  return (e.gratis_hasta && e.gratis_hasta < localDate()) ? {...e, gratis: null} : e; };
+const zona = z => z === 'rm' ? ' en Santiago' : z === 'chile' ? ' a todo Chile' : '';
+function shipPrice(id, price){         // línea bajo el precio de una oferta
+  const e = envOf(id); if (!e) return '';
+  if (e.gratis && price >= e.gratis) return `<div class="ship ok">Envío gratis${zona(e.gratis_zona)}</div>`;
+  if (e.rm) return `<div class="ship">+ ${fmt(e.rm)} envío Santiago</div>`;
+  if (e.por_pagar) return '<div class="ship">Envío por pagar</div>';
+  return '';
+}
+function shipFacts(id){                // resumen completo del despacho de una tienda
+  const e = envOf(id); if (!e) return '';
+  const f = [];
+  if (e.rm) f.push(`Santiago: ${fmt(e.rm)}`);
+  if (e.gratis) f.push(`Gratis desde ${fmt(e.gratis)}${zona(e.gratis_zona)}${e.gratis_hasta ? ` (hasta el ${fdate(e.gratis_hasta)})` : ''}`);
+  if (e.por_pagar) f.push('Por pagar (se paga al recibir)');
+  else if (e.por_pagar_regiones) f.push('Regiones: por pagar');
+  if (e.retiro) f.push(`Retiro ${e.retiro}`);
+  if (e.via) f.push(`Courier: ${e.via}`);
+  if (e.nota) f.push(e.nota);
+  return f.map(esc).join(' · ');
+}
+function shipDetails(id){
+  const t = shipFacts(id); if (!t) return '';
+  const e = envOf(id);
+  return `<details class="shipd" onclick="event.stopPropagation()"><summary>Envío ▾</summary><div>${t}${e.fuente ? ` · <a href="${esc(safeUrl(e.fuente))}" target="_blank" rel="noopener" style="color:var(--mute)">ver política ↗</a>` : ''}</div></details>`;
 }
 
 function reportUrl(p){
@@ -633,10 +669,11 @@ function chart(p){
 }
 
 function renderStores(){
+  if (!ENV) { loadEnv().then(renderStores); }
   const col = {ok:'var(--mint)', stale:'var(--gold)', error:'var(--pink)', pending:'var(--mute)'};
   const lab = {ok:'Al día', stale:'Mostrando últimos precios', error:'No se pudo leer', pending:'Pendiente'};
   $('#stores').innerHTML = [...META.stores].sort((x, y) => x.name.localeCompare(y.name, 'es', {sensitivity: 'base'})).map(s => `<div class="sc"><b><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)} ↗</a></b>
-    <div>${esc(s.location)}</div><div style="margin-top:6px"><span class="dot" style="background:${col[s.status]||col.pending}"></span>${lab[s.status]||s.status} · ${s.count||0} figuras</div>${s.status==='error'&&s.diag?`<div style="margin-top:4px;font-size:12px">Motivo: ${esc(why(s.diag))}</div>`:''}</div>`).join('');
+    <div>${esc(s.location)}</div><div style="margin-top:6px"><span class="dot" style="background:${col[s.status]||col.pending}"></span>${lab[s.status]||s.status} · ${s.count||0} figuras</div>${s.status==='error'&&s.diag?`<div style="margin-top:4px;font-size:12px">Motivo: ${esc(why(s.diag))}</div>`:''}${s.status!=='error'&&shipFacts(s.id)?`<div class="shipi">🚚 ${shipFacts(s.id)}</div>`:''}</div>`).join('');
 }
 function why(d){
   const errs = {}; (d.intentos||[]).forEach(i => Object.entries(i.errores||{}).forEach(([k,v]) => errs[k]=(errs[k]||0)+v));
