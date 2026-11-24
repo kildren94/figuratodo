@@ -57,3 +57,7 @@ python -m scraper.main --stores irion,richirocko   # o sin --stores para todas
 python -m http.server -d docs 8000                  # abre http://localhost:8000
 python -m pytest -q
 ```
+
+## Pendientes
+
+Ver [PENDIENTES.md](PENDIENTES.md).
