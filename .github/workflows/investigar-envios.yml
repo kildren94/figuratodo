@@ -1,0 +1,18 @@
+name: Investigar envíos (manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  envios:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -r requirements.txt
+      - run: git fetch --depth 1 origin datos && git show origin/datos:data/meta.json > /tmp/meta.json
+      - run: python -m tools.envios_texto --meta /tmp/meta.json
+      - uses: actions/upload-artifact@v4
+        with: {name: envios, path: envios/}
