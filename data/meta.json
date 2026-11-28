@@ -1,0 +1,1175 @@
+{
+ "updated": "2026-11-28T04:54-03:00",
+ "stores": [
+  {
+   "id": "richirocko",
+   "name": "Richirocko",
+   "url": "https://tienda.richirocko.com",
+   "location": "Santiago Centro (retiro)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "HTTP 403": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "HTTP 403": 7
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
+  },
+  {
+   "id": "irion",
+   "name": "Juguetería Irion",
+   "url": "https://irion.cl",
+   "location": "Santiago Centro y Dos Caracoles (Providencia)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 4120,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "shopify",
+   "count": 2328,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "bydanime",
+   "name": "BYD Anime",
+   "url": "https://bydanime.cl",
+   "location": "Dos Caracoles (Providencia)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 503": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "HTTP 503": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "HTTP 503": 17
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
+  },
+  {
+   "id": "figurasdbz",
+   "name": "Figuras DBZ Chile",
+   "url": "https://www.figurasdbzchile.cl",
+   "location": "Paseo San Agustín, Santiago Centro",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 2315,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 570,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "nakamahouse",
+   "name": "Nakama House",
+   "url": "https://nakamahouse.cl",
+   "location": "Boulevard Alameda, Santiago Centro",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 99,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": [
+     "Peluca verde larga || Cosplay Pelucas peluca verde larga",
+     "Peluca Shizuku Kuroe – My Dress-Up Darling || Cosplay Lentes de Contacto my dress up darling peluca negra Peluca Shizuku Kuroe – My Dress-Up Darling",
+     "Peluca Ochaco Uraraka – My Hero Academia || Cosplay Pelucas My hero academia peluca castaño uraka",
+     "Peluca Wriothesley – Genshin Impact || Cosplay Pelucas genshin impact peluca negra con tonos grises Peluca Wriothesley – Genshin Impact",
+     "Peluca Hu Tao – Genshin Impact || Cosplay Pelucas genshin impact Peluca Hu Tao – Genshin Impact peluca negra con mechas cafes",
+     "Peluca Lucy – Cyberpunk: Edgerunners || Cosplay Pelucas cyberpunk lucy peluca blanca con plateado y tonos rosados y azules",
+     "Peluca Rin Tohsaka – Fate/stay night || Cosplay Pelucas Fate/stay night. peluca negra Rin Tohsaka",
+     "Peluca Ai Ohto – Wonder Egg Priority || Cosplay Pelucas ai ohto Oshi no ko peluca azul electrico",
+     "Peluca Keisuke Baji – Tokyo Revengers || Cosplay Pelucas baji peluca negra larga tokyo revengers",
+     "Peluca Izuku Midoriya – My Hero Academia || Cosplay Pelucas midoriya My hero academia peluca negra con verde",
+     "Peluca Kobeni Higashiyama – Chainsaw Man || Cosplay Pelucas chainsaw man kobeni peluca castaño oscuro",
+     "Peluca Xiao – Genshin Impac || Cosplay Pelucas genshin impact peluca negro verdoso Xiao",
+     "Peluca Sucrose – Genshin Impact || Cosplay Pelucas genshin impact peluca verde menta sucrose",
+     "Peluca Lucoa – Miss Kobayashi’s Dragon Maid || Cosplay Pelucas lucoa Miss Kobayashi's Dragon Maid peluca rubia con mechas azules y verdes",
+     "Peluca Bulma – Dragon Ball || Cosplay Pelucas bulma dragon ball peluca azul"
+    ]
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 3,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "figuartschile",
+   "name": "Figuarts Chile",
+   "url": "https://www.figuartschile.com",
+   "location": "San Miguel",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 740,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 362,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "holygeek",
+   "name": "HolyGeek",
+   "url": "https://holygeek.cl",
+   "location": "Eurocentro, Santiago Centro",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 1075,
+      "errores": {
+       "HTTP 404": 6
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 284,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "svader",
+   "name": "SVADER Coleccionables",
+   "url": "https://www.svadercoleccionables.cl",
+   "location": "Providencia (Metro Tobalaba)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 1217,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 32,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "luffytoys",
+   "name": "LuffyToys",
+   "url": "https://luffytoys.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 976,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "shopify",
+   "count": 659,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "animestore",
+   "name": "Anime Store",
+   "url": "https://animestore.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 290,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "shopify",
+   "count": 251,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "avsotoyz",
+   "name": "AvsoToyz",
+   "url": "https://www.avsotoyz.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 1348,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 492,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "yumeshoku",
+   "name": "Yumeshoku Store",
+   "url": "https://www.yumeshokustore.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 2330,
+      "errores": {
+       "HTTP 404": 1
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 54,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "anezaki",
+   "name": "Anezaki Store",
+   "url": "https://anezakistore.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 3326,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "shopify",
+   "count": 1526,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "kinue",
+   "name": "Kinue Store",
+   "url": "https://kinuestore.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 1921,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "shopify",
+   "count": 1527,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "burubox",
+   "name": "Burubox",
+   "url": "https://burubox.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 132,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 74,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "zonaanime",
+   "name": "Zona Anime",
+   "url": "https://zonaanime.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 16,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 16,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "otakuverso",
+   "name": "OtakuVerso",
+   "url": "https://otakuverso.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 355,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 150,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "chilerobots",
+   "name": "Chile Robots",
+   "url": "https://www.chilerobots.cl",
+   "location": "Villa Alemana (despacho a todo Chile)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 207,
+      "errores": {
+       "HTTP 403": 15
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 165,
+   "last_ok": "2026-11-28",
+   "partial": true
+  },
+  {
+   "id": "tomatorepublic",
+   "name": "Tomato Republic",
+   "url": "https://tomatorepublic.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 1135,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 698,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "mranime",
+   "name": "Figuras MR Anime",
+   "url": "https://figurasmranime.cl",
+   "location": "Galpón Bío Bío, Santiago",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 1007,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 373,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "universotoys",
+   "name": "Universo Toys",
+   "url": "https://www.universotoystienda.com",
+   "location": "Dos Caracoles (Providencia)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 7
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
+  },
+  {
+   "id": "figurasdeku",
+   "name": "Figuras Deku Chile",
+   "url": "https://figurasdekuchile.cl",
+   "location": "Online (despacho gratis en RM)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "HTTP 404": 4
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
+  },
+  {
+   "id": "ryogatoys",
+   "name": "Ryoga Toys",
+   "url": "https://www.ryogatoys.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 653,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 337,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "shaggitoys",
+   "name": "Shaggi Toys",
+   "url": "https://www.shaggitoys.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 312,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 20,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "jftoys",
+   "name": "JF Toys",
+   "url": "https://www.jftoys.cl",
+   "location": "Online (entrega en metro U. de Chile)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 628,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 78,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "charlytoys",
+   "name": "Charly Colección Toys",
+   "url": "https://www.charlycolecciontoys.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 7
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
+  },
+  {
+   "id": "gwshop",
+   "name": "GW Shop (Funko)",
+   "url": "https://gwshop.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 2314,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 1114,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "metalstore",
+   "name": "Metal Store Chile",
+   "url": "https://metalstorechile.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectTimeout": 7
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": "woocommerce",
+   "count": 0,
+   "last_ok": "2026-11-24",
+   "total": 0
+  },
+  {
+   "id": "otakuworld",
+   "name": "Otakuworld",
+   "url": "https://www.otakuworld.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 605,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 75,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "chilemanga",
+   "name": "Chile Manga",
+   "url": "https://www.chilemanga.cl",
+   "location": "Persa Bío Bío, Santiago",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 1659,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": [
+     "20th Century Boys N°06 || ",
+     "20th Century Boys N°07 || ",
+     "Dragon Ball Kanzenban N°02 || ",
+     "Acerola's Premonition #TG24 Ingles || ",
+     "Acrilico Magnetico || ",
+     "Air Balloon #166 || ",
+     "Alakazam V #172 Español || ",
+     "Alcremie #TG08 ESPAÑOL || ",
+     "Allister #192 Español || ",
+     "Alolan Dugtrio #208 || ",
+     "Alolan Exeggutor #129 || ",
+     "Alolan Exeggutor ex #242 Ingles || ",
+     "Alolan Exeggutor ex INGLES - 248/191 - SV08: Surging Sparks || ",
+     "Alolan Meowth #139 || ",
+     "Altaria ex ESPAÑOL - 253/182 - SV04: Paradox Rift || "
+    ]
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 1,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "animecorp",
+   "name": "Animecorp",
+   "url": "https://www.animecorp.cl",
+   "location": "Viña del Mar",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 7
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
+  },
+  {
+   "id": "friitoys",
+   "name": "Friitoys",
+   "url": "https://friitoys.cl",
+   "location": "Eurocentro y Dos Caracoles",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 2179,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "shopify",
+   "count": 1861,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "geekz",
+   "name": "Geekz",
+   "url": "https://www.geekz.cl",
+   "location": "Costanera Center, Mall Plaza Oeste, Los Dominicos, Barrio Independencia",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 1408,
+      "errores": {
+       "HTTP 404": 19
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 374,
+   "last_ok": "2026-11-28",
+   "partial": true
+  },
+  {
+   "id": "jugueterialeon",
+   "name": "Juguetería León",
+   "url": "https://www.jugueterialeon.cl",
+   "location": "Online (despacho en Santiago)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 575,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": [
+     "Absorbing Man, Secret Wars 40th Anniversary - Marvel Legends || ",
+     "Agent Venom (Flash Thompson) Figura, Spider-Man Retro Series - Marvel Legends || ",
+     "Agente Anti-Venom, Battle-Damaged - Marvel Legends Magic: The Gathering || ",
+     "Albert \"Alpine\" Pine Figura, G.I. Joe Classified Series || ",
+     "Álbum Tapa Dura FIFA World Cup 2026 + 5 sobres || ",
+     "Álbum Tapa Dura Oro FIFA World Cup 2026 + 5 sobres || ",
+     "ALF Figura Coleccionable Ultimate 18 cm “Born To Rock” – NECA || ",
+     "ALF, Ultimate Action Figure - Neca (Empaque dañado) || ",
+     "Anakin Skywalker (Padawan) \"Star Wars: Attack of the Clone\" , The Vintage Collection || ",
+     "Artoo-Detoo (R2-D2) The Vintage Collection - Star Wars || ",
+     "Ascended Heroes sobre Inglés || ",
+     "Astro Boy Clear Version Classic - Mechanical - PANTASY || ",
+     "Ballora Core Figure Set Pack - Five Nights at Freddy's || ",
+     "Bart \"The Simpsons\", Jakks Pacific || ",
+     "Bat Gremlin Deluxe Figura - Gremlins 2: The New Batch || "
+    ]
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 14,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "weplay",
+   "name": "Weplay",
+   "url": "https://www.weplay.cl",
+   "location": "Costanera Center, Arauco Maipú y otros malls",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "HTTP 403": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "HTTP 403": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "HTTP 403": 7
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
+  },
+  {
+   "id": "takanodan",
+   "name": "Taka No Dan",
+   "url": "https://takanodan.cl",
+   "location": "Dos Caracoles (Providencia)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 1700,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "shopify",
+   "count": 193,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "topgames",
+   "name": "TopGames",
+   "url": "https://topgames.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 1889,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 276,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "figurasonline",
+   "name": "Figuras Online Chile",
+   "url": "https://figurasonlinechile.cl",
+   "location": "Santiago (online)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 1
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "woocommerce",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 2
+      },
+      "excepcion": null
+     },
+     {
+      "intento": "generic",
+      "productos": 0,
+      "errores": {
+       "ConnectionError": 7
+      },
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "error",
+   "platform": null,
+   "count": 0,
+   "last_ok": null,
+   "total": 0
+  },
+  {
+   "id": "kanjikana",
+   "name": "Kanjikana",
+   "url": "https://kanjikana.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 369,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "shopify",
+   "count": 180,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "hobbytoys",
+   "name": "Hobby Toys",
+   "url": "https://www.hobbytoys.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 1059,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 780,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "blaster",
+   "name": "Blaster Chile",
+   "url": "https://www.blasterchile.cl",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "shopify",
+      "productos": 3119,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "shopify",
+   "count": 1555,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "animetoyz",
+   "name": "Animetoyz Chile",
+   "url": "https://animetoyzchile.com",
+   "location": "Online",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "generic",
+      "productos": 351,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "generic",
+   "count": 23,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "allisontoys",
+   "name": "Allison Toys",
+   "url": "https://allisontoys.com",
+   "location": "Santiago",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 497,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 26,
+   "last_ok": "2026-11-28",
+   "partial": false
+  },
+  {
+   "id": "cositaskawaii",
+   "name": "Cositas Kawaii",
+   "url": "https://cositaskawaii.cl",
+   "location": "Quilicura (retiro)",
+   "diag": {
+    "intentos": [
+     {
+      "intento": "woocommerce",
+      "productos": 785,
+      "errores": {},
+      "excepcion": null
+     }
+    ],
+    "descartados_ejemplo": []
+   },
+   "status": "ok",
+   "platform": "woocommerce",
+   "count": 25,
+   "last_ok": "2026-11-28",
+   "partial": false
+  }
+ ]
+}
